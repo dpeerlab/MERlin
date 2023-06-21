@@ -2,7 +2,7 @@ from typing import List
 from typing import Union
 import numpy as np
 from skimage import transform
-from skimage import feature
+from skimage import registration
 import cv2
 
 from merlin.core import analysistask
@@ -196,11 +196,14 @@ class FiducialCorrelationWarp(Warp):
         # use the same alignment if they are from the same imaging round
         fixedImage = self._filter(
             self.dataSet.get_fiducial_image(0, fragmentIndex))
-        offsets = [feature.register_translation(
-            fixedImage,
-            self._filter(self.dataSet.get_fiducial_image(x, fragmentIndex)),
-            100)[0] for x in
-                   self.dataSet.get_data_organization().get_data_channels()]
+        offsets = [
+            registration.phase_cross_correlation(
+                fixedImage,
+                self._filter(self.dataSet.get_fiducial_image(x, fragmentIndex)),
+                upsample_factor=100,
+            )[0]
+            for x in self.dataSet.get_data_organization().get_data_channels()
+        ]
         transformations = [transform.SimilarityTransform(
             translation=[-x[1], -x[0]]) for x in offsets]
         self._process_transformations(transformations, fragmentIndex)
