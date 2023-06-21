@@ -1,7 +1,8 @@
-import pytest
 import random
+
 import numpy as np
 import pandas
+import pytest
 
 from merlin.util import barcodedb
 

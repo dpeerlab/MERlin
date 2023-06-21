@@ -1,6 +1,6 @@
-import numpy as np
 from typing import Tuple
 
+import numpy as np
 
 """
 This module contains Matlab functions that do not have equivalents in

@@ -1,11 +1,12 @@
-import subprocess
-import pandas
 import io
-import requests
-import time
 import json
-from matplotlib import pyplot as plt
+import subprocess
+import time
+
 import numpy as np
+import pandas
+import requests
+from matplotlib import pyplot as plt
 
 from merlin.core import analysistask
 

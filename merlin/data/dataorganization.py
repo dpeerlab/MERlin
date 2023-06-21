@@ -1,9 +1,9 @@
 import os
 import re
-from typing import List
-from typing import Tuple
-import pandas
+from typing import List, Tuple
+
 import numpy as np
+import pandas
 
 import merlin
 from merlin.core import dataset

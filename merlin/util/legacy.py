@@ -1,12 +1,8 @@
 import struct
-import pandas
-import numpy as np
-from typing import BinaryIO
-from typing import Tuple
-from typing import List
-from typing import Dict
-from typing import Iterator
+from typing import BinaryIO, Dict, Iterator, List, Tuple
 
+import numpy as np
+import pandas
 
 """
 This module contains convenience functions for reading and writing MERFISH

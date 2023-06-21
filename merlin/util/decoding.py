@@ -1,12 +1,13 @@
+from typing import Tuple
+
+import cv2
 import numpy as np
 import pandas
-import cv2
-from typing import Tuple
 from skimage import measure
 from sklearn.neighbors import NearestNeighbors
 
-from merlin.util import binary
 from merlin.data import codebook as mcodebook
+from merlin.util import binary
 
 """
 Utility functions for pixel based decoding.

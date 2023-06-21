@@ -1,15 +1,13 @@
-import cv2
-import numpy as np
-from skimage import measure
-from skimage import segmentation
-import rtree
 from typing import List
 
-from merlin.core import dataset
-from merlin.core import analysistask
-from merlin.util import spatialfeature
-from merlin.util import watershed
+import cv2
 import networkx as nx
+import numpy as np
+import rtree
+from skimage import measure, segmentation
+
+from merlin.core import analysistask, dataset
+from merlin.util import spatialfeature, watershed
 
 
 class FeatureSavingAnalysisTask(analysistask.ParallelAnalysisTask):

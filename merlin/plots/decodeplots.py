@@ -1,9 +1,9 @@
-from matplotlib import pyplot as plt
 import numpy as np
 import pandas
+from matplotlib import pyplot as plt
 
-from merlin.plots._base import AbstractPlot, PlotMetadata
 from merlin.analysis import filterbarcodes
+from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class MinimumDistanceDistributionPlot(AbstractPlot):

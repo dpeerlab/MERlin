@@ -1,20 +1,18 @@
-from abc import abstractmethod
-import numpy as np
 import uuid
+from abc import abstractmethod
+from typing import Dict, List, Tuple
+
 import cv2
-from skimage import measure
-from typing import List
-from typing import Tuple
-from typing import Dict
-from shapely import geometry
 import h5py
-import merlin
-import pandas
 import networkx as nx
+import numpy as np
+import pandas
 import rtree
 from scipy.spatial import cKDTree
+from shapely import geometry
+from skimage import measure
 
-
+import merlin
 from merlin.core import dataset
 
 

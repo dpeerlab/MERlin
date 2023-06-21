@@ -1,9 +1,10 @@
 import os
-from matplotlib import pyplot as plt
-import merlin
-from merlin.core import analysistask
 
+from matplotlib import pyplot as plt
+
+import merlin
 from merlin import plots
+from merlin.core import analysistask
 
 plt.style.use(
     os.sep.join([os.path.dirname(merlin.__file__), "ext", "default.mplstyle"])

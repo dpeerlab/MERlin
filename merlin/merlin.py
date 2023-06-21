@@ -1,17 +1,16 @@
 import argparse
 import cProfile
-import os
 import json
+import os
 import sys
-import snakemake
 import time
+from typing import Dict, TextIO
+
 import requests
-from typing import TextIO
-from typing import Dict
+import snakemake
 
 import merlin as m
-from merlin.core import dataset
-from merlin.core import executor
+from merlin.core import dataset, executor
 from merlin.util import snakewriter
 
 

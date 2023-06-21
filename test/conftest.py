@@ -1,11 +1,12 @@
-import os
-import pytest
-import shutil
 import glob
-from merlin.core import dataset
-from merlin.analysis import testtask
-import merlin
+import os
+import shutil
 
+import pytest
+
+import merlin
+from merlin.analysis import testtask
+from merlin.core import dataset
 
 root = os.path.join(os.path.dirname(merlin.__file__), "..", "test")
 merlin.DATA_HOME = os.path.abspath("test_data")

@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import List
-import pandas
+
 import numpy as np
+import pandas
 
 from merlin.core import dataset
 

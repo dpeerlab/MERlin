@@ -1,8 +1,9 @@
 from typing import Tuple
-from sklearn.neighbors import NearestNeighbors
-from skimage import transform
+
 import numpy as np
 from scipy import signal
+from skimage import transform
+from sklearn.neighbors import NearestNeighbors
 
 
 def extract_control_points(

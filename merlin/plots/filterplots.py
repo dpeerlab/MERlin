@@ -1,10 +1,11 @@
-from matplotlib import pyplot as plt
-import numpy as np
-import pandas
 from typing import List
 
-from merlin.plots._base import AbstractPlot, PlotMetadata
+import numpy as np
+import pandas
+from matplotlib import pyplot as plt
+
 from merlin.analysis import filterbarcodes
+from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class CodingBarcodeSpatialDistribution(AbstractPlot):

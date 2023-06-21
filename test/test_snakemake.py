@@ -1,6 +1,7 @@
-import snakemake
 import os
 import shutil
+
+import snakemake
 
 from merlin.util import snakewriter
 

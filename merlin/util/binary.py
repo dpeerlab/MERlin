@@ -1,5 +1,6 @@
-import numpy as np
 from typing import List
+
+import numpy as np
 
 
 def bit_list_to_int(bitList: List[bool]) -> int:

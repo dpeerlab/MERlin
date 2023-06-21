@@ -1,12 +1,10 @@
-import numpy as np
-import cv2
-from scipy import ndimage
-from skimage import morphology
-from skimage import filters
-from skimage import measure
-from pyclustering.cluster import kmedoids
 from typing import Tuple
 
+import cv2
+import numpy as np
+from pyclustering.cluster import kmedoids
+from scipy import ndimage
+from skimage import filters, measure, morphology
 
 """
 This module contains utility functions for preparing imagmes for 

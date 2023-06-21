@@ -1,6 +1,7 @@
-import numpy as np
 from abc import ABC, abstractmethod
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+
+import numpy as np
 from matplotlib import pyplot as plt
 
 from merlin.core import analysistask

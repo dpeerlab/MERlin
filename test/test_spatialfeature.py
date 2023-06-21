@@ -1,11 +1,11 @@
-import pytest
-import numpy as np
 import json
+
 import networkx as nx
+import numpy as np
+import pytest
 from shapely import geometry
 
 from merlin.util import spatialfeature
-
 
 testCoords1 = [(1, 1), (1, 2), (2, 2), (2, 1), (1, 1)]
 testCoords2 = [(0, 0), (2, 0), (2, 2), (0, 2), (0, 0)]

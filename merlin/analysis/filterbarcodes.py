@@ -2,8 +2,8 @@ import numpy as np
 import pandas
 from scipy import optimize
 
-from merlin.core import analysistask
 from merlin.analysis import decode
+from merlin.core import analysistask
 
 
 class AbstractFilterBarcodes(decode.BarcodeSavingParallelAnalysisTask):

@@ -1,8 +1,8 @@
 import numpy as np
 
+from merlin import plots
 from merlin.analysis import testtask
 from merlin.plots import testplots
-from merlin import plots
 
 
 def test_metadata(simple_merfish_data):

@@ -1,8 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from merlin.plots._base import AbstractPlot
-from merlin.plots._base import PlotMetadata
+from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class TestPlot(AbstractPlot):

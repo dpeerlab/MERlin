@@ -1,7 +1,8 @@
 import importlib
+
 import networkx
-from merlin.core import analysistask
-from merlin.core import dataset
+
+from merlin.core import analysistask, dataset
 
 
 class SnakemakeRule(object):

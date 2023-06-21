@@ -1,11 +1,10 @@
 import os
+
 import numpy as np
 
 from merlin.core import analysistask
-from merlin.util import deconvolve
-from merlin.util import aberration
-from merlin.util import imagefilters
 from merlin.data import codebook
+from merlin.util import aberration, deconvolve, imagefilters
 
 
 class Preprocess(analysistask.ParallelAnalysisTask):

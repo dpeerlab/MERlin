@@ -1,8 +1,9 @@
 import hashlib
-import numpy as np
 import re
-import tifffile
 from typing import List
+
+import numpy as np
+import tifffile
 
 from merlin.util import dataportal
 

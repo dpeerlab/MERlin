@@ -1,9 +1,9 @@
-import numpy as np
-import cv2
 from typing import Tuple
 
-from merlin.core import analysistask
+import cv2
+import numpy as np
 
+from merlin.core import analysistask
 
 ExtentTuple = Tuple[float, float, float, float]
 

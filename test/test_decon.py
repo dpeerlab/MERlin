@@ -1,9 +1,9 @@
-import cv2
-import numpy as np
 import random
 
-import merlin.util.deconvolve as deconvolve
+import cv2
+import numpy as np
 
+import merlin.util.deconvolve as deconvolve
 
 decon_sigma = 2
 decon_filter_size = 9

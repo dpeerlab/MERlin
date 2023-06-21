@@ -1,6 +1,6 @@
-import pandas
-import numpy as np
 import cv2
+import numpy as np
+import pandas
 from skimage.measure import regionprops
 
 from merlin.core import analysistask

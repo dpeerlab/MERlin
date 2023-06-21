@@ -1,14 +1,12 @@
-import numpy as np
-import pandas
 import os
 import tempfile
 
-from merlin.core import dataset
-from merlin.core import analysistask
-from merlin.util import decoding
-from merlin.util import barcodedb
+import numpy as np
+import pandas
+
+from merlin.core import analysistask, dataset
 from merlin.data.codebook import Codebook
-from merlin.util import barcodefilters
+from merlin.util import barcodedb, barcodefilters, decoding
 
 
 class BarcodeSavingParallelAnalysisTask(analysistask.ParallelAnalysisTask):

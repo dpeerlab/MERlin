@@ -1,18 +1,17 @@
-import numpy as np
 import time
 
+import numpy as np
+from PyQt5.QtCore import QObject, Qt, QTransform, pyqtSignal
+from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPolygon, QRect
 from PyQt5.QtWidgets import (
-    QWidget,
+    QFormLayout,
+    QGridLayout,
+    QGroupBox,
     QLabel,
     QScrollBar,
-    QGroupBox,
-    QFormLayout,
     QVBoxLayout,
-    QGridLayout,
+    QWidget,
 )
-from PyQt5.QtGui import QPainter, QPolygon, QRect, QPen, QColor, QImage
-from PyQt5.QtCore import Qt, QObject, pyqtSignal, QTransform
-
 
 from merlin.util import binary
 

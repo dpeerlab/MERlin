@@ -1,5 +1,5 @@
-from abc import abstractmethod
 import multiprocessing
+from abc import abstractmethod
 
 from merlin.core import analysistask
 

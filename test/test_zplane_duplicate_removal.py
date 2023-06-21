@@ -1,6 +1,8 @@
-import pandas as pd
 import random
+
 import numpy as np
+import pandas as pd
+
 from merlin.util import barcodefilters
 
 

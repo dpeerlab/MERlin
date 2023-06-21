@@ -1,7 +1,7 @@
 from abc import abstractmethod
+from typing import List, Tuple
+
 import numpy as np
-from typing import Tuple
-from typing import List
 from shapely import geometry
 
 from merlin.core import analysistask

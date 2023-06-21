@@ -1,7 +1,7 @@
+import importlib
 import inspect
 import pkgutil
-import importlib
-from typing import Set, List
+from typing import List, Set
 
 import merlin
 from merlin.plots._base import AbstractPlot

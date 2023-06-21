@@ -1,9 +1,9 @@
-import numpy as np
 import os
 
+import numpy as np
+
 import merlin
-from merlin.util import imagereader
-from merlin.util import dataportal
+from merlin.util import dataportal, imagereader
 
 root = os.path.join(os.path.dirname(merlin.__file__), "..", "test")
 

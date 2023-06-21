@@ -1,32 +1,26 @@
-import os
-import json
-import shutil
-import pandas
-import numpy as np
-import tifffile
-import importlib
-import time
-import logging
-import pickle
 import datetime
-import networkx as nx
-from matplotlib import pyplot as plt
-from typing import List
-from typing import Tuple
-from typing import Union
-from typing import Dict
-from typing import Optional
-import h5py
-import tables
-import xmltodict
+import importlib
+import json
+import logging
+import os
+import pickle
+import shutil
+import time
+from typing import Dict, List, Optional, Tuple, Union
 
-from merlin.util import imagereader
+import h5py
+import networkx as nx
+import numpy as np
+import pandas
+import tables
+import tifffile
+import xmltodict
+from matplotlib import pyplot as plt
+
 import merlin
 from merlin.core import analysistask
-from merlin.data import dataorganization
-from merlin.data import codebook
-from merlin.util import dataportal
-
+from merlin.data import codebook, dataorganization
+from merlin.util import dataportal, imagereader
 
 TaskOrName = Union[analysistask.AnalysisTask, str]
 

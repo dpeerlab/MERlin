@@ -1,9 +1,9 @@
-import os
 import csv
+import os
+from typing import List, Union
+
 import numpy as np
 import pandas
-from typing import List
-from typing import Union
 
 import merlin
 

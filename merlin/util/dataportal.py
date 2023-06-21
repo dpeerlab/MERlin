@@ -1,12 +1,12 @@
 import os
+from abc import ABC, abstractmethod
+from time import sleep
+from typing import List
+from urllib import parse
+
 import boto3
 import botocore
-from google.cloud import storage
-from google.cloud import exceptions
-from urllib import parse
-from abc import abstractmethod, ABC
-from typing import List
-from time import sleep
+from google.cloud import exceptions, storage
 
 
 class DataPortal(ABC):

@@ -1,15 +1,13 @@
-import numpy as np
 import itertools
-from skimage import transform
-from typing import Dict
-from typing import List
+from typing import Dict, List
+
+import numpy as np
 import pandas
+from skimage import transform
 
 from merlin.analysis import decode
-from merlin.util import decoding
-from merlin.util import registration
-from merlin.util import aberration
 from merlin.data.codebook import Codebook
+from merlin.util import aberration, decoding, registration
 
 
 class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):

@@ -1,8 +1,8 @@
-import pytest
 import os
 
-from merlin.core import executor
-from merlin.core import analysistask
+import pytest
+
+from merlin.core import analysistask, executor
 
 
 def test_task_delete(simple_data, simple_task):

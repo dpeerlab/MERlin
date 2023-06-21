@@ -1,8 +1,9 @@
-import pytest
+import os
 import shutil
 import tempfile
-import os
+
 import numpy as np
+import pytest
 from botocore import UNSIGNED
 from botocore.client import Config
 from google.auth.credentials import AnonymousCredentials

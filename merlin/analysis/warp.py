@@ -1,9 +1,8 @@
-from typing import List
-from typing import Union
-import numpy as np
-from skimage import transform
-from skimage import registration
+from typing import List, Union
+
 import cv2
+import numpy as np
+from skimage import registration, transform
 
 from merlin.core import analysistask
 from merlin.util import aberration

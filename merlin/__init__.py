@@ -1,9 +1,10 @@
-import dotenv
-import os
 import glob
-import json
 import importlib
+import json
+import os
 from typing import List
+
+import dotenv
 
 from merlin.core import dataset
 

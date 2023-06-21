@@ -1,7 +1,8 @@
 import os
+
+import cv2
 import numpy as np
 import PIL
-import cv2
 import tifffile
 from scipy.signal import convolve2d
 
