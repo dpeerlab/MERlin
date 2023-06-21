@@ -39,17 +39,17 @@ def infer_reader(filePortal: dataportal.FilePortal, verbose: bool = False):
     """
     ext = filePortal.get_file_extension()
 
-    if ext == '.dax':
+    if ext == ".dax":
         return DaxReader(filePortal, verbose=verbose)
     elif ext == ".tif" or ext == ".tiff":
         if isinstance(filePortal, dataportal.LocalFilePortal):
             # TODO implement tif reading from s3/gcloud
             return TifReader(filePortal._fileName, verbose=verbose)
         else:
-            raise IOError('Loading tiff files from %s is not yet implemented'
-                          % type(filePortal))
-    raise IOError(
-        "only .dax and .tif are supported (case sensitive..)")
+            raise IOError(
+                "Loading tiff files from %s is not yet implemented" % type(filePortal)
+            )
+    raise IOError("only .dax and .tif are supported (case sensitive..)")
 
 
 class Reader(object):
@@ -90,8 +90,7 @@ class Reader(object):
         Average multiple frames in a movie.
         """
         length = 0
-        average = np.zeros((self.image_height, self.image_width),
-                           np.float)
+        average = np.zeros((self.image_height, self.image_width), np.float)
         for [i, frame] in self.frame_iterator(start, end):
             if self.verbose and ((i % 10) == 0):
                 print(" processing frame:", i, " of", self.number_frames)
@@ -158,11 +157,12 @@ class Reader(object):
         return hashlib.md5(self.load_frame(0).tostring()).hexdigest()
 
     def load_frame(self, frame_number):
-        assert frame_number >= 0, \
-            "Frame_number must be greater than or equal to 0, it is "\
-            + str(frame_number)
-        assert frame_number < self.number_frames, \
-            "Frame number must be less than " + str(self.number_frames)
+        assert (
+            frame_number >= 0
+        ), "Frame_number must be greater than or equal to 0, it is " + str(frame_number)
+        assert (
+            frame_number < self.number_frames
+        ), "Frame number must be less than " + str(self.number_frames)
 
     def lock_target(self):
         """
@@ -179,27 +179,25 @@ class DaxReader(Reader):
     Dax reader class. This is a Zhuang lab custom format.
     """
 
-    def __init__(self, filePortal: dataportal.FilePortal,
-                 verbose: bool = False):
-        super(DaxReader, self).__init__(
-            filePortal.get_file_name(), verbose=verbose)
+    def __init__(self, filePortal: dataportal.FilePortal, verbose: bool = False):
+        super(DaxReader, self).__init__(filePortal.get_file_name(), verbose=verbose)
 
         self._filePortal = filePortal
-        infFile = filePortal.get_sibling_with_extension('.inf')
+        infFile = filePortal.get_sibling_with_extension(".inf")
         self._parse_inf(infFile.read_as_text().splitlines())
 
     def close(self):
         self._filePortal.close()
 
     def _parse_inf(self, inf_lines: List[str]) -> None:
-        size_re = re.compile(r'frame dimensions = ([\d]+) x ([\d]+)')
-        length_re = re.compile(r'number of frames = ([\d]+)')
-        endian_re = re.compile(r' (big|little) endian')
-        stagex_re = re.compile(r'Stage X = ([\d.\-]+)')
-        stagey_re = re.compile(r'Stage Y = ([\d.\-]+)')
-        lock_target_re = re.compile(r'Lock Target = ([\d.\-]+)')
-        scalemax_re = re.compile(r'scalemax = ([\d.\-]+)')
-        scalemin_re = re.compile(r'scalemin = ([\d.\-]+)')
+        size_re = re.compile(r"frame dimensions = ([\d]+) x ([\d]+)")
+        length_re = re.compile(r"number of frames = ([\d]+)")
+        endian_re = re.compile(r" (big|little) endian")
+        stagex_re = re.compile(r"Stage X = ([\d.\-]+)")
+        stagey_re = re.compile(r"Stage Y = ([\d.\-]+)")
+        lock_target_re = re.compile(r"Lock Target = ([\d.\-]+)")
+        scalemax_re = re.compile(r"scalemax = ([\d.\-]+)")
+        scalemin_re = re.compile(r"scalemin = ([\d.\-]+)")
 
         # defaults
         self.image_height = None
@@ -249,17 +247,16 @@ class DaxReader(Reader):
         super(DaxReader, self).load_frame(frame_number)
 
         startByte = frame_number * self.image_height * self.image_width * 2
-        endByte = startByte + 2*(self.image_height * self.image_width)
+        endByte = startByte + 2 * (self.image_height * self.image_width)
 
-        dataFormat = np.dtype('uint16')
+        dataFormat = np.dtype("uint16")
         if self.bigendian:
-            dataFormat = dataFormat.newbyteorder('>')
+            dataFormat = dataFormat.newbyteorder(">")
 
         image_data = np.frombuffer(
-            self._filePortal.read_file_bytes(startByte, endByte),
-            dtype=dataFormat)
-        image_data = np.reshape(image_data,
-                                [self.image_height, self.image_width])
+            self._filePortal.read_file_bytes(startByte, endByte), dtype=dataFormat
+        )
+        image_data = np.reshape(image_data, [self.image_height, self.image_width])
         return image_data
 
 
@@ -286,7 +283,6 @@ class TifReader(Reader):
         # Single page Tiff file, which might be a "ImageJ Tiff"
         # with many frames on a page.
         if number_pages == 1:
-
             # Determines the size without loading the entire file.
             isize = self.fileptr.series[0].shape
 
@@ -305,7 +301,7 @@ class TifReader(Reader):
                 self.number_frames = isize[0]
                 self.image_height = isize[1]
                 self.image_width = isize[2]
-                self.page_data = self.fileptr.asarray(out='memmap')
+                self.page_data = self.fileptr.asarray(out="memmap")
 
         # Multiple page Tiff file.
         #
@@ -330,8 +326,11 @@ class TifReader(Reader):
                 self.image_width = isize[2]
 
         if self.verbose:
-            print("{0:0d} frames per page, {1:0d} pages".format(
-                self.frames_per_page, number_pages))
+            print(
+                "{0:0d} frames per page, {1:0d} pages".format(
+                    self.frames_per_page, number_pages
+                )
+            )
 
     def load_frame(self, frame_number, cast_to_int16=True):
         super(TifReader, self).load_frame(frame_number)
@@ -367,9 +366,9 @@ class TifReader(Reader):
         else:
             image_data = self.fileptr.asarray(key=frame_number)
 
-        assert (len(
-            image_data.shape) == 2), "Not a monochrome tif image! " + str(
-            image_data.shape)
+        assert len(image_data.shape) == 2, "Not a monochrome tif image! " + str(
+            image_data.shape
+        )
 
         if cast_to_int16:
             image_data = image_data.astype(np.uint16)

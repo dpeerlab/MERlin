@@ -49,22 +49,28 @@ class AnalysisTask(ABC):
         else:
             self.analysisName = analysisName
 
-        if 'merlin_version' not in self.parameters:
-            self.parameters['merlin_version'] = merlin.version()
+        if "merlin_version" not in self.parameters:
+            self.parameters["merlin_version"] = merlin.version()
         else:
-            if not merlin.is_compatible(self.parameters['merlin_version']):
+            if not merlin.is_compatible(self.parameters["merlin_version"]):
                 raise merlin.IncompatibleVersionException(
-                    ('Analysis task %s has already been created by MERlin ' +
-                     'version %s, which is incompatible with the current ' +
-                     'MERlin version, %s')
-                    % (self.analysisName, self.parameters['merlin_version'],
-                       merlin.version()))
+                    (
+                        "Analysis task %s has already been created by MERlin "
+                        + "version %s, which is incompatible with the current "
+                        + "MERlin version, %s"
+                    )
+                    % (
+                        self.analysisName,
+                        self.parameters["merlin_version"],
+                        merlin.version(),
+                    )
+                )
 
-        self.parameters['module'] = type(self).__module__
-        self.parameters['class'] = type(self).__name__
+        self.parameters["module"] = type(self).__module__
+        self.parameters["class"] = type(self).__name__
 
-        if 'codebookNum' in self.parameters:
-            self.codebookNum = self.parameters['codebookNum']
+        if "codebookNum" in self.parameters:
+            self.codebookNum = self.parameters["codebookNum"]
 
     def save(self, overwrite=False) -> None:
         """Save a copy of this AnalysisTask into the data set.
@@ -82,7 +88,7 @@ class AnalysisTask(ABC):
 
     def run(self, overwrite=True) -> None:
         """Run this AnalysisTask.
-        
+
         Upon completion of the analysis, this function informs the DataSet
         that analysis is complete.
 
@@ -95,27 +101,27 @@ class AnalysisTask(ABC):
                 task has already completed or exited with an error.
         """
         logger = self.dataSet.get_logger(self)
-        logger.info('Beginning ' + self.get_analysis_name())
+        logger.info("Beginning " + self.get_analysis_name())
 
         try:
             if self.is_running():
                 raise AnalysisAlreadyStartedException(
-                    'Unable to run %s since it is already running'
-                    % self.analysisName)
+                    "Unable to run %s since it is already running" % self.analysisName
+                )
 
             if overwrite:
                 self._reset_analysis()
 
             if self.is_complete() or self.is_error():
                 raise AnalysisAlreadyStartedException(
-                    'Unable to run %s since it has already run'
-                    % self.analysisName)
+                    "Unable to run %s since it has already run" % self.analysisName
+                )
 
             self.dataSet.record_analysis_started(self)
             self._indicate_running()
             self._run_analysis()
             self.dataSet.record_analysis_complete(self)
-            logger.info('Completed ' + self.get_analysis_name())
+            logger.info("Completed " + self.get_analysis_name())
             self.dataSet.close_logger(self)
         except Exception as e:
             logger.exception(e)
@@ -134,9 +140,9 @@ class AnalysisTask(ABC):
 
     def _indicate_running(self) -> None:
         """A loop that regularly signals to the dataset that this analysis
-        task is still running successfully. 
+        task is still running successfully.
 
-        Once this function is called, the dataset will be notified every 
+        Once this function is called, the dataset will be notified every
         minute that this analysis is still running until the analysis
         completes.
         """
@@ -183,7 +189,7 @@ class AnalysisTask(ABC):
         analysis task can proceed.
 
         Returns:
-            a list containing the names of the analysis tasks that 
+            a list containing the names of the analysis tasks that
                 this analysis task depends on. If there are no dependencies,
                 an empty list is returned.
         """
@@ -199,7 +205,7 @@ class AnalysisTask(ABC):
 
     def is_error(self):
         """Determines if an error has occurred while running this analysis
-        
+
         Returns:
             True if the analysis is complete and otherwise False.
         """
@@ -207,7 +213,7 @@ class AnalysisTask(ABC):
 
     def is_complete(self):
         """Determines if this analysis has completed successfully
-        
+
         Returns:
             True if the analysis is complete and otherwise False.
         """
@@ -215,7 +221,7 @@ class AnalysisTask(ABC):
 
     def is_started(self):
         """Determines if this analysis has started.
-        
+
         Returns:
             True if the analysis has begun and otherwise False.
         """
@@ -264,25 +270,24 @@ class InternallyParallelAnalysisTask(AnalysisTask):
         self.coreCount = coreCount
 
     def is_parallel(self):
-        return True 
+        return True
 
 
 class ParallelAnalysisTask(AnalysisTask):
-
     # TODO - this can be restructured so that AnalysisTask is instead a subclass
     # of ParallelAnalysisTask where fragment count is set to 1. This could
     # help remove some of the redundant code
 
     """
-    An abstract class for analysis that can be run in multiple parts 
-    independently. Subclasses should implement the analysis to perform in 
+    An abstract class for analysis that can be run in multiple parts
+    independently. Subclasses should implement the analysis to perform in
     the run_analysis() function
     """
 
     def __init__(self, dataSet, parameters=None, analysisName=None):
         super().__init__(dataSet, parameters, analysisName)
 
-    def run(self, fragmentIndex: int=None, overwrite=True) -> None:
+    def run(self, fragmentIndex: int = None, overwrite=True) -> None:
         """Run the specified index of this analysis task.
 
         If fragment index is not provided. All fragments for this analysis
@@ -297,30 +302,33 @@ class ParallelAnalysisTask(AnalysisTask):
                 self.run(i, overwrite)
         else:
             logger = self.dataSet.get_logger(self, fragmentIndex)
-            logger.info(
-                'Beginning %s %i' % (self.get_analysis_name(), fragmentIndex))
+            logger.info("Beginning %s %i" % (self.get_analysis_name(), fragmentIndex))
             try:
                 if self.is_running(fragmentIndex):
                     raise AnalysisAlreadyStartedException(
-                        ('Unable to run %s fragment %i since it is already ' +
-                         'running')
-                        % (self.analysisName, fragmentIndex))
+                        (
+                            "Unable to run %s fragment %i since it is already "
+                            + "running"
+                        )
+                        % (self.analysisName, fragmentIndex)
+                    )
 
                 if overwrite:
                     self._reset_analysis(fragmentIndex)
 
-                if self.is_complete(fragmentIndex) \
-                        or self.is_error(fragmentIndex):
+                if self.is_complete(fragmentIndex) or self.is_error(fragmentIndex):
                     raise AnalysisAlreadyStartedException(
-                        'Unable to run %s fragment %i since it has already run'
-                        % (self.analysisName, fragmentIndex))
+                        "Unable to run %s fragment %i since it has already run"
+                        % (self.analysisName, fragmentIndex)
+                    )
 
                 self.dataSet.record_analysis_started(self, fragmentIndex)
                 self._indicate_running(fragmentIndex)
                 self._run_analysis(fragmentIndex)
                 self.dataSet.record_analysis_complete(self, fragmentIndex)
-                logger.info('Completed %s %i'
-                            % (self.get_analysis_name(), fragmentIndex))
+                logger.info(
+                    "Completed %s %i" % (self.get_analysis_name(), fragmentIndex)
+                )
                 self.dataSet.close_logger(self, fragmentIndex)
             except Exception as e:
                 logger.exception(e)
@@ -332,7 +340,7 @@ class ParallelAnalysisTask(AnalysisTask):
     def fragment_count(self):
         pass
 
-    def _reset_analysis(self, fragmentIndex: int=None) -> None:
+    def _reset_analysis(self, fragmentIndex: int = None) -> None:
         """Remove files created by this analysis task and remove markers
         indicating that this analysis has been started, or has completed.
         """
@@ -345,9 +353,9 @@ class ParallelAnalysisTask(AnalysisTask):
 
     def _indicate_running(self, fragmentIndex: int) -> None:
         """A loop that regularly signals to the dataset that this analysis
-        task is still running successfully. 
+        task is still running successfully.
 
-        Once this function is called, the dataset will be notified every 
+        Once this function is called, the dataset will be notified every
         minute that this analysis is still running until the analysis
         completes.
         """
@@ -355,8 +363,7 @@ class ParallelAnalysisTask(AnalysisTask):
             return
 
         self.dataSet.record_analysis_running(self, fragmentIndex)
-        self.runTimer = threading.Timer(
-                30, self._indicate_running, [fragmentIndex])
+        self.runTimer = threading.Timer(30, self._indicate_running, [fragmentIndex])
         self.runTimer.daemon = True
         self.runTimer.start()
 
@@ -368,7 +375,7 @@ class ParallelAnalysisTask(AnalysisTask):
         if fragmentIndex is None:
             for i in range(self.fragment_count()):
                 if self.is_error(i):
-                    return True 
+                    return True
 
             return False
 
@@ -396,7 +403,7 @@ class ParallelAnalysisTask(AnalysisTask):
         if fragmentIndex is None:
             for i in range(self.fragment_count()):
                 if self.is_started(i):
-                    return True 
+                    return True
 
             return False
 

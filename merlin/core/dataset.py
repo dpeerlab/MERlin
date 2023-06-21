@@ -64,7 +64,7 @@ class DataSet(object):
         self.rawDataPath = os.sep.join([dataHome, dataDirectoryName])
         self.rawDataPortal = dataportal.DataPortal.create_portal(self.rawDataPath)
         if not self.rawDataPortal.is_available():
-            print("The raw data is not available at %s".format(self.rawDataPath))
+            print("The raw data is not available at %s".format())
 
         self.analysisPath = os.sep.join([analysisHome, dataDirectoryName])
         os.makedirs(self.analysisPath, exist_ok=True)
