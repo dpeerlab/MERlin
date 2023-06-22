@@ -1,5 +1,6 @@
 import glob
 import importlib
+import importlib.metadata
 import json
 import os
 
@@ -51,9 +52,7 @@ class IncompatibleVersionException(Exception):
 
 
 def version():
-    import pkg_resources
-
-    return pkg_resources.get_distribution("merlin").version
+    return importlib.metadata.version("merlin")
 
 
 def is_compatible(testVersion: str, baseVersion: str = None) -> bool:
