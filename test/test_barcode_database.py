@@ -133,7 +133,7 @@ def test_write_and_read_one_fov(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
 
 
-@pytest.mark.slowtest()
+@pytest.mark.slowtest
 def test_write_and_read_one_fov_many_barcodes(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
     barcodesToWrite = pd.DataFrame([generate_random_barcode(0) for i in range(200000)])

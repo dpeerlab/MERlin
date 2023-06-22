@@ -7,7 +7,7 @@ from merlin import merlin as m
 
 
 @pytest.mark.fullrun()
-@pytest.mark.slowtest()
+@pytest.mark.slowtest
 def test_merfish_2d_full_local(simple_merfish_data):
     with open(
         os.sep.join([merlin.ANALYSIS_PARAMETERS_HOME, "test_analysis_parameters.json"]),

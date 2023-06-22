@@ -1,0 +1,10 @@
+
+
+[tool.ruff]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slowtest: a test that takes longer than a couple seconds",
+    "fullrun: a test that runs the full MERFISH decoding pipeline",
+]
