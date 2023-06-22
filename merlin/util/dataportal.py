@@ -59,7 +59,7 @@ class DataPortal(ABC):
     def _filter_file_list(inputList: list[str], extensionList: list[str]) -> list[str]:
         if not extensionList:
             return inputList
-        return [f for f in inputList if any([f.endswith(x) for x in extensionList])]
+        return [f for f in inputList if any(f.endswith(x) for x in extensionList)]
 
     @abstractmethod
     def list_files(self, extensionList: list[str] = None) -> list[str]:

@@ -103,11 +103,8 @@ class AbstractPlot(ABC):
         Returns: True if all required tasks and all required metadata
             is complete
         """
-        return all([t in completeTasks for t in self.get_required_tasks()]) and all(
-            [
-                m.metadata_name() in completeMetadata
-                for m in self.get_required_metadata()
-            ]
+        return all(t in completeTasks for t in self.get_required_tasks()) and all(
+            m.metadata_name() in completeMetadata for m in self.get_required_metadata()
         )
 
     def is_complete(self) -> bool:

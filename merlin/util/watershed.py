@@ -92,7 +92,7 @@ def separate_merged_seeds(seedsIn: np.ndarray) -> np.ndarray:
         localProps = [measure.regionprops(measure.label(x)) for x in seedImage]
         seedCounts = [len(x) for x in localProps]
 
-        if all([x < 2 for x in seedCounts]):
+        if all(x < 2 for x in seedCounts):
             goodFrames = [i for i, x in enumerate(seedCounts) if x == 1]
             goodProperties = [y for x in goodFrames for y in localProps[x]]
             seedPositions = np.round(

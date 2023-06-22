@@ -51,8 +51,8 @@ def test_portal_list_files(data_portal):
     fileList = [x for x in data_portal.list_files() if not x.endswith("/")]
     filteredList = data_portal.list_files(extensionList=".txt")
     assert len(fileList) == 2
-    assert any([x.endswith("test.txt") for x in fileList])
-    assert any([x.endswith("test.bin") for x in fileList])
+    assert any(x.endswith("test.txt") for x in fileList)
+    assert any(x.endswith("test.bin") for x in fileList)
     assert len(filteredList) == 1
     assert filteredList[0].endswith("test.txt")
 

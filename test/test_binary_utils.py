@@ -20,6 +20,6 @@ def test_flip_bit():
         flippedBarcode = binary.flip_bit(barcode, i)
         assert np.array_equal(barcode, barcodeCopy)
         assert all(
-            [barcode[j] == flippedBarcode[j] for j in range(len(barcode)) if j != i]
+            barcode[j] == flippedBarcode[j] for j in range(len(barcode)) if j != i
         )
         assert barcode[i] == (not flippedBarcode[i])

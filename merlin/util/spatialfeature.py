@@ -140,7 +140,7 @@ class SpatialFeature:
         goodPolygons = []
 
         for p in inPolygons:
-            if not any([pTest.contains(p) for pTest in inPolygons if p != pTest]):
+            if not any(pTest.contains(p) for pTest in inPolygons if p != pTest):
                 goodPolygons.append(p)
 
         return goodPolygons
@@ -238,14 +238,10 @@ class SpatialFeature:
                 a boundary with this feature.
         """
         if all(
-            [
-                b1.disjoint(b2)
-                for b1List, b2List in zip(
-                    self.get_boundaries(), inFeature.get_boundaries()
-                )
-                for b1 in b1List
-                for b2 in b2List
-            ]
+            b1.disjoint(b2)
+            for b1List, b2List in zip(self.get_boundaries(), inFeature.get_boundaries())
+            for b1 in b1List
+            for b2 in b2List
         ):
             return False
 
@@ -617,7 +613,7 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
                 )
             ]
 
-            existingIDs = set([x.get_feature_id() for x in existingFeatures])
+            existingIDs = {x.get_feature_id() for x in existingFeatures}
 
             for f in features:
                 if f.get_feature_id() not in existingIDs:
@@ -692,7 +688,7 @@ def construct_tree(
     cells: list,
     spatialIndex: rtree.index.Index = rtree.index.Index(),
     count: int = 0,
-    idToNum: dict = dict(),
+    idToNum: dict = {},
 ):
     """Builds or adds to an rtree with a list of cells.
 

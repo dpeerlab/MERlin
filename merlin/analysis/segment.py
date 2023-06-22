@@ -173,7 +173,7 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
 
         spatialTree = rtree.index.Index()
         count = 0
-        idToNum = dict()
+        idToNum = {}
         for currentFOV in intersectingFOVs:
             cells = self.segmentTask.get_feature_database().read_features(currentFOV)
             cells = spatialfeature.simple_clean_cells(cells)

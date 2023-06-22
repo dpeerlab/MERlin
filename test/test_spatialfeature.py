@@ -252,19 +252,17 @@ def test_feature_contains_positions():
         ]
     )
     assert all(
-        [a == b for a, b in zip(feature1.contains_positions(positions1), [False, True])]
+        a == b for a, b in zip(feature1.contains_positions(positions1), [False, True])
     )
     assert all(
-        [a == b for a, b in zip(feature4.contains_positions(positions1), [False, True])]
+        a == b for a, b in zip(feature4.contains_positions(positions1), [False, True])
     )
     assert all(
-        [
-            a == b
-            for a, b in zip(
-                feature4.contains_positions(positions2),
-                [False, False, True, False, True, True],
-            )
-        ]
+        a == b
+        for a, b in zip(
+            feature4.contains_positions(positions2),
+            [False, False, True, False, True, True],
+        )
     )
 
 
