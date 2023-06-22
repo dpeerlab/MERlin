@@ -342,7 +342,7 @@ class GCloudFilePortal(FilePortal):
         exception it reattempts after sleeping for exponentially increasing
         delays, up to a delay of about 4 minutes.
         """
-        file = self._error_tolerant_reading(self._fileHandle.download_as_string)
+        file = self._error_tolerant_reading(self._fileHandle.download_as_bytes)
         return file.decode("utf-8")
 
     def read_file_bytes(self, startByte, endByte):
@@ -351,7 +351,7 @@ class GCloudFilePortal(FilePortal):
         delays, up to a delay of about 4 minutes.
         """
         file = self._error_tolerant_reading(
-            self._fileHandle.download_as_string,
+            self._fileHandle.download_as_bytes,
             startByte=startByte,
             endByte=endByte - 1,
         )
