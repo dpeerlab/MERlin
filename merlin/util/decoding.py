@@ -383,7 +383,7 @@ class PixelBasedDecoder:
             barcodeRegions = [
                 x
                 for x in measure.regionprops(
-                    measure.label((decodedImage == b).astype(np.int))
+                    measure.label((decodedImage == b).astype(int))
                 )
                 if x.area >= self.refactorAreaThreshold
             ]
@@ -431,7 +431,7 @@ class PixelBasedDecoder:
             barcodeRegions = [
                 x
                 for x in measure.regionprops(
-                    measure.label((decodedImage == b).astype(np.int))
+                    measure.label((decodedImage == b).astype(int))
                 )
                 if x.area >= 5
             ]

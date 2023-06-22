@@ -125,7 +125,7 @@ class SpatialFeature:
     ) -> list[np.ndarray]:
         transformedList = []
         for b in boundaries:
-            reshapedBoundaries = np.reshape(b, (1, b.shape[0], 2)).astype(np.float)
+            reshapedBoundaries = np.reshape(b, (1, b.shape[0], 2)).astype(float)
             transformedBoundaries = cv2.transform(
                 reshapedBoundaries, transformationMatrix
             )[0, :, :2]
@@ -320,7 +320,7 @@ class SpatialFeature:
         boundaries = self.get_boundaries()
         positionList[:, 2] = np.round(positionList[:, 2])
 
-        containmentList = np.zeros(positionList.shape[0], dtype=np.bool)
+        containmentList = np.zeros(positionList.shape[0], dtype=bool)
 
         for zIndex in range(len(boundaries)):
             currentIndexes = np.where(positionList[:, 2] == zIndex)[0]
