@@ -48,7 +48,8 @@ def infer_reader(filePortal: dataportal.FilePortal, verbose: bool = False):
             raise OSError(
                 "Loading tiff files from %s is not yet implemented" % type(filePortal)
             )
-    raise OSError("only .dax and .tif are supported (case sensitive..)")
+    msg = "only .dax and .tif are supported (case sensitive..)"
+    raise OSError(msg)
 
 
 class Reader:

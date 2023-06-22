@@ -369,37 +369,32 @@ class DataOrganization:
                     )
 
                 if not self._dataSet.rawDataPortal.open_file(imagePath).exists():
-                    raise InputDataError(
-                        (
-                            "Image data for channel {} and fov {} not found. "
-                            "Expected at {}"
-                        ).format(dataChannel, fov, imagePath)
+                    msg = (
+                        f"Image data for channel {dataChannel} and fov {fov} "
+                        f"not found. Expected at {imagePath}"
                     )
+                    raise InputDataError(msg)
 
                 try:
                     imageSize = self._dataSet.image_stack_size(imagePath)
                 except Exception:
-                    raise InputDataError(
-                        (
-                            "Unable to determine image stack size for fov {} from"
-                            " data channel {} at {}"
-                        ).format(dataChannel, fov, imagePath)
+                    msg = (
+                        f"Unable to determine image stack size for fov {fov} "
+                        f"from data channel {dataChannel} at {imagePath}"
                     )
+                    raise InputDataError(msg)
 
                 frames = channelInfo["frame"]
 
                 # this assumes fiducials are stored in the same image file
                 requiredFrames = max(np.max(frames), channelInfo["fiducialFrame"])
                 if requiredFrames >= imageSize[2]:
-                    raise InputDataError(
-                        (
-                            "Insufficient frames in data for channel {} and "
-                            "fov {}. Expected {} frames "
-                            "but only found {} in file {}"
-                        ).format(
-                            dataChannel, fov, requiredFrames, imageSize[2], imagePath
-                        )
+                    msg = (
+                        f"Insufficient frames in data for channel {dataChannel} and "
+                        f"fov {fov}. Expected {requiredFrames} frames but only found "
+                        f"{imageSize[2]} in file {imagePath}"
                     )
+                    raise InputDataError(msg)
 
                 if expectedImageSize is None:
                     expectedImageSize = [imageSize[0], imageSize[1]]
@@ -408,17 +403,10 @@ class DataOrganization:
                         expectedImageSize[0] != imageSize[0]
                         or expectedImageSize[1] != imageSize[1]
                     ):
-                        raise InputDataError(
-                            (
-                                "Image data for channel {0} and fov {1} has "
-                                "unexpected dimensions. Expected {1}x{2} but "
-                                "found {3}x{4} in image file {5}"
-                            ).format(
-                                dataChannel,
-                                fov,
-                                expectedImageSize[0],
-                                expectedImageSize[1],
-                                imageSize[0],
-                                imageSize[1],
-                            )
+                        msg = (
+                            f"Image data for channel {dataChannel} and fov {fov}"
+                            " has unexpected dimensions. Expected "
+                            f"{expectedImageSize[0]}x{expectedImageSize[1]} but found "
+                            f"{imageSize[0]}x{imageSize[1]} in image file {imagePath}"
                         )
+                        raise InputDataError(msg)
