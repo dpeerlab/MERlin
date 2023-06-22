@@ -66,7 +66,7 @@ def remove_zplane_duplicates_single_barcodeid(
                       been removed.
     """
     barcodes.reset_index(drop=True, inplace=True)
-    if not len(barcodes["barcode_id"].unique()) == 1:
+    if len(barcodes["barcode_id"].unique()) != 1:
         errorString = (
             "The method remove_zplane_duplicates_single_barcodeid "
             + "should be given a dataframe containing molecules "

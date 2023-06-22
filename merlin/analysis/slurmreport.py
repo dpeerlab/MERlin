@@ -1,3 +1,4 @@
+import contextlib
 import io
 import json
 import subprocess
@@ -241,7 +242,7 @@ class SlurmReport(analysistask.AnalysisTask):
                     reportDict[t] = slurmDF
                     analysisParameters[t] = currentTask.get_parameters()
 
-                    try:
+                    with contextlib.suppress(requests.exceptions.RequestException):
                         requests.post(
                             "http://merlin.georgeemanuel.com/post",
                             files={
@@ -255,8 +256,7 @@ class SlurmReport(analysistask.AnalysisTask):
                             },
                             timeout=10,
                         )
-                    except requests.exceptions.RequestException:
-                        pass
+
             except Exception:
                 pass
 
@@ -280,7 +280,7 @@ class SlurmReport(analysistask.AnalysisTask):
             "report_time": reportTime,
             "analysis_parameters": analysisParameters,
         }
-        try:
+        with contextlib.suppress(requests.exceptions.RequestException):
             requests.post(
                 "http://merlin.georgeemanuel.com/post",
                 files={
@@ -291,5 +291,3 @@ class SlurmReport(analysistask.AnalysisTask):
                 },
                 timeout=10,
             )
-        except requests.exceptions.RequestException:
-            pass

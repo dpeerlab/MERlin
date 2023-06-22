@@ -229,10 +229,7 @@ class DataOrganization:
             frameIndex = 0
 
         frames = channelInfo["frame"]
-        if isinstance(frames, np.ndarray):
-            frame = frames[frameIndex]
-        else:
-            frame = frames
+        frame = frames[frameIndex] if isinstance(frames, np.ndarray) else frames
 
         return frame
 

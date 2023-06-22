@@ -187,7 +187,7 @@ class SnakefileGenerator:
 
     def _identify_terminal_tasks(self, analysisTasks):
         taskGraph = networkx.DiGraph()
-        for x in analysisTasks.keys():
+        for x in analysisTasks:
             taskGraph.add_node(x)
 
         for x, a in analysisTasks.items():

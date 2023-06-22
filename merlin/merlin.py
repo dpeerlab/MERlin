@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import cProfile
 import json
 import os
@@ -239,7 +240,7 @@ def run_with_snakemake(
             "report_time": reportTime,
             "analysis_parameters": analysisParameters,
         }
-        try:
+        with contextlib.suppress(requests.exceptions.RequestException):
             requests.post(
                 "http://merlin.georgeemanuel.com/post",
                 files={
@@ -250,5 +251,3 @@ def run_with_snakemake(
                 },
                 timeout=10,
             )
-        except requests.exceptions.RequestException:
-            pass

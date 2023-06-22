@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import importlib
 import json
@@ -986,10 +987,8 @@ class DataSet:
     ):
         fileName = self._analysis_status_file(analysisTask, eventName, fragmentIndex)
 
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(fileName)
-        except FileNotFoundError:
-            pass
 
     def is_analysis_idle(
         self, analysisTask: analysistask.AnalysisTask, fragmentIndex: int = None

@@ -274,7 +274,7 @@ class AdaptiveFilterBarcodeDistributionPlots(AbstractPlot):
 
             plt.subplot(6, 4, 4 * i + 4)
             plt.imshow(
-                blankFraction[:, :, i].T < threshold,
+                threshold > blankFraction[:, :, i].T,
                 extent=plotExtent,
                 origin="lower",
                 aspect="auto",

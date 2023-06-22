@@ -470,12 +470,12 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
 
     @staticmethod
     def _load_feature_from_hdf5_group(h5Group):
-        zCount = len([x for x in h5Group.keys() if x.startswith("zIndex_")])
+        zCount = len([x for x in h5Group if x.startswith("zIndex_")])
         boundaryList = []
         for z in range(zCount):
             zBoundaryList = []
             zGroup = h5Group["zIndex_" + str(z)]
-            pCount = len([x for x in zGroup.keys() if x[:2] == "p_"])
+            pCount = len([x for x in zGroup if x[:2] == "p_"])
             for p in range(pCount):
                 zBoundaryList.append(
                     HDF5SpatialFeatureDB._load_geometry_from_hdf5_group(
@@ -522,7 +522,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
                 "r", "feature_data", self._analysisTask, fov, "features"
             ) as f:
                 featureGroup = f.require_group("featuredata")
-                for k in featureGroup.keys():
+                for k in featureGroup:
                     featureList.append(
                         self._load_feature_from_hdf5_group(featureGroup[k])
                     )
@@ -565,7 +565,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
                 ) as f:
                     allAttrKeys = []
                     allAttrValues = []
-                    for key in f["featuredata"].keys():
+                    for key in f["featuredata"]:
                         attrNames = list(f["featuredata"][key].attrs.keys())
                         attrValues = list(f["featuredata"][key].attrs.values())
                         allAttrKeys.append(attrNames)

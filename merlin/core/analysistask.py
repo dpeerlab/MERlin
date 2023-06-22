@@ -378,11 +378,7 @@ class ParallelAnalysisTask(AnalysisTask):
 
     def is_error(self, fragmentIndex=None):
         if fragmentIndex is None:
-            for i in range(self.fragment_count()):
-                if self.is_error(i):
-                    return True
-
-            return False
+            return any(self.is_error(i) for i in range(self.fragment_count()))
 
         else:
             return self.dataSet.check_analysis_error(self, fragmentIndex)
@@ -406,11 +402,7 @@ class ParallelAnalysisTask(AnalysisTask):
 
     def is_started(self, fragmentIndex=None):
         if fragmentIndex is None:
-            for i in range(self.fragment_count()):
-                if self.is_started(i):
-                    return True
-
-            return False
+            return any(self.is_started(i) for i in range(self.fragment_count()))
 
         else:
             return self.dataSet.check_analysis_started(self, fragmentIndex)

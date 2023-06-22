@@ -45,10 +45,7 @@ def k_bit_set(n: int, k: int) -> bool:
     if k is None:
         return None
 
-    if n & (1 << k):
-        return True
-    else:
-        return False
+    return bool(n & 1 << k)
 
 
 def flip_bit(barcode: list[bool], bitIndex: int) -> list[bool]:
