@@ -165,7 +165,6 @@ class AnalysisTask(ABC):
         This function should be implemented in all subclasses with the
         logic to complete the analysis.
         """
-        pass
 
     @abstractmethod
     def get_estimated_memory(self) -> float:
@@ -176,7 +175,6 @@ class AnalysisTask(ABC):
         -------
             a memory estimate in megabytes.
         """
-        pass
 
     @abstractmethod
     def get_estimated_time(self) -> float:
@@ -187,7 +185,6 @@ class AnalysisTask(ABC):
         -------
             a time estimate in minutes.
         """
-        pass
 
     @abstractmethod
     def get_dependencies(self) -> list[str]:
@@ -200,7 +197,6 @@ class AnalysisTask(ABC):
                 this analysis task depends on. If there are no dependencies,
                 an empty list is returned.
         """
-        pass
 
     def get_parameters(self):
         """Get the parameters for this analysis task.

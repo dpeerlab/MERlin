@@ -32,7 +32,6 @@ class Executor:
                 the task or fragments of the task that have either not been
                 started or have previously completed in error.
         """
-        pass
 
 
 class LocalExecutor(Executor):

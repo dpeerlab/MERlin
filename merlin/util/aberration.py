@@ -25,7 +25,6 @@ class ChromaticCorrector(ABC):
                 of the input image is not in the set of transformations for
                 this corrector, no transformation is applied.
         """
-        pass
 
 
 class IdentityChromaticCorrector(ChromaticCorrector):

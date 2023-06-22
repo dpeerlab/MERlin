@@ -74,7 +74,6 @@ class BarcodeDB:
                 corresponding to the specified fov will be removed. Otherwise,
                 all barcodes will be removed.
         """
-        pass
 
     @abstractmethod
     def get_barcodes(
@@ -98,7 +97,6 @@ class BarcodeDB:
                 requested barcodes is returned. Otherwise an iterator is
                 returned that iterates over the requested barcodes.
         """
-        pass
 
     @abstractmethod
     def get_filtered_barcodes(
@@ -133,14 +131,12 @@ class BarcodeDB:
                 requested barcodes is returned. Otherwise an iterator is
                 returned that iterates over the requested barcodes.
         """
-        pass
 
     @abstractmethod
     def get_intensities_for_barcodes_with_area(self, area: int) -> pd.Series:
         """Gets the barcode intensities for barcodes that have the specified
         area.
         """
-        pass
 
     @abstractmethod
     def write_barcodes(self, barcodeInformation: pd.DataFrame, fov: int = None) -> None:
@@ -161,7 +157,6 @@ class BarcodeDB:
                 fov. If barcodeInformation contains barcodes from different
                 fovs, then fov should be set to None.
         """
-        pass
 
     def get_barcode_intensities(self) -> pd.Series:
         """Get mean intensities for all barcodes in this database.

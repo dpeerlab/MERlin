@@ -402,7 +402,6 @@ class SpatialFeatureDB:
                 fov. If the features correspond to different fovs, fov
                 should be None
         """
-        pass
 
     @abstractmethod
     def read_features(self, fov: int = None) -> list[SpatialFeature]:
@@ -413,7 +412,6 @@ class SpatialFeatureDB:
             fov: if not None, only the features associated with the specified
                 fov are returned
         """
-        pass
 
     @abstractmethod
     def empty_database(self, fov: int = None) -> None:
@@ -425,7 +423,6 @@ class SpatialFeatureDB:
                 corresponding to the specified fov will be removed.
                 Otherwise all barcodes will be removed.
         """
-        pass
 
 
 class HDF5SpatialFeatureDB(SpatialFeatureDB):

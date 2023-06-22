@@ -33,7 +33,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
             A tuple containing the global x and y coordinates or
             z, x, and y coordinates (in microns)
         """
-        pass
 
     @abstractmethod
     def global_coordinates_to_fov(
@@ -53,7 +52,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
             A list of tuples containing the global x and y coordinates
             (in microns)
         """
-        pass
         # TODO this can be updated to take either a list or a single coordinate
         # and to convert z position
 
@@ -68,7 +66,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
         Returns:
             a numpy array containing the transformation matrix
         """
-        pass
 
     @abstractmethod
     def get_global_extent(self) -> tuple[float, float, float, float]:
@@ -80,7 +77,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
             and x and y extents and the last two indexes correspond to the
             maximum x and y extents. All are in units of microns.
         """
-        pass
 
     @abstractmethod
     def fov_coordinate_array_to_global(
@@ -96,7 +92,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
         Returns:
             numpy array of the global [z, x, y] coordinates.
         """
-        pass
 
     def get_fov_boxes(self) -> list:
         """Creates a list of shapely boxes for each fov containing the global

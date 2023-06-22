@@ -41,7 +41,6 @@ class DataPortal(ABC):
 
         Returns: True if the basePath is available, otherwise False.
         """
-        pass
 
     @abstractmethod
     def open_file(self, fileName: str) -> "FilePortal":
@@ -53,7 +52,6 @@ class DataPortal(ABC):
             fileName: the name of the file to open, relative to basePath
         Returns: A FilePortal referencing the specified file.
         """
-        pass
 
     @staticmethod
     def _filter_file_list(inputList: list[str], extensionList: list[str]) -> list[str]:
@@ -72,7 +70,6 @@ class DataPortal(ABC):
                 files ending in one of the extensions will be returned.
         Returns: a list of the file paths
         """
-        pass
 
 
 class LocalDataPortal(DataPortal):
@@ -207,7 +204,6 @@ class FilePortal(ABC):
 
         Returns: Flag indicating whether or not the file exists
         """
-        pass
 
     @abstractmethod
     def get_sibling_with_extension(self, newExtension: str) -> "FilePortal":
@@ -219,7 +215,6 @@ class FilePortal(ABC):
             newExtension: the new extension
         Returns: A reference to the file with the extension exchanged.
         """
-        pass
 
     @abstractmethod
     def read_as_text(self) -> str:
@@ -227,7 +222,6 @@ class FilePortal(ABC):
 
         Returns: the file contents as a string
         """
-        pass
 
     @abstractmethod
     def read_file_bytes(self, startByte: int, endByte: int) -> bytes:
@@ -240,12 +234,10 @@ class FilePortal(ABC):
                 (exclusive)
         Returns: The bytes between startByte and endByte within this file.
         """
-        pass
 
     @abstractmethod
     def close(self) -> None:
         """Close this file portal."""
-        pass
 
 
 class LocalFilePortal(FilePortal):

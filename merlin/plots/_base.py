@@ -39,7 +39,6 @@ class AbstractPlot(ABC):
             of the specified type are allowed, the value should be 'all'. If
             no tasks are required then an empty dictionary should be returned.
         """
-        pass
 
     @abstractmethod
     def get_required_metadata(self) -> list[object]:
@@ -48,7 +47,6 @@ class AbstractPlot(ABC):
         Returns: A list of class references for the metadata
             objects that are required for this task.
         """
-        pass
 
     @abstractmethod
     def _generate_plot(
@@ -71,7 +69,6 @@ class AbstractPlot(ABC):
                 metadata.
         Returns: the figure handle to the newly generated figure
         """
-        pass
 
     def is_relevant(self, inputTasks: dict[str, analysistask.AnalysisTask]) -> bool:
         """Determine if this plot is relevant given the analysis tasks
@@ -213,7 +210,6 @@ class PlotMetadata(ABC):
         when the function is called and should not wait for additional
         analysis to complete.
         """
-        pass
 
     @abstractmethod
     def is_complete(self) -> bool:
@@ -222,4 +218,3 @@ class PlotMetadata(ABC):
         Returns: True if the metadata is complete or False if additional
             computation is necessary
         """
-        pass
