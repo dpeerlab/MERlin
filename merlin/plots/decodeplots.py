@@ -1,5 +1,5 @@
 import numpy as np
-import pandas
+import pandas as pd
 from matplotlib import pyplot as plt
 
 from merlin.analysis import filterbarcodes
@@ -98,7 +98,7 @@ class DecodedBarcodeAbundancePlot(AbstractPlot):
         decodeMetadata = inputMetadata["decodeplots/DecodedBarcodesMetadata"]
 
         barcodeCounts = decodeMetadata.barcodeCounts
-        countDF = pandas.DataFrame(
+        countDF = pd.DataFrame(
             decodeMetadata.barcodeCounts,
             index=np.arange(len(barcodeCounts)),
             columns=["counts"],
@@ -229,7 +229,7 @@ class DecodedBarcodesMetadata(PlotMetadata):
         self.queuedBarcodeData = []
 
     def _determine_bins(self):
-        aggregateDF = pandas.concat(self.queuedBarcodeData)
+        aggregateDF = pd.concat(self.queuedBarcodeData)
         minIntensity = np.log10(aggregateDF["mean_intensity"].min())
         maxIntensity = np.log10(aggregateDF["mean_intensity"].max())
         self.intensityBins = np.linspace(minIntensity, maxIntensity, 100)

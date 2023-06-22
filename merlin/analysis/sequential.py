@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import pandas
+import pandas as pd
 from skimage.measure import regionprops
 
 from merlin.core import analysistask
@@ -54,7 +54,7 @@ class SumSignal(analysistask.ParallelAnalysisTask):
             self.parameters["global_align_task"],
         ]
 
-    def _extract_signal(self, cells, inputImage, zIndex) -> pandas.DataFrame:
+    def _extract_signal(self, cells, inputImage, zIndex) -> pd.DataFrame:
         cellCoords = []
         for cell in cells:
             regions = cell.get_boundaries()[zIndex]
@@ -79,7 +79,7 @@ class SumSignal(analysistask.ParallelAnalysisTask):
         for i, cell in enumerate(cellCoords):
             cv2.drawContours(mask, cell, -1, i + 1, -1)
         propsDict = {x.label: x for x in regionprops(mask, inputImage)}
-        propsOut = pandas.DataFrame(
+        propsOut = pd.DataFrame(
             data=[
                 (propsDict[k].intensity_image.sum(), propsDict[k].filled_area)
                 if k in propsDict
@@ -111,12 +111,12 @@ class SumSignal(analysistask.ParallelAnalysisTask):
         # adding num of pixels
         signals.append(self._extract_signal(cells, img, zIndex).iloc[:, [1]])
 
-        compiledSignal = pandas.concat(signals, 1)
+        compiledSignal = pd.concat(signals, 1)
         compiledSignal.columns = channels + ["Pixels"]
 
         return compiledSignal
 
-    def get_sum_signals(self, fov: int = None) -> pandas.DataFrame:
+    def get_sum_signals(self, fov: int = None) -> pd.DataFrame:
         """Retrieve the sum signals calculated from this analysis task.
 
         Args:
@@ -126,10 +126,10 @@ class SumSignal(analysistask.ParallelAnalysisTask):
 
         Returns:
         -------
-            A pandas data frame containing the sum signal information.
+            A DataFrame containing the sum signal information.
         """
         if fov is None:
-            return pandas.concat(
+            return pd.concat(
                 [self.get_sum_signals(fov) for fov in self.dataSet.get_fovs()]
             )
 

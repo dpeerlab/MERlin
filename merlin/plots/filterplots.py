@@ -1,5 +1,5 @@
 import numpy as np
-import pandas
+import pandas as pd
 from matplotlib import pyplot as plt
 
 from merlin.analysis import filterbarcodes
@@ -168,7 +168,7 @@ class FilteredBarcodeAbundancePlot(AbstractPlot):
         decodeMetadata = inputMetadata["filterplots/FilteredBarcodesMetadata"]
 
         barcodeCounts = decodeMetadata.barcodeCounts
-        countDF = pandas.DataFrame(
+        countDF = pd.DataFrame(
             decodeMetadata.barcodeCounts,
             index=np.arange(len(barcodeCounts)),
             columns=["counts"],

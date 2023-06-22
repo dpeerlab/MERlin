@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import pandas
+import pandas as pd
 from skimage import measure
 from sklearn.neighbors import NearestNeighbors
 
@@ -159,7 +159,7 @@ class PixelBasedDecoder:
         zIndex: int = None,
         globalAligner=None,
         minimumArea: int = 0,
-    ) -> pandas.DataFrame:
+    ) -> pd.DataFrame:
         """Extract the barcode information from the decoded image for barcodes
         that were decoded to the specified barcode index.
 
@@ -217,7 +217,7 @@ class PixelBasedDecoder:
         else:
             intensityColumns = [f"intensity_{i}" for i in range(pixelTraces.shape[0])]
         if len(properties) == 0:
-            return pandas.DataFrame(columns=columnNames + intensityColumns)
+            return pd.DataFrame(columns=columnNames + intensityColumns)
 
         allCoords = [list(p.coords) for p in properties]
 
@@ -231,7 +231,7 @@ class PixelBasedDecoder:
             intensities = [
                 [pixelTraces[y[0], :, y[1], y[2]] for y in x] for x in allCoords
             ]
-            intensities = pandas.DataFrame(
+            intensities = pd.DataFrame(
                 [np.mean(x, 0) if len(x) > 1 else x[0] for x in intensities],
                 columns=intensityColumns,
             )
@@ -263,7 +263,7 @@ class PixelBasedDecoder:
                 ]
             )
             intensities = [[pixelTraces[:, y[0], y[1]] for y in x] for x in allCoords]
-            intensities = pandas.DataFrame(
+            intensities = pd.DataFrame(
                 [np.mean(x, 0) if len(x) > 1 else x[0] for x in intensities],
                 columns=intensityColumns,
             )
@@ -275,7 +275,7 @@ class PixelBasedDecoder:
         else:
             globalCentroids = centroids
 
-        df = pandas.DataFrame(
+        df = pd.DataFrame(
             np.zeros((len(properties), len(columnNames))), columns=columnNames
         )
         df["barcode_id"] = barcodeIndex
@@ -288,7 +288,7 @@ class PixelBasedDecoder:
         df.loc[:, ["global_x", "global_y", "global_z"]] = globalCentroids[:, [1, 2, 0]]
         df["cell_index"] = -1
 
-        fullDF = pandas.concat([df, intensities], 1)
+        fullDF = pd.concat([df, intensities], 1)
         fullDF = fullDF[
             (
                 fullDF["x"].between(

@@ -11,7 +11,7 @@ from typing import TypeAlias
 import h5py
 import networkx as nx
 import numpy as np
-import pandas
+import pandas as pd
 import tables
 import tifffile
 import xmltodict
@@ -361,7 +361,7 @@ class DataSet:
 
     def save_dataframe_to_csv(
         self,
-        dataframe: pandas.DataFrame,
+        dataframe: pd.DataFrame,
         resultName: str,
         analysisTask: TaskOrName = None,
         resultIndex: int = None,
@@ -385,7 +385,7 @@ class DataSet:
             subdirectory: subdirectory of the analysis task that the dataframe
                 should be saved to or None if the dataframe should be
                 saved to the root directory for the analysis task.
-            **kwargs: arguments to pass on to pandas.to_csv
+            **kwargs: arguments to pass on to pd.to_csv
         """
         savePath = self._analysis_result_save_path(
             resultName, analysisTask, resultIndex, subdirectory, ".csv"
@@ -401,7 +401,7 @@ class DataSet:
         resultIndex: int = None,
         subdirectory: str = None,
         **kwargs,
-    ) -> pandas.DataFrame | None:
+    ) -> pd.DataFrame | None:
         """Load a pandas data frame from a csv file stored in this data set.
 
         Args:
@@ -420,7 +420,7 @@ class DataSet:
             resultName, analysisTask, resultIndex, subdirectory, ".csv"
         )
         with open(savePath) as f:
-            return pandas.read_csv(f, **kwargs)
+            return pd.read_csv(f, **kwargs)
 
     def open_pandas_hdfstore(
         self,
@@ -429,11 +429,11 @@ class DataSet:
         analysisName: str,
         resultIndex: int = None,
         subdirectory: str = None,
-    ) -> pandas.HDFStore:
+    ) -> pd.HDFStore:
         savePath = self._analysis_result_save_path(
             resultName, analysisName, resultIndex, subdirectory, ".h5"
         )
-        return pandas.HDFStore(savePath, mode=mode)
+        return pd.HDFStore(savePath, mode=mode)
 
     def delete_pandas_hdfstore(
         self,
@@ -1417,7 +1417,7 @@ class MERFISHDataSet(ImageDataSet):
         positionPath = os.sep.join([self.analysisPath, "positions.csv"])
         if not os.path.exists(positionPath):
             self._import_positions_from_metadata()
-        self.positions = pandas.read_csv(positionPath, header=None, names=["X", "Y"])
+        self.positions = pd.read_csv(positionPath, header=None, names=["X", "Y"])
 
     def _import_positions(self, positionFileName):
         sourcePath = os.sep.join([merlin.POSITION_HOME, positionFileName])

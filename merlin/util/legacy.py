@@ -3,7 +3,7 @@ from collections.abc import Iterator
 from typing import BinaryIO
 
 import numpy as np
-import pandas
+import pandas as pd
 
 """
 This module contains convenience functions for reading and writing MERFISH
@@ -11,7 +11,7 @@ analysis results created from the deprecated Matlab pipeline.
 """
 
 
-def read_blist(bFile: BinaryIO) -> pandas.DataFrame:
+def read_blist(bFile: BinaryIO) -> pd.DataFrame:
     entryCount, _, entryFormat = _read_binary_header(bFile)
     bytesPerEntry = int(
         np.sum(
@@ -21,7 +21,7 @@ def read_blist(bFile: BinaryIO) -> pandas.DataFrame:
             ]
         )
     )
-    return pandas.DataFrame(
+    return pd.DataFrame(
         [
             _parse_entry_bytes(bFile.read(bytesPerEntry), entryFormat)
             for i in range(entryCount)

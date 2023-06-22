@@ -1,4 +1,4 @@
-import seaborn
+import seaborn as sns
 from matplotlib import pyplot as plt
 
 from merlin.plots._base import AbstractPlot
@@ -16,7 +16,7 @@ class OptimizationScaleFactorsPlot(AbstractPlot):
 
     def _generate_plot(self, inputTasks, inputMetadata):
         fig = plt.figure(figsize=(5, 5))
-        seaborn.heatmap(inputTasks["optimize_task"].get_scale_factor_history())
+        sns.heatmap(inputTasks["optimize_task"].get_scale_factor_history())
         plt.xlabel("Bit index")
         plt.ylabel("Iteration number")
         plt.title("Scale factor optimization history")
@@ -73,7 +73,7 @@ class OptimizationBarcodeCountsPlot(AbstractPlot):
 
     def _generate_plot(self, inputTasks, inputMetadata):
         fig = plt.figure(figsize=(5, 5))
-        seaborn.heatmap(inputTasks["optimize_task"].get_barcode_count_history())
+        sns.heatmap(inputTasks["optimize_task"].get_barcode_count_history())
         plt.xlabel("Barcode index")
         plt.ylabel("Iteration number")
         plt.title("Barcode counts optimization history")

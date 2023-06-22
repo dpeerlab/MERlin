@@ -1,5 +1,5 @@
 import numpy as np
-import pandas
+import pandas as pd
 from scipy import optimize
 
 from merlin.analysis import decode
@@ -199,8 +199,8 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
         )
 
     def extract_barcodes_with_threshold(
-        self, blankThreshold: float, barcodeSet: pandas.DataFrame
-    ) -> pandas.DataFrame:
+        self, blankThreshold: float, barcodeSet: pd.DataFrame
+    ) -> pd.DataFrame:
         selectData = barcodeSet[["mean_intensity", "min_distance", "area"]].values
         selectData[:, 0] = np.log10(selectData[:, 0])
         blankFractionHistogram = self.get_blank_fraction_histogram()
@@ -285,7 +285,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
 
                 if np.sum(pendingFragments) >= min(20, self.fragment_count()):
 
-                    def extreme_values(inputData: pandas.Series):
+                    def extreme_values(inputData: pd.Series):
                         return inputData.min(), inputData.max()
 
                     sampledFragments = np.random.choice(

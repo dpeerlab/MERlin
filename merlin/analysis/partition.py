@@ -1,5 +1,5 @@
 import numpy as np
-import pandas
+import pandas as pd
 
 from merlin.core import analysistask
 
@@ -28,7 +28,7 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
             self.parameters["alignment_task"],
         ]
 
-    def get_partitioned_barcodes(self, fov: int = None) -> pandas.DataFrame:
+    def get_partitioned_barcodes(self, fov: int = None) -> pd.DataFrame:
         """Retrieve the cell by barcode matrixes calculated from this
         analysis task.
 
@@ -39,10 +39,10 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
 
         Returns:
         -------
-            A pandas data frame containing the parsed barcode information.
+            A DataFrame containing the parsed barcode information.
         """
         if fov is None:
-            return pandas.concat(
+            return pd.concat(
                 [self.get_partitioned_barcodes(fov) for fov in self.dataSet.get_fovs()]
             )
 
@@ -71,14 +71,14 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
             if fi == fovIntersections[0]:
                 currentFOVBarcodes = partialBC.copy(deep=True)
             else:
-                currentFOVBarcodes = pandas.concat([currentFOVBarcodes, partialBC], 0)
+                currentFOVBarcodes = pd.concat([currentFOVBarcodes, partialBC], 0)
 
         currentFOVBarcodes = currentFOVBarcodes.reset_index().copy(deep=True)
 
         sDB = assignmentTask.get_feature_database()
         currentCells = sDB.read_features(fragmentIndex)
 
-        countsDF = pandas.DataFrame(
+        countsDF = pd.DataFrame(
             data=np.zeros((len(currentCells), barcodeCount)),
             columns=range(barcodeCount),
             index=[x.get_feature_id() for x in currentCells],

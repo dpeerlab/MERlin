@@ -2,7 +2,7 @@ import os
 import re
 
 import numpy as np
-import pandas
+import pandas as pd
 
 import merlin
 from merlin.core import dataset
@@ -48,7 +48,7 @@ class DataOrganization:
             if not os.path.exists(filePath):
                 filePath = os.sep.join([merlin.DATA_ORGANIZATION_HOME, filePath])
 
-            self.data = pandas.read_csv(
+            self.data = pd.read_csv(
                 filePath, converters={"frame": _parse_int_list, "zPos": _parse_list}
             )
             self.data["readoutName"] = self.data["readoutName"].str.strip()
@@ -333,7 +333,7 @@ class DataOrganization:
                         + f"for image type {currentType}."
                     )
 
-            self.fileMap = pandas.DataFrame(fileData)
+            self.fileMap = pd.DataFrame(fileData)
             self.fileMap[["imagingRound", "fov"]] = self.fileMap[
                 ["imagingRound", "fov"]
             ].astype(int)

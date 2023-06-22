@@ -2,7 +2,7 @@ import csv
 import os
 
 import numpy as np
-import pandas
+import pandas as pd
 
 import merlin
 
@@ -35,10 +35,10 @@ class Codebook:
                 newVersion = False
 
         if newVersion:
-            self._data = pandas.read_csv(filePath)
+            self._data = pd.read_csv(filePath)
         else:
             headerLength = 3
-            barcodeData = pandas.read_csv(
+            barcodeData = pd.read_csv(
                 filePath,
                 header=headerLength,
                 skipinitialspace=True,
@@ -67,11 +67,11 @@ class Codebook:
                 for i, currentRow in barcodeData.iterrows()
             ]
         )
-        df = pandas.DataFrame(dfData, columns=["name", "id"] + bitNames)
+        df = pd.DataFrame(dfData, columns=["name", "id"] + bitNames)
         df[bitNames] = df[bitNames].astype("uint8")
         return df
 
-    def get_data(self) -> pandas.DataFrame:
+    def get_data(self) -> pd.DataFrame:
         """Get the dataframe that contains the information for this codebook.
 
         Returns: The pandas dataframe

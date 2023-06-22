@@ -1,7 +1,7 @@
 import itertools
 
 import numpy as np
-import pandas
+import pandas as pd
 from skimage import transform
 
 from merlin.analysis import decode
@@ -124,7 +124,7 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
         # the barcodedb should be made more general
         cropWidth = self.parameters["crop_width"]
         self.get_barcode_database().write_barcodes(
-            pandas.concat(
+            pd.concat(
                 [
                     decoder.extract_barcodes_with_index(
                         i,

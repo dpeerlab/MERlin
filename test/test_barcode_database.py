@@ -1,7 +1,7 @@
 import random
 
 import numpy as np
-import pandas
+import pandas as pd
 import pytest
 
 from merlin.util import barcodedb
@@ -14,9 +14,9 @@ def barcode_db(single_task, simple_merfish_data):
 
 @pytest.fixture(scope="function")
 def barcode_db_with_barcodes(barcode_db):
-    barcodeSet1 = pandas.DataFrame([generate_random_barcode(0) for i in range(20)])
-    barcodeSet2 = pandas.DataFrame([generate_random_barcode(1) for i in range(20)])
-    barcodesToWrite = pandas.concat([barcodeSet1, barcodeSet2])
+    barcodeSet1 = pd.DataFrame([generate_random_barcode(0) for i in range(20)])
+    barcodeSet2 = pd.DataFrame([generate_random_barcode(1) for i in range(20)])
+    barcodesToWrite = pd.concat([barcodeSet1, barcodeSet2])
     barcode_db.write_barcodes(barcodesToWrite)
 
     yield (barcode_db, barcodesToWrite)
@@ -121,7 +121,7 @@ barcode2 = {
 
 def test_write_and_read_one_fov(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
-    barcodesToWrite = pandas.DataFrame([barcode1, barcode2])
+    barcodesToWrite = pd.DataFrame([barcode1, barcode2])
     barcode_db.write_barcodes(barcodesToWrite, fov=0)
     readBarcodes = barcode_db.get_barcodes()[barcodesToWrite.columns]
     print(barcodesToWrite.to_string())
@@ -136,9 +136,7 @@ def test_write_and_read_one_fov(barcode_db):
 @pytest.mark.slowtest
 def test_write_and_read_one_fov_many_barcodes(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
-    barcodesToWrite = pandas.DataFrame(
-        [generate_random_barcode(0) for i in range(200000)]
-    )
+    barcodesToWrite = pd.DataFrame([generate_random_barcode(0) for i in range(200000)])
     barcode_db.write_barcodes(barcodesToWrite, fov=0)
     readBarcodes = barcode_db.get_barcodes()[barcodesToWrite.columns]
 
@@ -153,14 +151,14 @@ def test_write_and_read_one_fov_many_barcodes(barcode_db):
 
 def test_multiple_write_one_fov(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
-    barcodeSet1 = pandas.DataFrame([generate_random_barcode(0) for i in range(10)])
-    barcodeSet2 = pandas.DataFrame([generate_random_barcode(0) for i in range(10)])
-    barcodeSet3 = pandas.DataFrame([generate_random_barcode(0) for i in range(10)])
+    barcodeSet1 = pd.DataFrame([generate_random_barcode(0) for i in range(10)])
+    barcodeSet2 = pd.DataFrame([generate_random_barcode(0) for i in range(10)])
+    barcodeSet3 = pd.DataFrame([generate_random_barcode(0) for i in range(10)])
     barcode_db.write_barcodes(barcodeSet1, fov=0)
     barcode_db.write_barcodes(barcodeSet2, fov=0)
     barcode_db.write_barcodes(barcodeSet3, fov=0)
     readBarcodes = barcode_db.get_barcodes()[barcodeSet1.columns]
-    combinedBarcodes = pandas.concat([barcodeSet1, barcodeSet2, barcodeSet3])
+    combinedBarcodes = pd.concat([barcodeSet1, barcodeSet2, barcodeSet3])
     readBarcodes.sort_values(by=list(readBarcodes.columns)[1:], inplace=True)
     combinedBarcodes.sort_values(by=list(combinedBarcodes.columns)[1:], inplace=True)
     assert np.isclose(
@@ -172,9 +170,9 @@ def test_multiple_write_one_fov(barcode_db):
 
 def test_write_and_read_multiple_fov(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
-    barcodeSet1 = pandas.DataFrame([generate_random_barcode(0) for i in range(10)])
-    barcodeSet2 = pandas.DataFrame([generate_random_barcode(1) for i in range(10)])
-    combinedBarcodes = pandas.concat([barcodeSet1, barcodeSet2])
+    barcodeSet1 = pd.DataFrame([generate_random_barcode(0) for i in range(10)])
+    barcodeSet2 = pd.DataFrame([generate_random_barcode(1) for i in range(10)])
+    combinedBarcodes = pd.concat([barcodeSet1, barcodeSet2])
     barcode_db.write_barcodes(combinedBarcodes)
     readBarcodes = barcode_db.get_barcodes()[barcodeSet1.columns]
     readBarcodes.sort_values(by=list(readBarcodes.columns)[1:], inplace=True)

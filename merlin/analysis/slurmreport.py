@@ -4,7 +4,7 @@ import subprocess
 import time
 
 import numpy as np
-import pandas
+import pandas as pd
 import requests
 from matplotlib import pyplot as plt
 
@@ -57,7 +57,7 @@ class SlurmReport(analysistask.AnalysisTask):
             stdout=subprocess.PIPE,
         )
 
-        slurmJobDF = pandas.read_csv(
+        slurmJobDF = pd.read_csv(
             io.StringIO(queryResult.stdout.decode("utf-8")), sep="|"
         )
 
@@ -81,19 +81,18 @@ class SlurmReport(analysistask.AnalysisTask):
                 return splitElapsed[0]
 
         outputDF = outputDF.assign(
-            Elapsed=pandas.to_timedelta(
+            Elapsed=pd.to_timedelta(
                 outputDF["Elapsed"].apply(reformat_timedelta), unit="s"
             )
         )
         outputDF = outputDF.assign(
-            Timelimit=pandas.to_timedelta(
+            Timelimit=pd.to_timedelta(
                 outputDF["Timelimit"].apply(reformat_timedelta), unit="s"
             )
         )
         outputDF = outputDF.assign(
-            Queued=pandas.to_timedelta(
-                pandas.to_datetime(outputDF["Start"])
-                - pandas.to_datetime(outputDF["Submit"]),
+            Queued=pd.to_timedelta(
+                pd.to_datetime(outputDF["Start"]) - pd.to_datetime(outputDF["Submit"]),
                 unit="s",
             )
         )

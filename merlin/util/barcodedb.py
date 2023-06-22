@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 import numpy as np
-import pandas
+import pandas as pd
 
 from merlin.core import dataset
 
@@ -136,16 +136,14 @@ class BarcodeDB:
         pass
 
     @abstractmethod
-    def get_intensities_for_barcodes_with_area(self, area: int) -> pandas.Series:
+    def get_intensities_for_barcodes_with_area(self, area: int) -> pd.Series:
         """Gets the barcode intensities for barcodes that have the specified
         area.
         """
         pass
 
     @abstractmethod
-    def write_barcodes(
-        self, barcodeInformation: pandas.DataFrame, fov: int = None
-    ) -> None:
+    def write_barcodes(self, barcodeInformation: pd.DataFrame, fov: int = None) -> None:
         """Writes the specified barcodes into the barcode database.
 
         If all the barcodes correspond to the same fov, then fov can be
@@ -165,7 +163,7 @@ class BarcodeDB:
         """
         pass
 
-    def get_barcode_intensities(self) -> pandas.Series:
+    def get_barcode_intensities(self) -> pd.Series:
         """Get mean intensities for all barcodes in this database.
 
         Returns
@@ -174,7 +172,7 @@ class BarcodeDB:
         """
         return self.get_barcodes(columnList=["mean_intensity"])["mean_intensity"]
 
-    def get_barcode_areas(self) -> pandas.Series:
+    def get_barcode_areas(self) -> pd.Series:
         """Get areas for all barcodes in this database.
 
         Returns
@@ -183,7 +181,7 @@ class BarcodeDB:
         """
         return self.get_barcodes(columnList=["area"])["area"]
 
-    def get_barcode_distances(self) -> pandas.Series:
+    def get_barcode_distances(self) -> pd.Series:
         """Get distances for all barcodes in this database.
 
         Returns
@@ -206,11 +204,9 @@ class PyTablesBarcodeDB(BarcodeDB):
             "barcode_data", self._analysisTask, fov, "barcodes"
         )
 
-    def get_barcodes(
-        self, fov=None, columnList=None, chunkSize=None
-    ) -> pandas.DataFrame:
+    def get_barcodes(self, fov=None, columnList=None, chunkSize=None) -> pd.DataFrame:
         if fov is None:
-            barcodes = pandas.concat(
+            barcodes = pd.concat(
                 [
                     self.get_barcodes(fov=x, columnList=columnList)
                     for x in self._dataSet.get_fovs()
@@ -223,25 +219,25 @@ class PyTablesBarcodeDB(BarcodeDB):
                     "r", "barcode_data", self._analysisTask, fov, "barcodes"
                 ) as pandasHDF:
                     if "barcodes" not in pandasHDF:
-                        return pandas.DataFrame()
+                        return pd.DataFrame()
 
                     if columnList is None:
                         barcodes = pandasHDF["barcodes"]
                     else:
-                        barcodes = pandas.read_hdf(
+                        barcodes = pd.read_hdf(
                             pandasHDF, key="barcodes", columns=columnList
                         )
 
             except OSError:
-                barcodes = pandas.DataFrame()
+                barcodes = pd.DataFrame()
 
         # if no barcodes are present make sure the dataframe still has the
         # correct columns
         if len(barcodes) == 0:
             if columnList:
-                barcodes = pandas.DataFrame(columns=columnList)
+                barcodes = pd.DataFrame(columns=columnList)
             else:
-                barcodes = pandas.DataFrame(columns=self._get_bc_column_types().keys())
+                barcodes = pd.DataFrame(columns=self._get_bc_column_types().keys())
 
         return barcodes
 
@@ -268,13 +264,11 @@ class PyTablesBarcodeDB(BarcodeDB):
 
         return filteredBarcodes
 
-    def get_intensities_for_barcodes_with_area(self, area: int) -> pandas.Series:
+    def get_intensities_for_barcodes_with_area(self, area: int) -> pd.Series:
         allBarcodes = self.get_barcodes(columnList=["area", "mean_intensity"])
         return allBarcodes[allBarcodes["area"] == area]["mean_intensity"]
 
-    def write_barcodes(
-        self, barcodeInformation: pandas.DataFrame, fov: int = None
-    ) -> None:
+    def write_barcodes(self, barcodeInformation: pd.DataFrame, fov: int = None) -> None:
         if len(barcodeInformation) <= 0:
             return
 

@@ -2,7 +2,7 @@ import os
 import tempfile
 
 import numpy as np
-import pandas
+import pandas as pd
 
 from merlin.core import analysistask, dataset
 from merlin.data.codebook import Codebook
@@ -256,7 +256,7 @@ class Decode(BarcodeSavingParallelAnalysisTask):
         minimumArea = self.parameters["minimum_area"]
 
         self.get_barcode_database().write_barcodes(
-            pandas.concat(
+            pd.concat(
                 [
                     decoder.extract_barcodes_with_index(
                         i,

@@ -5,7 +5,7 @@ import cv2
 import h5py
 import networkx as nx
 import numpy as np
-import pandas
+import pandas as pd
 import rtree
 from scipy.spatial import cKDTree
 from shapely import geometry
@@ -543,7 +543,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
             "feature_data", self._analysisTask, fov, "features"
         )
 
-    def read_feature_metadata(self, fov: int = None) -> pandas.DataFrame:
+    def read_feature_metadata(self, fov: int = None) -> pd.DataFrame:
         """Get the metadata for the features stored within this feature
         database.
 
@@ -557,7 +557,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
             Coordinates are in microns.
         """
         if fov is None:
-            finalDF = pandas.concat(
+            finalDF = pd.concat(
                 [self.read_feature_metadata(x) for x in self._dataSet.get_fovs()], 0
             )
 
@@ -575,12 +575,12 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
                         allAttrValues.append(attrValues)
 
                     columns = list(np.unique(allAttrKeys))
-                    df = pandas.DataFrame(data=allAttrValues, columns=columns)
+                    df = pd.DataFrame(data=allAttrValues, columns=columns)
                     finalDF = df.loc[:, ["fov", "volume"]].copy(deep=True)
                     finalDF.index = (
                         df["id"].str.decode(encoding="utf-8").values.tolist()
                     )
-                    boundingBoxDF = pandas.DataFrame(
+                    boundingBoxDF = pd.DataFrame(
                         df["bounding_box"].values.tolist(), index=finalDF.index
                     )
                     finalDF["center_x"] = (boundingBoxDF[0] + boundingBoxDF[2]) / 2
@@ -590,7 +590,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
                     finalDF["min_y"] = boundingBoxDF[1]
                     finalDF["max_y"] = boundingBoxDF[3]
             except FileNotFoundError:
-                return pandas.DataFrame()
+                return pd.DataFrame()
 
         return finalDF
 
@@ -775,7 +775,7 @@ def construct_graph(graph, cells, spatialTree, currentFOV, allFOVs, fovBoxes):
     coords = [x.centroid.coords.xy for x in fovBoxes]
     xcoords = [x[0][0] for x in coords]
     ycoords = [x[1][0] for x in coords]
-    coordsDF = pandas.DataFrame(
+    coordsDF = pd.DataFrame(
         data=np.array(list(zip(xcoords, ycoords))),
         index=allFOVs,
         columns=["centerX", "centerY"],
@@ -864,7 +864,7 @@ def remove_overlapping_cells(graph):
             listOfLists = list(zip(cellIDs, originalFOVs, assignedFOVs))
             listOfLists = [list(x) for x in listOfLists]
             cleanedCells = cleanedCells + listOfLists
-    cleanedCellsDF = pandas.DataFrame(
+    cleanedCellsDF = pd.DataFrame(
         cleanedCells, columns=["cell_id", "originalFOV", "assignedFOV"]
     )
     return cleanedCellsDF
