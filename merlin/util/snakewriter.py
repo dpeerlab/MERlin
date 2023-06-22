@@ -76,18 +76,12 @@ class SnakemakeRule:
             shellString = "python "
         else:
             shellString = self._clean_string(self._pythonPath) + " "
-        shellString += "".join(
-            [
-                "-m merlin -t ",
-                self._clean_string(self._analysisTask.analysisName),
-                ' -e "',
-                self._clean_string(self._analysisTask.dataSet.dataHome),
-                '"',
-                ' -s "',
-                self._clean_string(self._analysisTask.dataSet.analysisHome),
-                '"',
-            ]
+        shellString += (
+            f"-m merlin -t {self._clean_string(self._analysisTask.analysisName)} "
+            f'-e "{self._clean_string(self._analysisTask.dataSet.dataHome)}" '
+            f'-s "{self._clean_string(self._analysisTask.dataSet.analysisHome)}"'
         )
+
         return shellString
 
     def _generate_shell(self) -> str:
@@ -106,37 +100,42 @@ class SnakemakeRule:
 
     def as_string(self) -> str:
         fullString = (
-            "rule %s:\n\tinput: %s\n\toutput: %s\n\tmessage: %s\n\t" + "shell: %s\n\n"
-        ) % (
-            self._analysisTask.get_analysis_name(),
-            self._generate_current_task_inputs(),
-            self._generate_output(),
-            self._generate_message(),
-            self._generate_shell(),
+            f"rule {self._analysisTask.get_analysis_name()}:\n"
+            f"\tinput: {self._generate_current_task_inputs()}\n"
+            f"\toutput: {self._generate_output()}\n"
+            f"\tmessage: {self._generate_message()}\n"
+            f"\tshell: {self._generate_shell()}\n"
+            "\n"
         )
         # for parallel tasks, add a second snakemake task to reduce the time
         # it takes to generate DAGs
         if isinstance(self._analysisTask, analysistask.ParallelAnalysisTask):
-            fullString += (
-                "rule %s:\n\tinput: %s\n\toutput: %s\n\tmessage: %s\n\t"
-                + "shell: %s\n\n"
-            ) % (
-                self._analysisTask.get_analysis_name() + "Done",
-                self._clean_string(
-                    self._expand_as_string(
-                        self._analysisTask, self._analysisTask.fragment_count()
-                    )
-                ),
-                self._add_quotes(
-                    self._clean_string(
-                        self._analysisTask.dataSet.analysis_done_filename(
-                            self._analysisTask
-                        )
-                    )
-                ),
-                self._add_quotes("Checking %s done" % self._analysisTask.analysisName),
-                self._generate_done_shell(),
+            rule_name = self._analysisTask.get_analysis_name() + "Done"
+            input_val = self._clean_string(
+                self._expand_as_string(
+                    self._analysisTask, self._analysisTask.fragment_count()
+                )
             )
+            output_val = self._add_quotes(
+                self._clean_string(
+                    self._analysisTask.dataSet.analysis_done_filename(
+                        self._analysisTask
+                    )
+                )
+            )
+            message_val = self._add_quotes(
+                f"Checking {self._analysisTask.analysisName} done"
+            )
+            shell_val = self._generate_done_shell()
+
+            fullString += (
+                f"rule {rule_name}:\n"
+                f"\tinput: {input_val}\n"
+                f"\toutput: {output_val}\n"
+                f"\tmessage: {message_val}\n"
+                f"\tshell: {shell_val}\n\n"
+            )
+
         return fullString
 
     def full_output(self) -> str:
