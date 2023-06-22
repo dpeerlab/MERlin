@@ -1,6 +1,5 @@
 import csv
 import os
-from typing import List, Union
 
 import numpy as np
 import pandas
@@ -12,7 +11,7 @@ def _parse_barcode_from_string(inputString):
     return np.array([int(x) for x in inputString if x != " "])
 
 
-class Codebook(object):
+class Codebook:
 
     """
     A Codebook stores the association of barcodes to genes.
@@ -35,7 +34,7 @@ class Codebook(object):
             filePath = os.sep.join([merlin.CODEBOOK_HOME, filePath])
 
         newVersion = True
-        with open(filePath, "r") as f:
+        with open(filePath) as f:
             if "version" in f.readline():
                 newVersion = False
 
@@ -50,7 +49,7 @@ class Codebook(object):
                 usecols=["name", "id", "barcode"],
                 converters={"barcode": _parse_barcode_from_string},
             )
-            with open(filePath, "r") as inFile:
+            with open(filePath) as inFile:
                 csvReader = csv.reader(inFile, delimiter=",")
                 header = [row for i, row in enumerate(csvReader) if i < headerLength]
 
@@ -83,7 +82,7 @@ class Codebook(object):
         """
         return self._data
 
-    def get_barcode(self, index: int) -> List[bool]:
+    def get_barcode(self, index: int) -> list[bool]:
         """Get the barcode with the specified index.
 
         Args:
@@ -108,7 +107,7 @@ class Codebook(object):
         """
         return len(self.get_bit_names())
 
-    def get_bit_names(self) -> List[str]:
+    def get_bit_names(self) -> list[str]:
         """Get the names of the bits for this MERFISH data set.
 
         Returns:
@@ -139,7 +138,7 @@ class Codebook(object):
                 [[x[n] for n in bitNames] for i, x in self._data.iterrows()]
             )
 
-    def get_coding_indexes(self) -> List[int]:
+    def get_coding_indexes(self) -> list[int]:
         """Get the barcode indexes that correspond with genes.
 
         Returns:
@@ -148,7 +147,7 @@ class Codebook(object):
         """
         return self._data[~self._data["name"].str.contains("Blank", case=False)].index
 
-    def get_blank_indexes(self) -> List[int]:
+    def get_blank_indexes(self) -> list[int]:
         """Get the barcode indexes that do not correspond with genes.
 
         Returns:
@@ -156,7 +155,7 @@ class Codebook(object):
         """
         return self._data[self._data["name"].str.contains("Blank", case=False)].index
 
-    def get_gene_names(self) -> List[str]:
+    def get_gene_names(self) -> list[str]:
         """ " Get the names of the genes represented in this codebook.
 
         Returns:
@@ -173,7 +172,7 @@ class Codebook(object):
         """
         return self._data.loc[index]["name"]
 
-    def get_barcode_index_for_name(self, name: str) -> Union[int, None]:
+    def get_barcode_index_for_name(self, name: str) -> int | None:
         """Get the barcode index for the barcode with the specified name.
 
         Returns:

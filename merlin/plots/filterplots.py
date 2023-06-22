@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 import pandas
 from matplotlib import pyplot as plt
@@ -419,7 +417,7 @@ class FOVSpatialDistributionMetadata(PlotMetadata):
             i for i, b in enumerate(bcSet) if bitColors[np.where(b)[0]].nunique() > 1
         ]
 
-    def get_spatial_extents(self) -> List[float]:
+    def get_spatial_extents(self) -> list[float]:
         return [
             self.spatialXBins[0],
             self.spatialXBins[-1],
@@ -572,7 +570,7 @@ class GlobalSpatialDistributionMetadata(PlotMetadata):
         else:
             return 0
 
-    def get_spatial_extents(self) -> List[float]:
+    def get_spatial_extents(self) -> list[float]:
         globalTask = self._taskDict["global_align_task"]
         minX, minY, maxX, maxY = globalTask.get_global_extent()
         return [minX, maxX, minY, maxY]

@@ -11,7 +11,7 @@ from merlin.core import dataset
 from merlin.data import codebook as cb
 
 
-class MERFISHDataFactory(object):
+class MERFISHDataFactory:
 
     """
     A class for simulating MERFISH data sets.

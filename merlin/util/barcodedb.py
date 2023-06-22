@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import List
 
 import numpy as np
 import pandas
@@ -80,7 +79,7 @@ class BarcodeDB:
 
     @abstractmethod
     def get_barcodes(
-        self, fov: int = None, columnList: List[str] = None, chunksize: int = None
+        self, fov: int = None, columnList: list[str] = None, chunksize: int = None
     ):
         """Get barcodes stored in this database.
 

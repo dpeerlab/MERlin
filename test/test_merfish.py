@@ -11,7 +11,6 @@ from merlin import merlin as m
 def test_merfish_2d_full_local(simple_merfish_data):
     with open(
         os.sep.join([merlin.ANALYSIS_PARAMETERS_HOME, "test_analysis_parameters.json"]),
-        "r",
     ) as f:
         snakefilePath = m.generate_analysis_tasks_and_snakefile(simple_merfish_data, f)
         m.run_with_snakemake(simple_merfish_data, snakefilePath, 5)

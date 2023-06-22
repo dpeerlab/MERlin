@@ -1,11 +1,9 @@
-from typing import Tuple
-
 import cv2
 import numpy as np
 
 from merlin.core import analysistask
 
-ExtentTuple = Tuple[float, float, float, float]
+ExtentTuple = tuple[float, float, float, float]
 
 
 class GenerateMosaic(analysistask.AnalysisTask):
@@ -77,7 +75,7 @@ class GenerateMosaic(analysistask.AnalysisTask):
         fov: int,
         alignTask,
         micronExtents: ExtentTuple,
-        mosaicDimensions: Tuple[int, int],
+        mosaicDimensions: tuple[int, int],
     ) -> np.ndarray:
         transform = np.matmul(
             self._micron_to_mosaic_transform(micronExtents),

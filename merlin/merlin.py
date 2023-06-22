@@ -4,7 +4,7 @@ import json
 import os
 import sys
 import time
-from typing import Dict, TextIO
+from typing import TextIO
 
 import requests
 import snakemake
@@ -135,7 +135,7 @@ def merlin():
     if args.analysis_parameters:
         # This is run in all cases that analysis parameters are provided
         # so that new analysis tasks are generated to match the new parameters
-        with open(os.sep.join([parametersHome, args.analysis_parameters]), "r") as f:
+        with open(os.sep.join([parametersHome, args.analysis_parameters])) as f:
             snakefilePath = generate_analysis_tasks_and_snakefile(dataSet, f)
 
     if not args.generate_only:
@@ -188,7 +188,7 @@ def run_with_snakemake(
     dataSet: dataset.MERFISHDataSet,
     snakefilePath: str,
     coreCount: int,
-    snakemakeParameters: Dict = {},
+    snakemakeParameters: dict = {},
     report: bool = True,
 ):
     print("Running MERlin pipeline through snakemake")
@@ -204,7 +204,7 @@ def run_with_snakemake(
     if report:
         reportTime = int(time.time())
         try:
-            with open(snakefilePath + ".stats", "r") as f:
+            with open(snakefilePath + ".stats") as f:
                 requests.post(
                     "http://merlin.georgeemanuel.com/post",
                     files={

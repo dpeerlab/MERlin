@@ -6,7 +6,7 @@ import os
 import pickle
 import shutil
 import time
-from typing import Dict, List, Optional, Tuple, Union
+from typing import TypeAlias
 
 import h5py
 import networkx as nx
@@ -22,14 +22,14 @@ from merlin.core import analysistask
 from merlin.data import codebook, dataorganization
 from merlin.util import dataportal, imagereader
 
-TaskOrName = Union[analysistask.AnalysisTask, str]
+TaskOrName: TypeAlias = analysistask.AnalysisTask | str
 
 
 class DataFormatException(Exception):
     pass
 
 
-class DataSet(object):
+class DataSet:
     def __init__(
         self, dataDirectoryName: str, dataHome: str = None, analysisHome: str = None
     ):
@@ -58,7 +58,7 @@ class DataSet(object):
         self.rawDataPath = os.sep.join([dataHome, dataDirectoryName])
         self.rawDataPortal = dataportal.DataPortal.create_portal(self.rawDataPath)
         if not self.rawDataPortal.is_available():
-            print("The raw data is not available at %s".format())
+            print(f"The raw data is not available at {self.rawDataPath}")
 
         self.analysisPath = os.sep.join([analysisHome, dataDirectoryName])
         os.makedirs(self.analysisPath, exist_ok=True)
@@ -238,7 +238,7 @@ class DataSet(object):
         )
 
     @staticmethod
-    def analysis_tiff_description(sliceCount: int, frameCount: int) -> Dict:
+    def analysis_tiff_description(sliceCount: int, frameCount: int) -> dict:
         imageDescription = {
             "ImageJ": "1.47a\n",
             "images": sliceCount * frameCount,
@@ -286,7 +286,7 @@ class DataSet(object):
         subdirectory: str = None,
         extension: str = None,
         fullPath: bool = True,
-    ) -> List[str]:
+    ) -> list[str]:
         basePath = self._analysis_result_save_path(
             "", analysisTask, subdirectory=subdirectory
         )
@@ -357,7 +357,7 @@ class DataSet(object):
         analysisTask: TaskOrName = None,
         resultIndex: int = None,
         subdirectory: str = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         """Save a pandas data frame to a csv file stored in this dataset.
 
@@ -390,8 +390,8 @@ class DataSet(object):
         analysisTask: TaskOrName = None,
         resultIndex: int = None,
         subdirectory: str = None,
-        **kwargs
-    ) -> Union[pandas.DataFrame, None]:
+        **kwargs,
+    ) -> pandas.DataFrame | None:
         """Load a pandas data frame from a csv file stored in this data set.
 
         Args:
@@ -408,7 +408,7 @@ class DataSet(object):
         savePath = self._analysis_result_save_path(
             resultName, analysisTask, resultIndex, subdirectory, ".csv"
         )
-        with open(savePath, "r") as f:
+        with open(savePath) as f:
             return pandas.read_csv(f, **kwargs)
 
     def open_pandas_hdfstore(
@@ -543,7 +543,7 @@ class DataSet(object):
 
     def save_json_analysis_result(
         self,
-        analysisResult: Dict,
+        analysisResult: dict,
         resultName: str,
         analysisName: str,
         resultIndex: int = None,
@@ -561,11 +561,11 @@ class DataSet(object):
         analysisName: str,
         resultIndex: int = None,
         subdirectory: str = None,
-    ) -> Dict:
+    ) -> dict:
         savePath = self._analysis_result_save_path(
             resultName, analysisName, resultIndex, subdirectory, ".json"
         )
-        with open(savePath, "r") as f:
+        with open(savePath) as f:
             return json.load(f)
 
     def load_pickle_analysis_result(
@@ -574,7 +574,7 @@ class DataSet(object):
         analysisName: str,
         resultIndex: int = None,
         subdirectory: str = None,
-    ) -> Dict:
+    ) -> dict:
         savePath = self._analysis_result_save_path(
             resultName, analysisName, resultIndex, subdirectory, ".pkl"
         )
@@ -659,7 +659,7 @@ class DataSet(object):
             return self.load_numpy_analysis_result(
                 resultName, analysisName, resultIndex, subdirectory
             )
-        except IOError:
+        except OSError:
             return defaultValue
 
     def get_analysis_subdirectory(
@@ -742,7 +742,7 @@ class DataSet(object):
             [self.get_task_subdirectory(analysisTaskName), "task.json"]
         )
 
-        with open(loadName, "r") as inFile:
+        with open(loadName) as inFile:
             parameters = json.load(inFile)
             analysisModule = importlib.import_module(parameters["module"])
             analysisTask = getattr(analysisModule, parameters["class"])
@@ -759,7 +759,7 @@ class DataSet(object):
         analysisDirectory = self.get_analysis_subdirectory(analysisTask)
         shutil.rmtree(analysisDirectory)
 
-    def get_analysis_tasks(self) -> List[str]:
+    def get_analysis_tasks(self) -> list[str]:
         """
         Get a list of the analysis tasks within this dataset.
 
@@ -869,7 +869,7 @@ class DataSet(object):
         fileName = self._analysis_status_file(
             analysisTask, "environment", fragmentIndex
         )
-        with open(fileName, "r") as inFile:
+        with open(fileName) as inFile:
             envDict = json.load(inFile)
         return envDict
 
@@ -913,7 +913,7 @@ class DataSet(object):
             the epoch in UTC.
         """
         with open(
-            self._analysis_status_file(analysisTask, "start", fragmentIndex), "r"
+            self._analysis_status_file(analysisTask, "start", fragmentIndex)
         ) as f:
             return float(f.read())
 
@@ -926,9 +926,7 @@ class DataSet(object):
             The completion time for the analysis task execution in seconds since
             the epoch in UTC.
         """
-        with open(
-            self._analysis_status_file(analysisTask, "done", fragmentIndex), "r"
-        ) as f:
+        with open(self._analysis_status_file(analysisTask, "done", fragmentIndex)) as f:
             return float(f.read())
 
     def get_analysis_elapsed_time(
@@ -1118,7 +1116,7 @@ class ImageDataSet(DataSet):
         """
         return self.imageDimensions
 
-    def get_image_xml_metadata(self, imagePath: str) -> Dict:
+    def get_image_xml_metadata(self, imagePath: str) -> dict:
         """Get the xml metadata stored for the specified image.
 
         Args:
@@ -1135,7 +1133,7 @@ class MERFISHDataSet(ImageDataSet):
     def __init__(
         self,
         dataDirectoryName: str,
-        codebookNames: List[str] = None,
+        codebookNames: list[str] = None,
         dataOrganizationName: str = None,
         positionFileName: str = None,
         dataHome: str = None,
@@ -1234,7 +1232,7 @@ class MERFISHDataSet(ImageDataSet):
                 index=False,
             )
 
-    def load_codebooks(self) -> List[codebook.Codebook]:
+    def load_codebooks(self) -> list[codebook.Codebook]:
         """Get all the codebooks stored within this dataset.
 
         Returns:
@@ -1251,7 +1249,7 @@ class MERFISHDataSet(ImageDataSet):
 
         return codebookList
 
-    def load_codebook(self, codebookIndex: int = 0) -> Optional[codebook.Codebook]:
+    def load_codebook(self, codebookIndex: int = 0) -> codebook.Codebook | None:
         """Load the codebook stored within this dataset with the specified
         index.
 
@@ -1273,7 +1271,7 @@ class MERFISHDataSet(ImageDataSet):
         )
         return codebook.Codebook(self, codebookFile[0], codebookIndex, codebookName)
 
-    def get_stored_codebook_name(self, codebookIndex: int = 0) -> Optional[str]:
+    def get_stored_codebook_name(self, codebookIndex: int = 0) -> str | None:
         """Get the name of the codebook stored within this dataset with the
         specified index.
 
@@ -1296,7 +1294,7 @@ class MERFISHDataSet(ImageDataSet):
             os.path.splitext(os.path.basename(codebookFile[0]))[0].split("_")[2:]
         )
 
-    def get_codebooks(self) -> List[codebook.Codebook]:
+    def get_codebooks(self) -> list[codebook.Codebook]:
         """Get the codebooks associated with this dataset.
 
         Returns:
@@ -1310,10 +1308,10 @@ class MERFISHDataSet(ImageDataSet):
     def get_data_organization(self) -> dataorganization.DataOrganization:
         return self.dataOrganization
 
-    def get_stage_positions(self) -> List[List[float]]:
+    def get_stage_positions(self) -> list[list[float]]:
         return self.positions
 
-    def get_fov_offset(self, fov: int) -> Tuple[float, float]:
+    def get_fov_offset(self, fov: int) -> tuple[float, float]:
         """Get the offset of the specified fov in the global coordinate system.
         This offset is based on the anticipated stage position.
 
@@ -1345,7 +1343,7 @@ class MERFISHDataSet(ImageDataSet):
 
         return zIndex[0]
 
-    def get_z_positions(self) -> List[float]:
+    def get_z_positions(self) -> list[float]:
         """Get the z positions present in this dataset.
 
         Returns:
@@ -1353,10 +1351,10 @@ class MERFISHDataSet(ImageDataSet):
         """
         return self.dataOrganization.get_z_positions()
 
-    def get_fovs(self) -> List[int]:
+    def get_fovs(self) -> list[int]:
         return self.dataOrganization.get_fovs()
 
-    def get_imaging_rounds(self) -> List[int]:
+    def get_imaging_rounds(self) -> list[int]:
         # TODO - check this function
         return np.unique(self.dataOrganization.fileMap["imagingRound"])
 

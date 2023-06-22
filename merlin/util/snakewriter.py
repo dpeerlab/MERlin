@@ -5,7 +5,7 @@ import networkx
 from merlin.core import analysistask, dataset
 
 
-class SnakemakeRule(object):
+class SnakemakeRule:
     def __init__(self, analysisTask: analysistask.AnalysisTask, pythonPath=None):
         self._analysisTask = analysisTask
         self._pythonPath = pythonPath
@@ -155,7 +155,7 @@ class SnakemakeRule(object):
             )
 
 
-class SnakefileGenerator(object):
+class SnakefileGenerator:
     def __init__(
         self, analysisParameters, dataSet: dataset.DataSet, pythonPath: str = None
     ):

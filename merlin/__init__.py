@@ -2,7 +2,6 @@ import glob
 import importlib
 import json
 import os
-from typing import List
 
 import dotenv
 
@@ -73,7 +72,7 @@ def is_compatible(testVersion: str, baseVersion: str = None) -> bool:
     return testVersion.split(".")[0] == baseVersion.split(".")[0]
 
 
-def get_analysis_datasets(maxDepth=2) -> List[dataset.DataSet]:
+def get_analysis_datasets(maxDepth=2) -> list[dataset.DataSet]:
     """Get a list of all datasets currently stored in analysis home.
 
     Args:
@@ -87,7 +86,7 @@ def get_analysis_datasets(maxDepth=2) -> List[dataset.DataSet]:
         )
 
     def load_dataset(jsonPath) -> dataset.DataSet:
-        with open(jsonPath, "r") as f:
+        with open(jsonPath) as f:
             metadata = json.load(f)
             analysisModule = importlib.import_module(metadata["module"])
             analysisTask = getattr(analysisModule, metadata["class"])

@@ -4,7 +4,7 @@ from abc import abstractmethod
 from merlin.core import analysistask
 
 
-class Executor(object):
+class Executor:
     def __init__(self):
         super().__init__()
 

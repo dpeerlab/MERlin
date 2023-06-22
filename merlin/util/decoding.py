@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import cv2
 import numpy as np
 import pandas
@@ -22,7 +20,7 @@ def normalize(x):
         return x
 
 
-class PixelBasedDecoder(object):
+class PixelBasedDecoder:
     def __init__(
         self,
         codebook: mcodebook.Codebook,
@@ -209,13 +207,9 @@ class PixelBasedDecoder(object):
             "cell_index",
         ]
         if is3D:
-            intensityColumns = [
-                "intensity_{}".format(i) for i in range(pixelTraces.shape[1])
-            ]
+            intensityColumns = [f"intensity_{i}" for i in range(pixelTraces.shape[1])]
         else:
-            intensityColumns = [
-                "intensity_{}".format(i) for i in range(pixelTraces.shape[0])
-            ]
+            intensityColumns = [f"intensity_{i}" for i in range(pixelTraces.shape[0])]
         if len(properties) == 0:
             return pandas.DataFrame(columns=columnNames + intensityColumns)
 
@@ -346,7 +340,7 @@ class PixelBasedDecoder(object):
         pixelMagnitudes,
         normalizedPixelTraces,
         extractBackgrounds=False,
-    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Calculate the scale factors that would result in the mean
         on bit intensity for each bit to be equal.
 

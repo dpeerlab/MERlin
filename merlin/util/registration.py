@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 from scipy import signal
 from skimage import transform
@@ -8,7 +6,7 @@ from sklearn.neighbors import NearestNeighbors
 
 def extract_control_points(
     referencePoints: np.ndarray, movingPoints: np.ndarray, gridSpacing: float = 0.5
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     If fewer than 10 points are provided for either the reference or the moving
     list, this returns no points.
@@ -92,7 +90,7 @@ def lsradialcenterfit(m, b, w):
     return xc, yc
 
 
-def radial_center(imageIn) -> Tuple[float, float]:
+def radial_center(imageIn) -> tuple[float, float]:
     """Determine the center of the object in imageIn using radial-symmetry-based
     particle localization.
 
@@ -149,7 +147,7 @@ def radial_center(imageIn) -> Tuple[float, float]:
     return xc, yc
 
 
-def refine_position(image, x, y, cropSize=4) -> Tuple[float, float]:
+def refine_position(image, x, y, cropSize=4) -> tuple[float, float]:
     # TODO this would be more intuitive it it retransformed the output
     # coordinates to the original image coordinates
     subImage = image[

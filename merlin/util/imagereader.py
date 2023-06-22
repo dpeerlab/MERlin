@@ -1,6 +1,5 @@
 import hashlib
 import re
-from typing import List
 
 import numpy as np
 import tifffile
@@ -47,13 +46,13 @@ def infer_reader(filePortal: dataportal.FilePortal, verbose: bool = False):
             # TODO implement tif reading from s3/gcloud
             return TifReader(filePortal._fileName, verbose=verbose)
         else:
-            raise IOError(
+            raise OSError(
                 "Loading tiff files from %s is not yet implemented" % type(filePortal)
             )
-    raise IOError("only .dax and .tif are supported (case sensitive..)")
+    raise OSError("only .dax and .tif are supported (case sensitive..)")
 
 
-class Reader(object):
+class Reader:
     """
     The superclass containing those functions that
     are common to reading a STORM movie file.
@@ -67,7 +66,7 @@ class Reader(object):
     """
 
     def __init__(self, filename, verbose=False):
-        super(Reader, self).__init__()
+        super().__init__()
         self.image_height = 0
         self.image_width = 0
         self.number_frames = 0
@@ -181,7 +180,7 @@ class DaxReader(Reader):
     """
 
     def __init__(self, filePortal: dataportal.FilePortal, verbose: bool = False):
-        super(DaxReader, self).__init__(filePortal.get_file_name(), verbose=verbose)
+        super().__init__(filePortal.get_file_name(), verbose=verbose)
 
         self._filePortal = filePortal
         infFile = filePortal.get_sibling_with_extension(".inf")
@@ -190,7 +189,7 @@ class DaxReader(Reader):
     def close(self):
         self._filePortal.close()
 
-    def _parse_inf(self, inf_lines: List[str]) -> None:
+    def _parse_inf(self, inf_lines: list[str]) -> None:
         size_re = re.compile(r"frame dimensions = ([\d]+) x ([\d]+)")
         length_re = re.compile(r"number of frames = ([\d]+)")
         endian_re = re.compile(r" (big|little) endian")
@@ -245,7 +244,7 @@ class DaxReader(Reader):
         """
         Load a frame & return it as a np array.
         """
-        super(DaxReader, self).load_frame(frame_number)
+        super().load_frame(frame_number)
 
         startByte = frame_number * self.image_height * self.image_width * 2
         endByte = startByte + 2 * (self.image_height * self.image_width)
@@ -272,7 +271,7 @@ class TifReader(Reader):
     """
 
     def __init__(self, filename, verbose=False):
-        super(TifReader, self).__init__(filename, verbose)
+        super().__init__(filename, verbose)
 
         self.page_data = None
         self.page_number = -1
@@ -328,13 +327,13 @@ class TifReader(Reader):
 
         if self.verbose:
             print(
-                "{0:0d} frames per page, {1:0d} pages".format(
+                "{:0d} frames per page, {:0d} pages".format(
                     self.frames_per_page, number_pages
                 )
             )
 
     def load_frame(self, frame_number, cast_to_int16=True):
-        super(TifReader, self).load_frame(frame_number)
+        super().load_frame(frame_number)
 
         # All the data is on a single page.
         if self.number_frames == self.frames_per_page:

@@ -2,7 +2,6 @@ import copy
 import multiprocessing
 import threading
 from abc import ABC, abstractmethod
-from typing import List
 
 import merlin
 
@@ -184,7 +183,7 @@ class AnalysisTask(ABC):
         pass
 
     @abstractmethod
-    def get_dependencies(self) -> List[str]:
+    def get_dependencies(self) -> list[str]:
         """Get the analysis tasks that must be completed before this
         analysis task can proceed.
 

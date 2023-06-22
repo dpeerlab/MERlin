@@ -1,7 +1,6 @@
 import os
 from abc import ABC, abstractmethod
 from time import sleep
-from typing import List
 from urllib import parse
 
 import boto3
@@ -57,13 +56,13 @@ class DataPortal(ABC):
         pass
 
     @staticmethod
-    def _filter_file_list(inputList: List[str], extensionList: List[str]) -> List[str]:
+    def _filter_file_list(inputList: list[str], extensionList: list[str]) -> list[str]:
         if not extensionList:
             return inputList
         return [f for f in inputList if any([f.endswith(x) for x in extensionList])]
 
     @abstractmethod
-    def list_files(self, extensionList: List[str] = None) -> List[str]:
+    def list_files(self, extensionList: list[str] = None) -> list[str]:
         """List all the files within the base path represented by this
         DataReader.
 
@@ -132,7 +131,7 @@ class S3DataPortal(DataPortal):
 
     def list_files(self, extensionList=None):
         allFiles = [
-            "s3://%s/%s" % (self._bucketName, f.key)
+            f"s3://{self._bucketName}/{f.key}"
             for f in self._s3.Bucket(self._bucketName).objects.filter(
                 Prefix=self._prefix
             )
@@ -171,7 +170,7 @@ class GCloudDataPortal(DataPortal):
 
     def list_files(self, extensionList=None):
         allFiles = [
-            "gc://%s/%s" % (self._bucketName, f.name)
+            f"gc://{self._bucketName}/{f.name}"
             for f in self._client.list_blobs(self._bucketName, prefix=self._prefix)
         ]
         return self._filter_file_list(allFiles, extensionList)

@@ -1,6 +1,5 @@
 import os
 import re
-from typing import List, Tuple
 
 import numpy as np
 import pandas
@@ -24,7 +23,7 @@ class InputDataError(Exception):
     pass
 
 
-class DataOrganization(object):
+class DataOrganization:
 
     """
     A class to specify the organization of raw images in the original
@@ -228,7 +227,7 @@ class DataOrganization(object):
 
         return frame
 
-    def get_z_positions(self) -> List[float]:
+    def get_z_positions(self) -> list[float]:
         """Get the z positions present in this data organization.
 
         Returns:
@@ -239,7 +238,7 @@ class DataOrganization(object):
     def get_fovs(self) -> np.ndarray:
         return np.unique(self.fileMap["fov"])
 
-    def get_sequential_rounds(self) -> Tuple[List[int], List[str]]:
+    def get_sequential_rounds(self) -> tuple[list[int], list[str]]:
         """Get the rounds that are not present in your codebook
 
         Returns:
@@ -319,8 +318,8 @@ class DataOrganization(object):
                 if not matchingFiles:
                     raise dataset.DataFormatException(
                         "Unable to identify image files matching regular "
-                        + "expression %s for image type %s."
-                        % (self.data.imageRegExp[currentIndex], currentType)
+                        + f"expression {self.data.imageRegExp[currentIndex]} "
+                        + f"for image type {currentType}."
                     )
 
             self.fileMap = pandas.DataFrame(fileData)
@@ -362,8 +361,8 @@ class DataOrganization(object):
                 if not self._dataSet.rawDataPortal.open_file(imagePath).exists():
                     raise InputDataError(
                         (
-                            "Image data for channel {0} and fov {1} not found. "
-                            "Expected at {2}"
+                            "Image data for channel {} and fov {} not found. "
+                            "Expected at {}"
                         ).format(dataChannel, fov, imagePath)
                     )
 
@@ -372,8 +371,8 @@ class DataOrganization(object):
                 except Exception:
                     raise InputDataError(
                         (
-                            "Unable to determine image stack size for fov {0} from"
-                            " data channel {1} at {2}"
+                            "Unable to determine image stack size for fov {} from"
+                            " data channel {} at {}"
                         ).format(dataChannel, fov, imagePath)
                     )
 
@@ -384,9 +383,9 @@ class DataOrganization(object):
                 if requiredFrames >= imageSize[2]:
                     raise InputDataError(
                         (
-                            "Insufficient frames in data for channel {0} and "
-                            "fov {1}. Expected {2} frames "
-                            "but only found {3} in file {4}"
+                            "Insufficient frames in data for channel {} and "
+                            "fov {}. Expected {} frames "
+                            "but only found {} in file {}"
                         ).format(
                             dataChannel, fov, requiredFrames, imageSize[2], imagePath
                         )

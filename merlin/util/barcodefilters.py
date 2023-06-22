@@ -1,5 +1,3 @@
-from typing import List
-
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -7,7 +5,7 @@ from scipy.spatial import cKDTree
 
 
 def remove_zplane_duplicates_all_barcodeids(
-    barcodes: pd.DataFrame, zPlanes: int, maxDist: float, allZPos: List
+    barcodes: pd.DataFrame, zPlanes: int, maxDist: float, allZPos: list
 ) -> pd.DataFrame:
     """Depending on the separation between z planes, spots from a single
         molecule may be observed in more than one z plane. These putative
@@ -48,7 +46,7 @@ def remove_zplane_duplicates_all_barcodeids(
 
 
 def remove_zplane_duplicates_single_barcodeid(
-    barcodes: pd.DataFrame, zPlanes: int, maxDist: float, allZPos: List
+    barcodes: pd.DataFrame, zPlanes: int, maxDist: float, allZPos: list
 ) -> pd.DataFrame:
     """Remove barcodes with a given barcode id that are putative z plane
         duplicates.

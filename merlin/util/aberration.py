@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Dict
 
 import numpy as np
 from skimage import transform
@@ -53,7 +52,7 @@ class RigidChromaticCorrector(ChromaticCorrector):
 
     def __init__(
         self,
-        transformations: Dict[str, Dict[str, transform.EuclideanTransform]],
+        transformations: dict[str, dict[str, transform.EuclideanTransform]],
         referenceColor: str = None,
     ):
         """Creates a new RigidChromaticCorrector that transforms images
