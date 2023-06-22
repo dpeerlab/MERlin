@@ -7,9 +7,7 @@ from merlin.core import dataset
 
 
 class BarcodeDB:
-
-    """
-    An abstract class for storing and retrieving barcode information.
+    """An abstract class for storing and retrieving barcode information.
 
     For each barcode in the database, the following information is stored:
         barcode - the error corrected binary word corresponding to the barcode
@@ -71,6 +69,7 @@ class BarcodeDB:
         """Remove all barcodes from this database.
 
         Args:
+        ----
             fov: index of the field of view. If specified, only barcodes
                 corresponding to the specified fov will be removed. Otherwise,
                 all barcodes will be removed.
@@ -84,6 +83,7 @@ class BarcodeDB:
         """Get barcodes stored in this database.
 
         Args:
+        ----
             fov: index of the field view. If None, barcodes for all fovs
                 are returned.
             columnList: list of columns to extract. If not specified, all
@@ -91,7 +91,9 @@ class BarcodeDB:
             chunksize: the size of chunks to iterate. If not specified, a
                 pandas dataframe is returned otherwise an iterator over the
                 barcodes is returned.
+
         Returns:
+        -------
             if chunksize is not set, a pandas dataframe containing all the
                 requested barcodes is returned. Otherwise an iterator is
                 returned that iterates over the requested barcodes.
@@ -111,6 +113,7 @@ class BarcodeDB:
         intensity thresholds.
 
         Args:
+        ----
             areaThreshold: the minimum area threshold. Barcodes that
                 have an area equal to the specified threshold are included
                 in the output.
@@ -123,7 +126,9 @@ class BarcodeDB:
             chunksize: the size of chunks to iterate. If not specified, a
                 pandas dataframe is returned otherwise an iterator over the
                 barcodes is returned.
+
         Returns:
+        -------
             if chunksize is not set, a pandas dataframe containing all the
                 requested barcodes is returned. Otherwise an iterator is
                 returned that iterates over the requested barcodes.
@@ -150,6 +155,7 @@ class BarcodeDB:
         corrupted.
 
         Args:
+        ----
             barcodeInformation: barcodes to write to the database. The
                 dataframe must have the columns specified for a barcode
                 database.
@@ -162,7 +168,8 @@ class BarcodeDB:
     def get_barcode_intensities(self) -> pandas.Series:
         """Get mean intensities for all barcodes in this database.
 
-        Returns:
+        Returns
+        -------
             series containing mean intensity for all barcodes
         """
         return self.get_barcodes(columnList=["mean_intensity"])["mean_intensity"]
@@ -170,15 +177,17 @@ class BarcodeDB:
     def get_barcode_areas(self) -> pandas.Series:
         """Get areas for all barcodes in this database.
 
-        Returns:
+        Returns
+        -------
             series containing areas for all barcodes
         """
         return self.get_barcodes(columnList=["area"])["area"]
 
     def get_barcode_distances(self) -> pandas.Series:
-        """Get distances for all barcodes in this database
+        """Get distances for all barcodes in this database.
 
-        Returns:
+        Returns
+        -------
             series containing distances for all barcodes
         """
         return self.get_barcodes(columnList=["mean_distance"])["mean_distance"]

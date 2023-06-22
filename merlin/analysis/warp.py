@@ -7,9 +7,7 @@ from merlin.util import aberration
 
 
 class Warp(analysistask.ParallelAnalysisTask):
-
-    """
-    An abstract class for warping a set of images so that the corresponding
+    """An abstract class for warping a set of images so that the corresponding
     pixels align between images taken in different imaging rounds.
     """
 
@@ -29,11 +27,14 @@ class Warp(analysistask.ParallelAnalysisTask):
         """Get the set of transformed images for the specified fov.
 
         Args:
+        ----
             fov: index of the field of view
             chromaticCorrector: the ChromaticCorrector to use to chromatically
                 correct the images. If not supplied, no correction is
                 performed.
+
         Returns:
+        -------
             a 4-dimensional numpy array containing the aligned images. The
                 images are arranged as [channel, zIndex, x, y]
         """
@@ -56,16 +57,19 @@ class Warp(analysistask.ParallelAnalysisTask):
         zIndex: int,
         chromaticCorrector: aberration.ChromaticCorrector = None,
     ) -> np.ndarray:
-        """Get the specified transformed image
+        """Get the specified transformed image.
 
         Args:
+        ----
             fov: index of the field of view
             dataChannel: index of the data channel
             zIndex: index of the z position
             chromaticCorrector: the ChromaticCorrector to use to chromatically
                 correct the images. If not supplied, no correction is
                 performed.
+
         Returns:
+        -------
             a 2-dimensional numpy array containing the specified image
         """
         inputImage = self.dataSet.get_raw_image(
@@ -87,18 +91,17 @@ class Warp(analysistask.ParallelAnalysisTask):
             ).astype(inputImage.dtype)
 
     def _process_transformations(self, transformationList, fov) -> None:
-        """
-        Process the transformations determined for a given fov.
+        """Process the transformations determined for a given fov.
 
         The list of transformation is used to write registered images and
         the transformation list is archived.
 
         Args:
+        ----
             transformationList: A list of transformations that contains a
                 transformation for each data channel.
             fov: The fov that is being transformed.
         """
-
         dataChannels = self.dataSet.get_data_organization().get_data_channels()
 
         if self.parameters["write_aligned_images"]:
@@ -160,10 +163,13 @@ class Warp(analysistask.ParallelAnalysisTask):
         of view.
 
         Args:
+        ----
             fov: the fov to get the transformations for.
             dataChannel: the index of the data channel to get the transformation
                 for. If None, then all data channels are returned.
+
         Returns:
+        -------
             a EuclideanTransform if dataChannel is specified or a list of
                 EuclideanTransforms for all dataChannels if dataChannel is
                 not specified.
@@ -178,9 +184,7 @@ class Warp(analysistask.ParallelAnalysisTask):
 
 
 class FiducialCorrelationWarp(Warp):
-
-    """
-    An analysis task that warps a set of images taken in different imaging
+    """An analysis task that warps a set of images taken in different imaging
     rounds based on the crosscorrelation between fiducial images.
     """
 

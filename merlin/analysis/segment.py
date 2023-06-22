@@ -9,9 +9,7 @@ from merlin.util import spatialfeature, watershed
 
 
 class FeatureSavingAnalysisTask(analysistask.ParallelAnalysisTask):
-
-    """
-    An abstract analysis class that saves features into a spatial feature
+    """An abstract analysis class that saves features into a spatial feature
     database.
     """
 
@@ -32,9 +30,7 @@ class FeatureSavingAnalysisTask(analysistask.ParallelAnalysisTask):
 
 
 class WatershedSegment(FeatureSavingAnalysisTask):
-
-    """
-    An analysis task that determines the boundaries of features in the
+    """An analysis task that determines the boundaries of features in the
     image data in each field of view using a watershed algorithm.
 
     Since each field of view is analyzed individually, the segmentation results
@@ -131,8 +127,7 @@ class WatershedSegment(FeatureSavingAnalysisTask):
 
 
 class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
-    """
-    A task to construct a network graph where each cell is a node, and overlaps
+    """A task to construct a network graph where each cell is a node, and overlaps
     are represented by edges. This graph is then refined to assign cells to the
     fov they are closest to (in terms of centroid). This graph is then refined
     to eliminate overlapping cells to leave a single cell occupying a given
@@ -196,8 +191,7 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
 
 
 class CombineCleanedBoundaries(analysistask.AnalysisTask):
-    """
-    A task to construct a network graph where each cell is a node, and overlaps
+    """A task to construct a network graph where each cell is a node, and overlaps
     are represented by edges. This graph is then refined to assign cells to the
     fov they are closest to (in terms of centroid). This graph is then refined
     to eliminate overlapping cells to leave a single cell occupying a given
@@ -288,9 +282,7 @@ class RefineCellDatabases(FeatureSavingAnalysisTask):
 
 
 class ExportCellMetadata(analysistask.AnalysisTask):
-    """
-    An analysis task exports cell metadata.
-    """
+    """An analysis task exports cell metadata."""
 
     def __init__(self, dataSet, parameters=None, analysisName=None):
         super().__init__(dataSet, parameters, analysisName)

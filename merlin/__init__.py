@@ -57,9 +57,10 @@ def version():
 
 
 def is_compatible(testVersion: str, baseVersion: str = None) -> bool:
-    """Determine if testVersion is compatible with baseVersion
+    """Determine if testVersion is compatible with baseVersion.
 
     Args:
+    ----
         testVersion: the version identifier to test, as the string 'x.y.z'
             where x is the major version, y is the minor version,
             and z is the patch.
@@ -76,6 +77,7 @@ def get_analysis_datasets(maxDepth=2) -> list[dataset.DataSet]:
     """Get a list of all datasets currently stored in analysis home.
 
     Args:
+    ----
         maxDepth: the directory depth to search for datasets.
     Returns: A list of the dataset objects currently within analysis home.
     """

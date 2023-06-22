@@ -21,6 +21,7 @@ def extract_seeds(seedImageStackIn: np.ndarray) -> np.ndarray:
     seeds are then expanded by dilation.
 
     Args:
+    ----
         seedImageStackIn: a 3 dimensional numpy array arranged as (z,x,y)
     Returns: a boolean numpy array with the same dimensions as seedImageStackIn
         where a given (z,x,y) coordinate is True if it corresponds to a seed
@@ -71,6 +72,7 @@ def separate_merged_seeds(seedsIn: np.ndarray) -> np.ndarray:
     in some 2 dimensional slices.
 
     Args:
+    ----
         seedsIn: a 3 dimensional binary numpy array arranged as (z,x,y) where
             True indicates the pixel corresponds with a seed.
     Returns: a 3 dimensional binary numpy array of the same size as seedsIn
@@ -136,6 +138,7 @@ def prepare_watershed_images(
     and 1.
 
     Args:
+    ----
         watershedImageStack: a 3 dimensional numpy array containing the images
             arranged as (z, x, y).
     Returns: a tuple containing the normalized watershed images and the

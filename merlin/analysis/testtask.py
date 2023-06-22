@@ -49,7 +49,6 @@ class SimpleParallelAnalysisTask(analysistask.ParallelAnalysisTask):
 
 
 class RandomNumberParallelAnalysisTask(analysistask.ParallelAnalysisTask):
-
     """A test analysis task that generates random numbers."""
 
     def __init__(self, dataSet, parameters=None, analysisName=None):

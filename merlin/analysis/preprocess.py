@@ -8,10 +8,7 @@ from merlin.util import aberration, deconvolve, imagefilters
 
 
 class Preprocess(analysistask.ParallelAnalysisTask):
-
-    """
-    An abstract class for preparing data for barcode calling.
-    """
+    """An abstract class for preparing data for barcode calling."""
 
     def _image_name(self, fov):
         destPath = self.dataSet.get_analysis_subdirectory(

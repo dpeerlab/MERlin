@@ -9,16 +9,14 @@ This module contains tools for measuring and correcting chromatic aberrations.
 
 
 class ChromaticCorrector(ABC):
-
-    """
-    An abstract class for color-specific image transformation.
-    """
+    """An abstract class for color-specific image transformation."""
 
     @abstractmethod
     def transform_image(self, inputImage: np.ndarray, imageColor: str) -> np.ndarray:
         """Transform inputImage to the reference color.
 
         Args:
+        ----
             inputImage: The image to transform. If inputImage has two
                 dimensions, it is transformed as a single image. If inputImage
                 has three dimensions, each element in the first dimension is
@@ -31,10 +29,7 @@ class ChromaticCorrector(ABC):
 
 
 class IdentityChromaticCorrector(ChromaticCorrector):
-
-    """
-    A class for correcting chromatic aberration that performs no transformation.
-    """
+    """A class for correcting chromatic aberration that performs no transformation."""
 
     def __init__(self):
         pass
@@ -44,9 +39,7 @@ class IdentityChromaticCorrector(ChromaticCorrector):
 
 
 class RigidChromaticCorrector(ChromaticCorrector):
-
-    """
-    A class for correcting chromatic aberration using rigid transformation
+    """A class for correcting chromatic aberration using rigid transformation
     matrices.
     """
 
@@ -59,10 +52,10 @@ class RigidChromaticCorrector(ChromaticCorrector):
         using the specified transformations.
 
         Args:
+        ----
               transformations: A dictionary of transformations
               referenceColor: the name of the color to transform the images to
         """
-
         self.transformations = transformations
         if referenceColor is None:
             self.referenceColor = min(transformations.keys())

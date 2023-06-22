@@ -22,6 +22,7 @@ class Executor:
         will not be restarted.
 
         Args:
+        ----
             task: the analysis task to run.
             index: index of the analysis to run for a parallel analysis task.
             rerunCompleted: flag indicating if previous analysis should be

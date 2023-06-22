@@ -36,6 +36,7 @@ class DataSet:
         """Create a dataset for the specified raw data.
 
         Args:
+        ----
             dataDirectoryName: the relative directory to the raw data
             dataHome: the base path to the data. The data is expected
                     to be in dataHome/dataDirectoryName. If dataHome
@@ -94,6 +95,7 @@ class DataSet:
         """Save a snakemake workflow for analysis of this dataset.
 
         Args:
+        ----
             workflowString: a string containing the snakemake workflow
                 to save
 
@@ -127,11 +129,12 @@ class DataSet:
         figureName: str,
         subdirectory: str = "figures",
     ) -> None:
-        """Save the figure into the analysis results for this DataSet
+        """Save the figure into the analysis results for this DataSet.
 
         This function will save the figure in both png and pdf formats.
 
         Args:
+        ----
             analysisTask: the analysis task that generated this figure.
             figure: the figure handle for the figure to save
             figureName: the name of the file to store the figure in, excluding
@@ -155,6 +158,7 @@ class DataSet:
         This function only checks for the png formats.
 
         Args:
+        ----
             analysisTask: the analysis task that generated this figure.
             figureName: the name of the file to store the figure in, excluding
                     extension
@@ -176,6 +180,7 @@ class DataSet:
         """Get an analysis image set saved in the analysis for this data set.
 
         Args:
+        ----
             analysisTask: the analysis task that generated and stored the
                 image set.
             imageBaseName: the base name of the image
@@ -198,6 +203,7 @@ class DataSet:
         data set.
 
         Args:
+        ----
             analysisTask: the analysis task that generated and stored the
                 image set.
             imageBaseName: the base name of the image
@@ -225,6 +231,7 @@ class DataSet:
         """Get a writer for writing tiff files from an analysis task.
 
         Args:
+        ----
             analysisTask:
             imageBaseName:
             imageIndex:
@@ -305,9 +312,10 @@ class DataSet:
         resultIndex: int = None,
         subdirectory: str = None,
     ):
-        """Save a networkx graph as a gpickle into the analysis results
+        """Save a networkx graph as a gpickle into the analysis results.
 
         Args:
+        ----
             graph: the networkx graph to save
             resultName: the base name of the output file
             analysisTask: the analysis task that the graph should be
@@ -335,6 +343,7 @@ class DataSet:
         results.
 
         Args:
+        ----
             resultName: the base name of the output file
             analysisTask: the analysis task that the graph should be
                 saved under. If None, the graph is saved to the
@@ -365,6 +374,7 @@ class DataSet:
         it will be overwritten
 
         Args:
+        ----
             dataframe: the data frame to save
             resultName: the name of the output file
             analysisTask: the analysis task that the dataframe should be
@@ -395,6 +405,7 @@ class DataSet:
         """Load a pandas data frame from a csv file stored in this data set.
 
         Args:
+        ----
             resultName:
             analysisTask:
             resultIndex:
@@ -460,6 +471,7 @@ class DataSet:
         """Delete an hdf5 file stored in this data set if it exists.
 
         Args:
+        ----
             resultName: the name of the output file
             analysisTask: the analysis task that should be associated with this
                 hdf5 file. If None, the file is assumed to be in the
@@ -488,6 +500,7 @@ class DataSet:
         """Open an hdf5 file stored in this data set.
 
         Args:
+        ----
             mode: the mode for opening the file, either 'r', 'r+', 'w', 'w-',
                 or 'a'.
             resultName: the name of the output file
@@ -499,7 +512,9 @@ class DataSet:
             subdirectory: subdirectory of the analysis task that the dataframe
                 should be saved to or None if the dataframe should be
                 saved to the root directory for the analysis task.
+
         Returns:
+        -------
             a h5py file object connected to the hdf5 file
         Raise:
             FileNotFoundError: if the mode is 'r' and the specified hdf5 file
@@ -525,6 +540,7 @@ class DataSet:
         """Delete an hdf5 file stored in this data set if it exists.
 
         Args:
+        ----
             resultName: the name of the output file
             analysisTask: the analysis task that should be associated with this
                 hdf5 file. If None, the file is assumed to be in the
@@ -645,6 +661,7 @@ class DataSet:
         value if the analysis result does not exist.
 
         Args:
+        ----
             resultName: The name of the analysis result
             analysisName: The name of the analysis task the result is saved in
             defaultValue: The value to return if the specified analysis result
@@ -665,8 +682,7 @@ class DataSet:
     def get_analysis_subdirectory(
         self, analysisTask: TaskOrName, subdirectory: str = None, create: bool = True
     ) -> str:
-        """
-        analysisTask can either be the class or a string containing the
+        """AnalysisTask can either be the class or a string containing the
         class name.
 
         create - Flag indicating if the analysis subdirectory should be
@@ -749,8 +765,7 @@ class DataSet:
             return analysisTask(self, parameters, analysisTaskName)
 
     def delete_analysis(self, analysisTask: TaskOrName) -> None:
-        """
-        Remove all files associated with the provided analysis
+        """Remove all files associated with the provided analysis
         from this data set.
 
         Before deleting an analysis task, it must be verified that the
@@ -760,8 +775,7 @@ class DataSet:
         shutil.rmtree(analysisDirectory)
 
     def get_analysis_tasks(self) -> list[str]:
-        """
-        Get a list of the analysis tasks within this dataset.
+        """Get a list of the analysis tasks within this dataset.
 
         Returns: A list of the analysis task names.
         """
@@ -775,8 +789,7 @@ class DataSet:
         return analysisList
 
     def analysis_exists(self, analysisTaskName: str) -> bool:
-        """
-        Determine if an analysis task with the specified name exists in this
+        """Determine if an analysis task with the specified name exists in this
         dataset.
         """
         analysisPath = self.get_analysis_subdirectory(analysisTaskName, create=False)
@@ -855,6 +868,7 @@ class DataSet:
         specified analysis task.
 
         Args:
+        ----
             analysisTask: The completed analysis task to get the environment
                 variables for.
             fragmentIndex: The fragment index of the analysis task to
@@ -906,9 +920,10 @@ class DataSet:
     def get_analysis_start_time(
         self, analysisTask: analysistask.AnalysisTask, fragmentIndex: int = None
     ) -> float:
-        """Get the time that this analysis task started
+        """Get the time that this analysis task started.
 
-        Returns:
+        Returns
+        -------
             The start time for the analysis task execution in seconds since
             the epoch in UTC.
         """
@@ -922,7 +937,8 @@ class DataSet:
     ) -> float:
         """Get the time that this analysis task completed.
 
-        Returns:
+        Returns
+        -------
             The completion time for the analysis task execution in seconds since
             the epoch in UTC.
         """
@@ -934,7 +950,8 @@ class DataSet:
     ) -> float:
         """Get the time that this analysis took to complete.
 
-        Returns:
+        Returns
+        -------
             The elapsed time for the analysis task execution in seconds.
             Returns None if the analysis task has not yet completed.
         """
@@ -1027,6 +1044,7 @@ class ImageDataSet(DataSet):
         """Create a dataset for the specified raw data.
 
         Args:
+        ----
             dataDirectoryName: the relative directory to the raw data
             dataHome: the base path to the data. The data is expected
                     to be in dataHome/dataDirectoryName. If dataHome
@@ -1066,10 +1084,10 @@ class ImageDataSet(DataSet):
             return imageIn
 
     def image_stack_size(self, imagePath):
-        """
-        Get the size of the image stack stored in the specified image path.
+        """Get the size of the image stack stored in the specified image path.
 
-        Returns:
+        Returns
+        -------
             a three element list with [width, height, frameCount] or None
                     if the file does not exist
         """
@@ -1105,13 +1123,13 @@ class ImageDataSet(DataSet):
 
     def get_microns_per_pixel(self):
         """Get the conversion factor to convert pixels to microns."""
-
         return self.micronsPerPixel
 
     def get_image_dimensions(self):
         """Get the dimensions of the images in this data set.
 
-        Returns:
+        Returns
+        -------
             A tuple containing the width and height of each image in pixels.
         """
         return self.imageDimensions
@@ -1120,6 +1138,7 @@ class ImageDataSet(DataSet):
         """Get the xml metadata stored for the specified image.
 
         Args:
+        ----
             imagePath: the path to the image file (.dax or .tif)
         Returns: the metadata from the associated xml file
         """
@@ -1143,6 +1162,7 @@ class MERFISHDataSet(ImageDataSet):
         """Create a MERFISH dataset for the specified raw data.
 
         Args:
+        ----
             dataDirectoryName: the relative directory to the raw data
             codebookNames: A list of the names of codebooks to use. The codebook
                     should be present in the analysis parameters
@@ -1194,6 +1214,7 @@ class MERFISHDataSet(ImageDataSet):
         overwritten.
 
         Args:
+        ----
             codebook: the codebook to store
         Raises:
             FileExistsError: If a codebook with the same codebook index but
@@ -1235,7 +1256,8 @@ class MERFISHDataSet(ImageDataSet):
     def load_codebooks(self) -> list[codebook.Codebook]:
         """Get all the codebooks stored within this dataset.
 
-        Returns:
+        Returns
+        -------
             A list of all the stored codebooks.
         """
         codebookList = []
@@ -1254,8 +1276,11 @@ class MERFISHDataSet(ImageDataSet):
         index.
 
         Args:
+        ----
             codebookIndex: the index of the codebook to load.
+
         Returns:
+        -------
             The codebook stored with the specified codebook index. If no
             codebook exists with the specified index then None is returned.
         """
@@ -1276,9 +1301,12 @@ class MERFISHDataSet(ImageDataSet):
         specified index.
 
         Args:
+        ----
             codebookIndex: the index of the codebook to load to find the name
                 of.
+
         Returns:
+        -------
             The name of the codebook stored with the specified codebook index.
             If no codebook exists with the specified index then None is
             returned.
@@ -1297,7 +1325,8 @@ class MERFISHDataSet(ImageDataSet):
     def get_codebooks(self) -> list[codebook.Codebook]:
         """Get the codebooks associated with this dataset.
 
-        Returns:
+        Returns
+        -------
             A list containing the codebooks for this dataset.
         """
         return self.codebooks
@@ -1316,6 +1345,7 @@ class MERFISHDataSet(ImageDataSet):
         This offset is based on the anticipated stage position.
 
         Args:
+        ----
             fov: index of the field of view
         Returns:
             A tuple specifying the x and y offset of the top right corner
@@ -1326,17 +1356,16 @@ class MERFISHDataSet(ImageDataSet):
 
     def z_index_to_position(self, zIndex: int) -> float:
         """Get the z position associated with the provided z index."""
-
         return self.get_z_positions()[zIndex]
 
     def position_to_z_index(self, zPosition: float) -> int:
-        """Get the z index associated with the specified z position
+        """Get the z index associated with the specified z position.
 
-        Raises:
+        Raises
+        ------
              Exception: If the provided z position is not specified in this
                 dataset
         """
-
         zIndex = np.where(self.get_z_positions() == zPosition)[0]
         if len(zIndex) == 0:
             raise Exception("Requested z=%0.2f position not found." % zPosition)
@@ -1346,7 +1375,8 @@ class MERFISHDataSet(ImageDataSet):
     def get_z_positions(self) -> list[float]:
         """Get the z positions present in this dataset.
 
-        Returns:
+        Returns
+        -------
             A sorted list of all unique z positions
         """
         return self.dataOrganization.get_z_positions()

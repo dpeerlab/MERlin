@@ -5,9 +5,7 @@ from merlin.core import analysistask
 
 
 class PartitionBarcodes(analysistask.ParallelAnalysisTask):
-
-    """
-    An analysis task that assigns RNAs and sequential signals to cells
+    """An analysis task that assigns RNAs and sequential signals to cells
     based on the boundaries determined during the segment task.
     """
 
@@ -35,10 +33,12 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
         analysis task.
 
         Args:
+        ----
             fov: the fov to get the barcode table for. If not specified, the
                 combined table for all fovs are returned.
 
         Returns:
+        -------
             A pandas data frame containing the parsed barcode information.
         """
         if fov is None:
@@ -104,9 +104,7 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
 
 
 class ExportPartitionedBarcodes(analysistask.AnalysisTask):
-
-    """
-    An analysis task that combines counts per cells data from each
+    """An analysis task that combines counts per cells data from each
     field of view into a single output file.
     """
 

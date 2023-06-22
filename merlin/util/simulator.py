@@ -12,10 +12,7 @@ from merlin.data import codebook as cb
 
 
 class MERFISHDataFactory:
-
-    """
-    A class for simulating MERFISH data sets.
-    """
+    """A class for simulating MERFISH data sets."""
 
     def __init__(self):
         self.codebookPath = "L26E1.csv"
@@ -48,15 +45,18 @@ class MERFISHDataFactory:
         self, spotPositions: np.ndarray = None, addNoise: bool = False
     ) -> np.ndarray:
         """Simulate a single image consisting of point sources with a Gaussian
-        point spread function
+        point spread function.
 
         Args:
+        ----
             spotPositions: a n x 2 numpy array containing the positions to
                 simulate the point sources. If not specified, 1000 random
                 positions are selected.
             addNoise: flag indicating whether poisson noise should be added
                 to the simulated image.
+
         Returns:
+        -------
             the simulated image
         """
         if spotPositions is None:
@@ -76,7 +76,7 @@ class MERFISHDataFactory:
     def simulate_dataset(
         self, datasetName, abundanceScale=1, fluorophoreCount=5, fovCount=10
     ):
-        """Simulate a full MERFISH dataset"""
+        """Simulate a full MERFISH dataset."""
         dataDir = os.sep.join([merlin.DATA_HOME, datasetName])
         if not os.path.exists(dataDir):
             os.mkdir(dataDir)

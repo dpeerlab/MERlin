@@ -96,7 +96,7 @@ class SnakemakeRule:
         return self._add_quotes(shellString)
 
     def _generate_done_shell(self) -> str:
-        """Check done shell command for parallel analysis tasks"""
+        """Check done shell command for parallel analysis tasks."""
         shellString = self._base_shell_command()
         shellString += " --check-done"
         shellString += " " + self._clean_string(self._analysisTask.dataSet.dataSetName)
@@ -198,7 +198,8 @@ class SnakefileGenerator:
         """Generate a snakemake workflow for the analysis parameters
         of this SnakemakeGenerator and save the workflow into the dataset.
 
-        Returns:
+        Returns
+        -------
             the path to the generated snakemake workflow
         """
         analysisTasks = self._parse_parameters()

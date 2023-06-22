@@ -33,8 +33,7 @@ from merlin.util import dataportal
 
 
 def infer_reader(filePortal: dataportal.FilePortal, verbose: bool = False):
-    """
-    Given a file name this will try to return the appropriate
+    """Given a file name this will try to return the appropriate
     reader based on the file extension.
     """
     ext = filePortal.get_file_extension()
@@ -53,8 +52,7 @@ def infer_reader(filePortal: dataportal.FilePortal, verbose: bool = False):
 
 
 class Reader:
-    """
-    The superclass containing those functions that
+    """The superclass containing those functions that
     are common to reading a STORM movie file.
     Subclasses should implement:
      1. __init__(self, filename, verbose = False)
@@ -86,9 +84,7 @@ class Reader:
         self.close()
 
     def average_frames(self, start=None, end=None):
-        """
-        Average multiple frames in a movie.
-        """
+        """Average multiple frames in a movie."""
         length = 0
         average = np.zeros((self.image_height, self.image_width), np.float)
         for [i, frame] in self.frame_iterator(start, end):
@@ -108,29 +104,22 @@ class Reader:
             self.fileptr = None
 
     def film_filename(self):
-        """
-        Returns the film name.
-        """
+        """Returns the film name."""
         return self.filename
 
     def film_size(self):
-        """
-        Returns the film size.
-        """
+        """Returns the film size."""
         return [self.image_width, self.image_height, self.number_frames]
 
     def film_location(self):
-        """
-        Returns the picture x,y location, if available.
-        """
+        """Returns the picture x,y location, if available."""
         if hasattr(self, "stage_x"):
             return [self.stage_x, self.stage_y]
         else:
             return [0.0, 0.0]
 
     def film_scale(self):
-        """
-        Returns the scale used to display the film when
+        """Returns the scale used to display the film when
         the picture was taken.
         """
         if hasattr(self, "scalemin") and hasattr(self, "scalemax"):
@@ -139,9 +128,7 @@ class Reader:
             return [100, 2000]
 
     def frame_iterator(self, start=None, end=None):
-        """
-        Iterator for going through the frames of a movie.
-        """
+        """Iterator for going through the frames of a movie."""
         if start is None:
             start = 0
         if end is None:
@@ -151,9 +138,7 @@ class Reader:
             yield [i, self.load_frame(i)]
 
     def hash_ID(self):
-        """
-        A (hopefully) unique string that identifies this movie.
-        """
+        """A (hopefully) unique string that identifies this movie."""
         return hashlib.md5(self.load_frame(0).tostring()).hexdigest()
 
     def load_frame(self, frame_number):
@@ -165,9 +150,7 @@ class Reader:
         ), "Frame number must be less than " + str(self.number_frames)
 
     def lock_target(self):
-        """
-        Returns the film focus lock target.
-        """
+        """Returns the film focus lock target."""
         if hasattr(self, "lock_target"):
             return self.lock_target
         else:
@@ -175,9 +158,7 @@ class Reader:
 
 
 class DaxReader(Reader):
-    """
-    Dax reader class. This is a Zhuang lab custom format.
-    """
+    """Dax reader class. This is a Zhuang lab custom format."""
 
     def __init__(self, filePortal: dataportal.FilePortal, verbose: bool = False):
         super().__init__(filePortal.get_file_name(), verbose=verbose)
@@ -241,9 +222,7 @@ class DaxReader(Reader):
             self.image_width = 256
 
     def load_frame(self, frame_number):
-        """
-        Load a frame & return it as a np array.
-        """
+        """Load a frame & return it as a np array."""
         super().load_frame(frame_number)
 
         startByte = frame_number * self.image_height * self.image_width * 2
@@ -261,8 +240,7 @@ class DaxReader(Reader):
 
 
 class TifReader(Reader):
-    """
-    TIF reader class.
+    """TIF reader class.
 
     This is supposed to handle the following:
     1. A normal Tiff file with one frame/image per page.

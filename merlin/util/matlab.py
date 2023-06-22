@@ -7,9 +7,8 @@ python libraries.
 
 
 def matlab_gauss2D(shape: tuple[int, int] = (3, 3), sigma: float = 0.5) -> np.array:
-    """
-    2D gaussian mask - should give the same result as MATLAB's
-    fspecial('gaussian',[shape],[sigma])
+    """2D gaussian mask - should give the same result as MATLAB's
+    fspecial('gaussian',[shape],[sigma]).
     """
     m, n = ((ss - 1.0) / 2.0 for ss in shape)
     y, x = np.ogrid[-m : m + 1, -n : n + 1]

@@ -24,15 +24,12 @@ class InputDataError(Exception):
 
 
 class DataOrganization:
-
-    """
-    A class to specify the organization of raw images in the original
+    """A class to specify the organization of raw images in the original
     image files.
     """
 
     def __init__(self, dataSet, filePath: str = None):
-        """
-        Create a new DataOrganization for the data in the specified data set.
+        """Create a new DataOrganization for the data in the specified data set.
 
         If filePath is not specified, a previously stored DataOrganization
         is loaded from the dataSet if it exists. If filePath is specified,
@@ -40,11 +37,11 @@ class DataOrganization:
         stored in the dataSet, overwriting any previously stored
         DataOrganization.
 
-        Raises:
+        Raises
+        ------
             InputDataError: If the set of raw data is incomplete or the
                     format of the raw data deviates from expectations.
         """
-
         self._dataSet = dataSet
 
         if filePath is not None:
@@ -79,7 +76,8 @@ class DataOrganization:
     def get_data_channels(self) -> np.array:
         """Get the data channels for the MERFISH data set.
 
-        Returns:
+        Returns
+        -------
             A list of the data channel indexes
         """
         return np.array(self.data.index)
@@ -88,6 +86,7 @@ class DataOrganization:
         """Get the name for the data channel with the specified index.
 
         Args:
+        ----
             dataChannelIndex: The index of the data channel
         Returns:
             The name of the specified data channel
@@ -98,6 +97,7 @@ class DataOrganization:
         """Get the name for the data channel with the specified index.
 
         Args:
+        ----
             dataChannelIndex: The index of the data channel
         Returns:
             The name of the specified data channel,
@@ -109,9 +109,12 @@ class DataOrganization:
         """Get the index for the data channel with the specified name.
 
         Args:
+        ----
             dataChannelName: the name of the data channel. The data channel
                 name is not case sensitive.
+
         Returns:
+        -------
             the index of the data channel where the data channel name is
                 dataChannelName
         Raises:
@@ -127,6 +130,7 @@ class DataOrganization:
         """Get the color used for measuring the specified data channel.
 
         Args:
+        ----
             dataChannel: the data channel index
         Returns:
             the color for this data channel as a string
@@ -137,6 +141,7 @@ class DataOrganization:
         """Get the data channel associated with the specified bit.
 
         Args:
+        ----
             bitName: the name of the bit to search for
         Returns:
             The index of the associated data channel
@@ -147,6 +152,7 @@ class DataOrganization:
         """Get the data channel associated with a gene name.
 
         Args:
+        ----
             channelName: the name of the gene to search for
         Returns:
             The index of the associated data channel
@@ -158,12 +164,12 @@ class DataOrganization:
         image for the specified dataChannel and fov.
 
         Args:
+        ----
             dataChannel: index of the data channel
             fov: index of the field of view
         Returns:
             The full path to the image file containing the fiducials
         """
-
         imageType = self.data.loc[dataChannel, "fiducialImageType"]
         imagingRound = self.data.loc[dataChannel, "fiducialImagingRound"]
         return self._get_image_path(imageType, fov, imagingRound)
@@ -173,6 +179,7 @@ class DataOrganization:
         for the specified data channel.
 
         Args:
+        ----
             dataChannel: index of the data channel
         Returns:
             The index of the fiducial frame in the corresponding image file
@@ -184,6 +191,7 @@ class DataOrganization:
         images for the specified dataChannel and fov.
 
         Args:
+        ----
             dataChannel: index of the data channel
             fov: index of the field of view
         Returns:
@@ -200,6 +208,7 @@ class DataOrganization:
         for the specified data channel and z position.
 
         Args:
+        ----
             dataChannel: index of the data channel
             zPosition: the z position
         Returns:
@@ -230,7 +239,8 @@ class DataOrganization:
     def get_z_positions(self) -> list[float]:
         """Get the z positions present in this data organization.
 
-        Returns:
+        Returns
+        -------
             A sorted list of all unique z positions
         """
         return sorted(np.unique([y for x in self.data["zPos"] for y in x]))
@@ -239,9 +249,10 @@ class DataOrganization:
         return np.unique(self.fileMap["fov"])
 
     def get_sequential_rounds(self) -> tuple[list[int], list[str]]:
-        """Get the rounds that are not present in your codebook
+        """Get the rounds that are not present in your codebook.
 
-        Returns:
+        Returns
+        -------
             A tuple of two lists, the first list contains the channel number
             for all the rounds not contained in the codebook, the second list
             contains the name associated with that channel in the data
@@ -335,15 +346,14 @@ class DataOrganization:
             self._dataSet.save_dataframe_to_csv(self.fileMap, "filemap", index=False)
 
     def _validate_file_map(self) -> None:
-        """
-        This function ensures that all the files specified in the file map
+        """This function ensures that all the files specified in the file map
         of the raw images are present.
 
-        Raises:
+        Raises
+        ------
             InputDataError: If the set of raw data is incomplete or the
                     format of the raw data deviates from expectations.
         """
-
         expectedImageSize = None
         for dataChannel in self.get_data_channels():
             for fov in self.get_fovs():

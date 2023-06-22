@@ -12,9 +12,7 @@ plt.style.use(
 
 
 class PlotPerformance(analysistask.AnalysisTask):
-
-    """
-    An analysis task that generates plots depicting metrics of the MERFISH
+    """An analysis task that generates plots depicting metrics of the MERFISH
     decoding.
     """
 

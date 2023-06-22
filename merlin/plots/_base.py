@@ -7,16 +7,15 @@ from merlin.core import analysistask
 
 
 class AbstractPlot(ABC):
-
-    """
-    A base class for generating a plot of the analysis results. Each plot
+    """A base class for generating a plot of the analysis results. Each plot
     should inherit from this class.
     """
 
     def __init__(self, analysisTask: analysistask.AnalysisTask):
-        """Create a new AbstractPlot
+        """Create a new AbstractPlot.
 
         Args:
+        ----
             analysisTask: the analysisTask where the plot should be saved.
         """
         self._analysisTask = analysisTask
@@ -63,6 +62,7 @@ class AbstractPlot(ABC):
         figure handle should be returned.
 
         Args:
+        ----
             inputTasks: A dictionary of the input tasks to use to generate the
                 plot. Each analysis task is indexed by a string indicating
                 the task type as in get_required_tasks.
@@ -78,6 +78,7 @@ class AbstractPlot(ABC):
         provided.
 
         Args:
+        ----
             inputTasks: A dictionary of the analysis tasks indexed with
                 strings indicating the task type as in get_required_tasks
         Returns: True if this plot can be generated using the provided
@@ -95,6 +96,7 @@ class AbstractPlot(ABC):
         satisfied.
 
         Args:
+        ----
             completeTasks: A list of the types of tasks that are complete.
                 The list can contain the same strings as in get_required_tasks
             completeMetadata: A list of the metadata that has been generated.
@@ -128,6 +130,7 @@ class AbstractPlot(ABC):
         then the function will return without generating any plot.
 
         Args:
+        ----
             inputTasks: A dictionary of the input tasks to use to generate the
                 plot. Each analysis task is indexed by a string indicating
                 the task type as in get_required_tasks.
@@ -157,6 +160,7 @@ class PlotMetadata(ABC):
         """Create a new metadata object.
 
         Args:
+        ----
             analysisTask: the analysisTask where the metadata should be saved.
             taskDict: a dictionary containing the analysis tasks to use
                 to generate the metadata indexed by the type of task as a
@@ -176,6 +180,7 @@ class PlotMetadata(ABC):
         from the dataset.
 
         Args:
+        ----
             resultName: the name of the metadata result
             defaultValue: the value to return if the metadata is not found
         Returns: a numpy array with the result or defaultValue if an IOError is
@@ -193,6 +198,7 @@ class PlotMetadata(ABC):
         from the dataset.
 
         Args:
+        ----
             result: the numpy array to save
             resultName: the name of the metadata result
         """

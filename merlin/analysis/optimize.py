@@ -10,9 +10,7 @@ from merlin.util import aberration, decoding, registration
 
 
 class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
-
-    """
-    An analysis task for performing a single iteration of scale factor
+    """An analysis task for performing a single iteration of scale factor
     optimization.
     """
 
@@ -231,9 +229,10 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
 
     def get_chromatic_corrector(self) -> aberration.ChromaticCorrector:
         """Get the chromatic corrector estimated from this optimization
-        iteration
+        iteration.
 
-        Returns:
+        Returns
+        -------
             The chromatic corrector.
         """
         return aberration.RigidChromaticCorrector(
@@ -246,7 +245,8 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
         """Get the estimated chromatic corrections from this optimization
         iteration.
 
-        Returns:
+        Returns
+        -------
             a dictionary of dictionary of transformations for transforming
             the farther red colors to the most blue color. The transformation
             for transforming the farther red color, e.g. '750', to the
@@ -373,7 +373,8 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
     def get_scale_factors(self) -> np.ndarray:
         """Get the final, optimized scale factors.
 
-        Returns:
+        Returns
+        -------
             a one-dimensional numpy array where the i'th entry is the
             scale factor corresponding to the i'th bit.
         """
@@ -472,7 +473,8 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
     def get_scale_factor_history(self) -> np.ndarray:
         """Get the scale factors cached for each iteration of the optimization.
 
-        Returns:
+        Returns
+        -------
             a two-dimensional numpy array where the i,j'th entry is the
             scale factor corresponding to the i'th bit in the j'th
             iteration.
@@ -489,7 +491,8 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
         """Get the set of barcode counts for each iteration of the
         optimization.
 
-        Returns:
+        Returns
+        -------
             a two-dimensional numpy array where the i,j'th entry is the
             barcode count corresponding to the i'th barcode in the j'th
             iteration.

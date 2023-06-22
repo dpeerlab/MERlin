@@ -16,10 +16,7 @@ from merlin.core import dataset
 
 
 class SpatialFeature:
-
-    """
-    A spatial feature is a collection of contiguous voxels.
-    """
+    """A spatial feature is a collection of contiguous voxels."""
 
     def __init__(
         self,
@@ -29,9 +26,10 @@ class SpatialFeature:
         uniqueID: int = None,
         label: int = -1,
     ) -> None:
-        """Create a new feature specified by a list of pixels
+        """Create a new feature specified by a list of pixels.
 
         Args:
+        ----
             boundaryList: a list of boundaries that define this feature.
                 The first index of the list corresponds with the z index.
                 The second index corresponds with the index of the shape since
@@ -69,6 +67,7 @@ class SpatialFeature:
         """Generate a new feature from the specified label matrix.
 
         Args:
+        ----
             labelMatrix: a 3d matrix indicating the z, x, y position
                 of voxels that contain the feature. Voxels corresponding
                 to the feature have a value of True while voxels outside of the
@@ -82,7 +81,6 @@ class SpatialFeature:
                 specified, each z index is assumed to have unit height.
         Returns: the new feature
         """
-
         boundaries = [SpatialFeature._extract_boundaries(x) for x in labelMatrix]
 
         if transformationMatrix is not None:
@@ -110,6 +108,7 @@ class SpatialFeature:
         label matrix.
 
         Args:
+        ----
             labelMatrix: a 2 dimensional numpy array indicating the x, y
                 position of pixels that contain the feature.
         Returns: a list of n x 2 numpy arrays indicating the x, y coordinates
@@ -156,6 +155,7 @@ class SpatialFeature:
         """Update the FOV for this spatial feature.
 
         Args:
+        ----
             nowFOV: the new FOV index
         """
         self._fov = newFOV
@@ -176,7 +176,8 @@ class SpatialFeature:
         """Get the 2d box that contains all boundaries in all z plans of this
         feature.
 
-        Returns:
+        Returns
+        -------
             a tuple containing (x1, y1, x2, y2) coordinates of the bounding box
         """
         boundarySet = []
@@ -190,7 +191,8 @@ class SpatialFeature:
     def get_volume(self) -> float:
         """Get the volume enclosed by this feature.
 
-        Returns:
+        Returns
+        -------
             the volume represented in global coordinates. If only one z
             slice is present for the feature, the z height is taken as 1.
         """
@@ -227,6 +229,7 @@ class SpatialFeature:
         boundary of the specified feature.
 
         Args:
+        ----
             inFeature: the feature whose boundary should be checked whether
                 it contains this feature
         Returns:
@@ -257,9 +260,10 @@ class SpatialFeature:
         return False
 
     def equals(self, testFeature) -> bool:
-        """Determine if this feature is equivalent to testFeature
+        """Determine if this feature is equivalent to testFeature.
 
         Args:
+        ----
             testFeature: the feature to test equivalency
         Returns:
             True if this feature and testFeature are equivalent, otherwise
@@ -289,6 +293,7 @@ class SpatialFeature:
         """Determine if this spatial feature contains the specified point.
 
         Args:
+        ----
             point: the point to check
             zIndex: the z-index that the point corresponds to
         Returns:
@@ -302,14 +307,17 @@ class SpatialFeature:
         return False
 
     def contains_positions(self, positionList: np.ndarray) -> np.ndarray:
-        """Determine if this spatial feature contains the specified positions
+        """Determine if this spatial feature contains the specified positions.
 
         Args:
+        ----
             positionList: a N x 3 numpy array containing the (x, y, z)
                 positions for N points where x and y are spatial coordinates
                 and z is the z index. If z is not an integer it is rounded
                 to the nearest integer.
+
         Returns:
+        -------
             a numpy array of booleans containing true in the i'th index if
                 the i'th point provided is in this spatial feature.
         """
@@ -335,6 +343,7 @@ class SpatialFeature:
         feature.
 
         Args:
+        ----
             featuresToCheck: the list of features to check for overlap with
                 this feature.
         Returns: the features that overlap with this feature
@@ -377,7 +386,6 @@ class SpatialFeature:
 
 
 class SpatialFeatureDB:
-
     """A database for storing spatial features."""
 
     def __init__(self, dataSet, analysisTask):
@@ -392,6 +400,7 @@ class SpatialFeatureDB:
         those in the provided list, an exception is raised.
 
         Args:
+        ----
             features: a list of features
             fov: the fov of the features if all feature correspond to the same
                 fov. If the features correspond to different fovs, fov
@@ -401,9 +410,10 @@ class SpatialFeatureDB:
 
     @abstractmethod
     def read_features(self, fov: int = None) -> list[SpatialFeature]:
-        """Read the features in this database
+        """Read the features in this database.
 
         Args:
+        ----
             fov: if not None, only the features associated with the specified
                 fov are returned
         """
@@ -414,6 +424,7 @@ class SpatialFeatureDB:
         """Remove all features from this database.
 
         Args:
+        ----
             fov: index of the field of view. If specified, only features
                 corresponding to the specified fov will be removed.
                 Otherwise all barcodes will be removed.
@@ -422,9 +433,7 @@ class SpatialFeatureDB:
 
 
 class HDF5SpatialFeatureDB(SpatialFeatureDB):
-
-    """
-    A data store for spatial features that uses a HDF5 file to store the feature
+    """A data store for spatial features that uses a HDF5 file to store the feature
     information.
     """
 
@@ -543,6 +552,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
         database.
 
         Args:
+        ----
             fov: an index of a fov to only get the features within the
                 specified field of view. If not specified features
                 within all fields of view are returned.
@@ -590,10 +600,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
 
 
 class JSONSpatialFeatureDB(SpatialFeatureDB):
-
-    """
-    A database for storing spatial features with json serialization.
-    """
+    """A database for storing spatial features with json serialization."""
 
     def __init__(self, dataSet: dataset.DataSet, analysisTask):
         super().__init__(dataSet, analysisTask)
@@ -656,13 +663,14 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
 
 
 def simple_clean_cells(cells: list) -> list:
-    """
-    Removes cells that lack a bounding box or have a volume equal to 0
+    """Removes cells that lack a bounding box or have a volume equal to 0.
 
     Args:
+    ----
         cells: List of spatial features
 
     Returns:
+    -------
         List of spatial features
 
     """
@@ -686,21 +694,21 @@ def construct_tree(
     count: int = 0,
     idToNum: dict = dict(),
 ):
-    """
-    Builds or adds to an rtree with a list of cells
+    """Builds or adds to an rtree with a list of cells.
 
     Args:
+    ----
         cells: list of spatial features
         spatialIndex: an existing rtree to append to
         count: number of existing entries in existing rtree
         idToNum: dict containing feature ID as key, and number in rtree as value
 
     Returns:
+    -------
         spatialIndex: an rtree updated with the input cells
         count: number of entries in rtree
         idToNum: dict containing feature ID as key, and number in rtree as value
     """
-
     for i in range(len(cells)):
         idToNum[cells[i].get_feature_id()] = count
         count += 1
@@ -710,18 +718,20 @@ def construct_tree(
 
 
 def return_overlapping_cells(currentCell, cells: list):
-    """
-    Determines if there is overlap between a cell of interest and a list of
+    """Determines if there is overlap between a cell of interest and a list of
     other cells. In the event that the cell of interest is entirely contained
     within one of the cells in the cells it is being compared to, an empty
     list is returned. Otherwise, the cell of interest and any overlapping
     cells are returned.
+
     Args:
+    ----
         currentCell: A spatial feature of interest
         cells: A list of spatial features to compare to, the spatial feature
-               of interest is expected to be in this list
+               of interest is expected to be in this list.
 
     Returns:
+    -------
         A list of spatial features including the cell of interest and all
         overlapping cells, or an empty list if the cell of intereset is
         entirely contained within one of the cells it is compared to
@@ -746,11 +756,11 @@ def return_overlapping_cells(currentCell, cells: list):
 
 
 def construct_graph(graph, cells, spatialTree, currentFOV, allFOVs, fovBoxes):
-    """
-    Adds the cells from the current fov to a graph where each node is a cell
+    """Adds the cells from the current fov to a graph where each node is a cell
     and edges connect overlapping cells.
 
     Args:
+    ----
         graph: An undirected graph, either empty of already containing cells
         cells: A list of spatial features to potentially add to graph
         spatialTree: an rtree index containing each cell in the dataset
@@ -759,9 +769,9 @@ def construct_graph(graph, cells, spatialTree, currentFOV, allFOVs, fovBoxes):
         fovBoxes: a list of shapely polygons containing the bounds of each fov
 
     Returns:
+    -------
         A graph updated to include cells from the current fov
     """
-
     fovIntersections = sorted(
         [i for i, x in enumerate(fovBoxes) if fovBoxes[currentFOV].intersects(x)]
     )
@@ -808,22 +818,23 @@ def construct_graph(graph, cells, spatialTree, currentFOV, allFOVs, fovBoxes):
 
 
 def remove_overlapping_cells(graph):
-    """
-    Takes in a graph in which each node is a cell and edges connect cells that
+    """Takes in a graph in which each node is a cell and edges connect cells that
     overlap eachother in space. Removes overlapping cells, preferentially
     eliminating the cell that overlaps the most cells (i.e. if cell A overlaps
     cells B, C, and D, whereas cell B only overlaps cell A, cell C only overlaps
     cell A, and cell D only overlaps cell A, then cell A will be removed,
     leaving cells B, C, and D remaining because there is no more overlap
     within this group of cells).
+
     Args:
+    ----
         graph: An undirected graph, in which each node is a cell and each
                edge connects overlapping cells. nodes are expected to have
                the following attributes: originalFOV, assignedFOV
     Returns:
         A pandas dataframe containing the feature ID of all cells after removing
         all instances of overlap. There are columns for cell_id, originalFOV,
-        and assignedFOV
+        and assignedFOV.
     """
     connectedComponents = list(nx.connected_components(graph))
     cleanedCells = []

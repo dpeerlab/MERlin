@@ -17,11 +17,13 @@ def calculate_projectors(windowSize: int, sigmaG: float) -> list:
     of magnitude', Guo et al, bioRxiv 2019.
 
     Args:
+    ----
         windowSize: the size of the window over which to perform the gaussian.
             This must be an odd number.
         sigmaG: the standard deviation of the Gaussian point spread function
 
     Returns:
+    -------
         A list containing the forward and backward projectors to use for
         Lucy-Richardson deconvolution.
     """
@@ -75,6 +77,7 @@ def deconvolve_lucyrichardson(
     Ported from Matlab deconvlucy.
 
     Args:
+    ----
         image: the input image to be deconvolved
         windowSize: the size of the window over which to perform the gaussian.
             This must be an odd number.
@@ -82,6 +85,7 @@ def deconvolve_lucyrichardson(
         iterationCount: the number of iterations to perform
 
     Returns:
+    -------
         the deconvolved image
     """
     eps = np.finfo(float).eps
@@ -153,6 +157,7 @@ def deconvolve_lucyrichardson_guo(
     of magnitude', Guo et al, bioRxiv 2019.
 
     Args:
+    ----
         image: the input image to be deconvolved
         windowSize: the size of the window over which to perform the gaussian.
             This must be an odd number.
@@ -160,6 +165,7 @@ def deconvolve_lucyrichardson_guo(
         iterationCount: the number of iterations to perform
 
     Returns:
+    -------
         the deconvolved image
     """
     [pf, pb] = calculate_projectors(windowSize, sigmaG)

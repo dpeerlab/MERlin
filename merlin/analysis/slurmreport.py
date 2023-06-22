@@ -12,9 +12,7 @@ from merlin.core import analysistask
 
 
 class SlurmReport(analysistask.AnalysisTask):
-
-    """
-    An analysis task that generates reports on previously completed analysis
+    """An analysis task that generates reports on previously completed analysis
     tasks using Slurm.
 
     This analysis task only works when Merlin is run through Slurm

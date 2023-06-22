@@ -7,9 +7,7 @@ from merlin.core import analysistask
 
 
 class GlobalAlignment(analysistask.AnalysisTask):
-
-    """
-    An abstract analysis task that determines the relative position of
+    """An abstract analysis task that determines the relative position of
     different field of views relative to each other in order to construct
     a global alignment.
     """
@@ -25,10 +23,13 @@ class GlobalAlignment(analysistask.AnalysisTask):
         in the specified field of view.
 
         Args:
+        ----
             fov: the fov where the coordinates are measured
             fovCoordinates: a tuple containing the x and y coordinates
                 or z, x, and y coordinates (in pixels) in the specified fov.
+
         Returns:
+        -------
             A tuple containing the global x and y coordinates or
             z, x, and y coordinates (in microns)
         """
@@ -42,10 +43,13 @@ class GlobalAlignment(analysistask.AnalysisTask):
         in the specified field of view.
 
         Args:
+        ----
             fov: the fov where the coordinates are measured
             globalCoordinates: a list of tuples containing the x and
                                y coordinates (in pixels) in the specified fov.
+
         Returns:
+        -------
             A list of tuples containing the global x and y coordinates
             (in microns)
         """
@@ -59,6 +63,7 @@ class GlobalAlignment(analysistask.AnalysisTask):
         that transforms the fov coordinates to global coordinates.
 
         Args:
+        ----
             fov: the fov to calculate the transformation
         Returns:
             a numpy array containing the transformation matrix
@@ -69,7 +74,8 @@ class GlobalAlignment(analysistask.AnalysisTask):
     def get_global_extent(self) -> tuple[float, float, float, float]:
         """Get the extent of the global coordinate system.
 
-        Returns:
+        Returns
+        -------
             a tuple where the first two indexes correspond to the minimum
             and x and y extents and the last two indexes correspond to the
             maximum x and y extents. All are in units of microns.
@@ -82,20 +88,22 @@ class GlobalAlignment(analysistask.AnalysisTask):
     ) -> np.array:
         """A bulk transformation of a list of fov coordinates to
            global coordinates.
+
         Args:
+        ----
             fov: the fov of interest
             fovCoordArray: numpy array of the [z, x, y] positions to transform
         Returns:
-            numpy array of the global [z, x, y] coordinates
+            numpy array of the global [z, x, y] coordinates.
         """
         pass
 
     def get_fov_boxes(self) -> list:
-        """
-        Creates a list of shapely boxes for each fov containing the global
+        """Creates a list of shapely boxes for each fov containing the global
         coordinates as the box coordinates.
 
-        Returns:
+        Returns
+        -------
             A list of shapely boxes
         """
         fovs = self.dataSet.get_fovs()
@@ -105,7 +113,6 @@ class GlobalAlignment(analysistask.AnalysisTask):
 
 
 class SimpleGlobalAlignment(GlobalAlignment):
-
     """A global alignment that uses the theoretical stage positions in
     order to determine the relative positions of each field of view.
     """
@@ -153,16 +160,15 @@ class SimpleGlobalAlignment(GlobalAlignment):
         return globalCentroids
 
     def fov_global_extent(self, fov: int) -> list[float]:
-        """
-        Returns the global extent of a fov, output interleaved as
-        xmin, ymin, xmax, ymax
+        """Returns the global extent of a fov, output interleaved as
+        xmin, ymin, xmax, ymax.
 
         Args:
+        ----
             fov: the fov of interest
         Returns:
             a list of four floats, representing the xmin, xmax, ymin, ymax
         """
-
         return [
             x
             for y in (
@@ -211,9 +217,7 @@ class SimpleGlobalAlignment(GlobalAlignment):
 
 
 class CorrelationGlobalAlignment(GlobalAlignment):
-
-    """
-    A global alignment that uses the cross-correlation between
+    """A global alignment that uses the cross-correlation between
     overlapping regions in order to determine the relative positions
     of each field of view.
     """
@@ -250,7 +254,6 @@ class CorrelationGlobalAlignment(GlobalAlignment):
         """Calculates the overlapping area between two rectangles with
         equal dimensions.
         """
-
         dx = min(x1 + width, x2 + width) - max(x1, x2)
         dy = min(y1 + height, y2 + height) - max(y1, y2)
 

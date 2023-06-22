@@ -7,11 +7,11 @@ from sklearn.neighbors import NearestNeighbors
 def extract_control_points(
     referencePoints: np.ndarray, movingPoints: np.ndarray, gridSpacing: float = 0.5
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    If fewer than 10 points are provided for either the reference or the moving
+    """If fewer than 10 points are provided for either the reference or the moving
     list, this returns no points.
 
     Args:
+    ----
         referencePoints: a n x 2 numpy array containing the reference points.
         movingPoints: a m x 2 numpy array containing the moving points.
         gridSpacing: the spacing of the grid for the 2d histogram for
@@ -56,12 +56,11 @@ def extract_control_points(
 def estimate_transform_from_points(
     referencePoints: np.ndarray, movingPoints: np.ndarray
 ) -> transform.EuclideanTransform:
-    """
-
-    If fewer than two points are provided, this will return the identity
+    """If fewer than two points are provided, this will return the identity
     transform.
 
     Args:
+    ----
         referencePoints: a n x 2 numpy array containing the reference points
         movingPoints: a n x 2 numpy array containing the moving points, where
             the i'th point of moving points corresponds with the i'th point

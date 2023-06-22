@@ -7,9 +7,7 @@ from merlin.core import analysistask
 
 
 class AbstractFilterBarcodes(decode.BarcodeSavingParallelAnalysisTask):
-    """
-    An abstract class for filtering barcodes identified by pixel-based decoding.
-    """
+    """An abstract class for filtering barcodes identified by pixel-based decoding."""
 
     def __init__(self, dataSet, parameters=None, analysisName=None):
         super().__init__(dataSet, parameters, analysisName)
@@ -20,9 +18,7 @@ class AbstractFilterBarcodes(decode.BarcodeSavingParallelAnalysisTask):
 
 
 class FilterBarcodes(AbstractFilterBarcodes):
-
-    """
-    An analysis task that filters barcodes based on area and mean
+    """An analysis task that filters barcodes based on area and mean
     intensity.
     """
 
@@ -66,9 +62,7 @@ class FilterBarcodes(AbstractFilterBarcodes):
 
 
 class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
-
-    """
-    An analysis task that generates a three-dimension mean intenisty,
+    """An analysis task that generates a three-dimension mean intenisty,
     area, minimum distance histogram for barcodes as they are decoded.
     """
 
@@ -142,6 +136,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
         fraction threshold.
 
         Args:
+        ----
             threshold: the normalized blank fraction threshold
         Returns: The estimated misidentification rate, estimated as the
             number of blank barcodes per blank barcode divided
@@ -168,6 +163,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
         a specified misidentification rate.
 
         Args:
+        ----
             targetMisidentificationRate: the target misidentification rate
         Returns: the normalized blank fraction threshold that achieves
             targetMisidentificationRate
@@ -191,6 +187,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
         the specified normalized blank fraction threshold.
 
         Args:
+        ----
             threshold: the normalized blank fraction threshold
         Returns: The number of barcodes passing the threshold.
         """
@@ -371,9 +368,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
 
 
 class AdaptiveFilterBarcodes(AbstractFilterBarcodes):
-
-    """
-    An analysis task that filters barcodes based on a mean intensity threshold
+    """An analysis task that filters barcodes based on a mean intensity threshold
     for each area based on the abundance of blank barcodes. The threshold
     is selected to achieve a specified misidentification rate.
     """

@@ -2,9 +2,7 @@ from merlin.core import analysistask
 
 
 class ExportBarcodes(analysistask.AnalysisTask):
-
-    """
-    An analysis task that filters barcodes based on area and mean
+    """An analysis task that filters barcodes based on area and mean
     intensity.
     """
 

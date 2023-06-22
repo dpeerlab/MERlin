@@ -8,9 +8,7 @@ from merlin.util import imagefilters
 
 
 class SumSignal(analysistask.ParallelAnalysisTask):
-
-    """
-    An analysis task that calculates the signal intensity within the boundaries
+    """An analysis task that calculates the signal intensity within the boundaries
     of a cell for all rounds not used in the codebook, useful for measuring
     RNA species that were stained individually.
     """
@@ -122,10 +120,12 @@ class SumSignal(analysistask.ParallelAnalysisTask):
         """Retrieve the sum signals calculated from this analysis task.
 
         Args:
+        ----
             fov: the fov to get the sum signals for. If not specified, the
                 sum signals for all fovs are returned.
 
         Returns:
+        -------
             A pandas data frame containing the sum signal information.
         """
         if fov is None:

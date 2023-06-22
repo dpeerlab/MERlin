@@ -10,10 +10,7 @@ from merlin.util import barcodedb, barcodefilters, decoding
 
 
 class BarcodeSavingParallelAnalysisTask(analysistask.ParallelAnalysisTask):
-
-    """
-    An abstract analysis class that saves barcodes into a barcode database.
-    """
+    """An abstract analysis class that saves barcodes into a barcode database."""
 
     def __init__(self, dataSet: dataset.DataSet, parameters=None, analysisName=None):
         super().__init__(dataSet, parameters, analysisName)
@@ -31,10 +28,7 @@ class BarcodeSavingParallelAnalysisTask(analysistask.ParallelAnalysisTask):
 
 
 class Decode(BarcodeSavingParallelAnalysisTask):
-
-    """
-    An analysis task that extracts barcodes from images.
-    """
+    """An analysis task that extracts barcodes from images."""
 
     def __init__(
         self, dataSet: dataset.MERFISHDataSet, parameters=None, analysisName=None

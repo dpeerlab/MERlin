@@ -2,9 +2,10 @@ import numpy as np
 
 
 def bit_list_to_int(bitList: list[bool]) -> int:
-    """Converts a binary list to an integer
+    """Converts a binary list to an integer.
 
     Args:
+    ----
         bitList: the binary list to convert
     Returns:
         The integer corresponding to the input bit list
@@ -19,6 +20,7 @@ def int_to_bit_list(intIn: int, bitCount: int) -> list[bool]:
     """Converts an integer to a binary list with the specified number of bits.
 
     Args:
+    ----
         intIn: the integer to convert
         bitCount: the number of bits to include in the output bit list
     Returns:
@@ -32,6 +34,7 @@ def k_bit_set(n: int, k: int) -> bool:
     """Determine if the k'th bit of integer n is set to 1.
 
     Args:
+    ----
         n: the integer to check
         k: the index of the bit to check where 0 corresponds with the least
             significant bit
@@ -56,6 +59,7 @@ def flip_bit(barcode: list[bool], bitIndex: int) -> list[bool]:
     bit.
 
     Args:
+    ----
         barcode: A binary array where the i'th entry corresponds with the
             value of the i'th bit
         bitIndex: The index of the bit to reverse

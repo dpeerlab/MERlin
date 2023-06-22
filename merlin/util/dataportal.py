@@ -9,9 +9,7 @@ from google.cloud import exceptions, storage
 
 
 class DataPortal(ABC):
-
-    """
-    A superclass for reading files within a specified directory from a
+    """A superclass for reading files within a specified directory from a
     data storage service.
     """
 
@@ -25,6 +23,7 @@ class DataPortal(ABC):
         """Create a new portal capable of reading from the specified basePath.
 
         Args:
+        ----
             basePath: the base path of the data portal
         Returns: a new DataPortal for reading from basePath
         """
@@ -50,6 +49,7 @@ class DataPortal(ABC):
         by this DataPortal.
 
         Args:
+        ----
             fileName: the name of the file to open, relative to basePath
         Returns: A FilePortal referencing the specified file.
         """
@@ -67,6 +67,7 @@ class DataPortal(ABC):
         DataReader.
 
         Args:
+        ----
             extensionList: a list of extensions of files to filter for. Only
                 files ending in one of the extensions will be returned.
         Returns: a list of the file paths
@@ -75,10 +76,7 @@ class DataPortal(ABC):
 
 
 class LocalDataPortal(DataPortal):
-
-    """
-    A class for accessing data that is stored in a local file system.
-    """
+    """A class for accessing data that is stored in a local file system."""
 
     def __init__(self, basePath: str):
         super().__init__(basePath)
@@ -101,10 +99,7 @@ class LocalDataPortal(DataPortal):
 
 
 class S3DataPortal(DataPortal):
-
-    """
-    A class for accessing data that is stored in a S3 filesystem
-    """
+    """A class for accessing data that is stored in a S3 filesystem."""
 
     def __init__(self, basePath: str, **kwargs):
         super().__init__(basePath)
@@ -140,10 +135,7 @@ class S3DataPortal(DataPortal):
 
 
 class GCloudDataPortal(DataPortal):
-
-    """
-    A class for accessing data that is stored in Google Cloud Storage.
-    """
+    """A class for accessing data that is stored in Google Cloud Storage."""
 
     def __init__(self, basePath: str, **kwargs):
         super().__init__(basePath)
@@ -177,10 +169,7 @@ class GCloudDataPortal(DataPortal):
 
 
 class FilePortal(ABC):
-
-    """
-    A superclass for reading a specified file from a data storage service.
-    """
+    """A superclass for reading a specified file from a data storage service."""
 
     def __init__(self, fileName: str):
         super().__init__()
@@ -226,6 +215,7 @@ class FilePortal(ABC):
         specified extension.
 
         Args:
+        ----
             newExtension: the new extension
         Returns: A reference to the file with the extension exchanged.
         """
@@ -244,6 +234,7 @@ class FilePortal(ABC):
         """Read bytes within the specified range from this file.
 
         Args:
+        ----
             startByte: the index of the first byte to read (inclusive)
             endByte: the index at the end of the range of bytes to read
                 (exclusive)
@@ -258,10 +249,7 @@ class FilePortal(ABC):
 
 
 class LocalFilePortal(FilePortal):
-
-    """
-    A file portal for accessing a file in a local file system.
-    """
+    """A file portal for accessing a file in a local file system."""
 
     def __init__(self, fileName: str):
         super().__init__(fileName)
@@ -286,10 +274,7 @@ class LocalFilePortal(FilePortal):
 
 
 class S3FilePortal(FilePortal):
-
-    """
-    A file portal for accessing a file from s3.
-    """
+    """A file portal for accessing a file from s3."""
 
     def __init__(self, fileName: str, s3=None):
         super().__init__(fileName)
@@ -327,10 +312,7 @@ class S3FilePortal(FilePortal):
 
 
 class GCloudFilePortal(FilePortal):
-
-    """
-    A file portal for accessing a file from Google Cloud.
-    """
+    """A file portal for accessing a file from Google Cloud."""
 
     def __init__(self, fileName: str, client=None):
         super().__init__(fileName)
@@ -364,19 +346,17 @@ class GCloudFilePortal(FilePortal):
                     sleep(sleepDuration)
 
     def read_as_text(self):
-        """
-        Attempts to read a file from bucket as text, it if encounters a timeout
+        """Attempts to read a file from bucket as text, it if encounters a timeout
         exception it reattempts after sleeping for exponentially increasing
-        delays, up to a delay of about 4 minutes
+        delays, up to a delay of about 4 minutes.
         """
         file = self._error_tolerant_reading(self._fileHandle.download_as_string)
         return file.decode("utf-8")
 
     def read_file_bytes(self, startByte, endByte):
-        """
-        Attempts to read a file from bucket as bytes, it if encounters a timeout
+        """Attempts to read a file from bucket as bytes, it if encounters a timeout
         exception it reattempts after sleeping for exponentially increasing
-        delays, up to a delay of about 4 minutes
+        delays, up to a delay of about 4 minutes.
         """
         file = self._error_tolerant_reading(
             self._fileHandle.download_as_string,

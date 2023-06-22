@@ -18,6 +18,7 @@ def remove_zplane_duplicates_all_barcodeids(
         adjacent z planes.
 
     Args:
+    ----
         barcodes: a pandas dataframe containing all the entries for a given
                   barcode identity
         zPlanes: number of planes above and below to consider when evaluating
@@ -52,6 +53,7 @@ def remove_zplane_duplicates_single_barcodeid(
         duplicates.
 
     Args:
+    ----
         barcodes: a pandas dataframe containing all the entries for a given
                   barcode identity
         zPlanes: number of planes above and below to consider when evaluating

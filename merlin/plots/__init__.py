@@ -7,7 +7,7 @@ from merlin.plots._base import AbstractPlot
 
 
 def get_available_plots() -> set:
-    """Get all plots defined within any submodule of merlin.plots
+    """Get all plots defined within any submodule of merlin.plots.
 
     Returns: a set of references to the plots
     """
@@ -29,6 +29,7 @@ class PlotEngine:
         """Create a new plot engine.
 
         Args:
+        ----
             plotTask: the analysis task to save the plots and plot
                 metadata into
             taskDict: a dictionary containing references to the analysis
@@ -56,7 +57,6 @@ class PlotEngine:
 
         Returns: True if all plots have been generated and otherwise false.
         """
-
         incompletePlots = [p for p in self.plotList if not p.is_complete()]
         if len(incompletePlots) == 0:
             return True

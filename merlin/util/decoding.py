@@ -60,6 +60,7 @@ class PixelBasedDecoder:
         less than the distance threshold.
 
         Args:
+        ----
             imageData: input image stack. The first dimension indexes the bit
                 number and the second and third dimensions contain the
                 corresponding image.
@@ -77,7 +78,9 @@ class PixelBasedDecoder:
                 in the decoded image.
             lowPassSigma: standard deviation for the low pass filter that is
                 applied to the images prior to decoding.
+
         Returns:
+        -------
             Four results are returned as a tuple (decodedImage, pixelMagnitudes,
                 normalizedPixelTraces, distances). decodedImage is an image
                 indicating the barcode index assigned to each pixel. Pixels
@@ -161,6 +164,7 @@ class PixelBasedDecoder:
         that were decoded to the specified barcode index.
 
         Args:
+        ----
             barcodeIndex: the index of the barcode to extract the corresponding
                 barcodes
             decodedImage: the image indicating the barcode index assigned to
@@ -179,7 +183,9 @@ class PixelBasedDecoder:
                 coordinates to global x,y coordinates
             minimumArea: the minimum area of barcodes to identify. Barcodes
                 less than the specified minimum area are ignored.
+
         Returns:
+        -------
             a pandas dataframe containing all the barcodes decoded with the
                 specified barcode index
         """
@@ -304,16 +310,18 @@ class PixelBasedDecoder:
         their L2 norm is 1.
 
         Args:
+        ----
             ignoreBlanks: Flag to set if the barcodes corresponding to blanks
                 should be ignored. If True, barcodes corresponding to a name
                 that contains 'Blank' are ignored.
             includeErrors: Flag to set if barcodes corresponding to single bit
                 errors should be added.
+
         Returns:
+        -------
             A 2d numpy array where each row is a normalized barcode and each
                 column is the corresponding normalized bit value.
         """
-
         barcodeSet = self._codebook.get_barcodes(ignoreBlanks=ignoreBlanks)
         magnitudes = np.sqrt(np.sum(barcodeSet * barcodeSet, axis=1))
 
@@ -351,6 +359,7 @@ class PixelBasedDecoder:
         used for the decoding.
 
         Args:
+        ----
             imageSet: the image stack to decode in order to determine the
                 scale factors
         Returns:
@@ -361,7 +370,6 @@ class PixelBasedDecoder:
                 for bit i. If extractBackgrounds is false, the returned
                 background array is all zeros.
         """
-
         if extractBackgrounds:
             backgroundRefactors = self._extract_backgrounds(
                 decodedImage, pixelMagnitudes, normalizedPixelTraces
@@ -408,6 +416,7 @@ class PixelBasedDecoder:
         bit intensity for each bit to be equal to zero.
 
         Args:
+        ----
             imageSet: the image stack to decode in order to determine the
                 scale factors
         Returns:

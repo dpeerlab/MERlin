@@ -19,9 +19,7 @@ class InvalidParameterException(Exception):
 
 
 class AnalysisTask(ABC):
-
-    """
-    An abstract class for performing analysis on a DataSet. Subclasses
+    """An abstract class for performing analysis on a DataSet. Subclasses
     should implement the analysis to perform in the run_analysis() function.
     """
 
@@ -30,6 +28,7 @@ class AnalysisTask(ABC):
         specified DataSet.
 
         Args:
+        ----
             dataSet: the DataSet to run analysis on.
             parameters: a dictionary containing parameters used to run the
                 analysis.
@@ -75,10 +74,13 @@ class AnalysisTask(ABC):
         """Save a copy of this AnalysisTask into the data set.
 
         Args:
+        ----
             overwrite: flag indicating if an existing analysis task with the
                 same name as this analysis task should be overwritten even
                 if the specified parameters are different.
+
         Raises:
+        ------
             AnalysisAlreadyExistsException: if an analysis task with the
                 same name as this analysis task already exists in the
                 data set with different parameters.
@@ -92,9 +94,12 @@ class AnalysisTask(ABC):
         that analysis is complete.
 
         Args:
+        ----
             overwrite: flag indicating if previous analysis from this
                 analysis task should be overwritten.
+
         Raises:
+        ------
             AnalysisAlreadyStartedException: if this analysis task is currently
                 already running or if overwrite is not True and this analysis
                 task has already completed or exited with an error.
@@ -167,7 +172,8 @@ class AnalysisTask(ABC):
         """Get an estimate of how much memory is required for this
         AnalysisTask.
 
-        Returns:
+        Returns
+        -------
             a memory estimate in megabytes.
         """
         pass
@@ -177,7 +183,8 @@ class AnalysisTask(ABC):
         """Get an estimate for the amount of time required to complete
         this AnalysisTask.
 
-        Returns:
+        Returns
+        -------
             a time estimate in minutes.
         """
         pass
@@ -187,7 +194,8 @@ class AnalysisTask(ABC):
         """Get the analysis tasks that must be completed before this
         analysis task can proceed.
 
-        Returns:
+        Returns
+        -------
             a list containing the names of the analysis tasks that
                 this analysis task depends on. If there are no dependencies,
                 an empty list is returned.
@@ -197,23 +205,26 @@ class AnalysisTask(ABC):
     def get_parameters(self):
         """Get the parameters for this analysis task.
 
-        Returns:
+        Returns
+        -------
             the parameter dictionary
         """
         return self.parameters
 
     def is_error(self):
-        """Determines if an error has occurred while running this analysis
+        """Determines if an error has occurred while running this analysis.
 
-        Returns:
+        Returns
+        -------
             True if the analysis is complete and otherwise False.
         """
         return self.dataSet.check_analysis_error(self)
 
     def is_complete(self):
-        """Determines if this analysis has completed successfully
+        """Determines if this analysis has completed successfully.
 
-        Returns:
+        Returns
+        -------
             True if the analysis is complete and otherwise False.
         """
         return self.dataSet.check_analysis_done(self)
@@ -221,7 +232,8 @@ class AnalysisTask(ABC):
     def is_started(self):
         """Determines if this analysis has started.
 
-        Returns:
+        Returns
+        -------
             True if the analysis has begun and otherwise False.
         """
         return self.dataSet.check_analysis_started(self)
@@ -240,7 +252,8 @@ class AnalysisTask(ABC):
     def get_analysis_name(self):
         """Get the name for this AnalysisTask.
 
-        Returns:
+        Returns
+        -------
             the name of this AnalysisTask
         """
         return self.analysisName
@@ -251,9 +264,7 @@ class AnalysisTask(ABC):
 
 
 class InternallyParallelAnalysisTask(AnalysisTask):
-
-    """
-    An abstract class for analysis that can only be run in one part,
+    """An abstract class for analysis that can only be run in one part,
     but can internally be sped up using multiple processes. Subclasses
     should implement the analysis to perform in the run_analysis() function.
     """
@@ -276,11 +287,9 @@ class ParallelAnalysisTask(AnalysisTask):
     # TODO - this can be restructured so that AnalysisTask is instead a subclass
     # of ParallelAnalysisTask where fragment count is set to 1. This could
     # help remove some of the redundant code
-
-    """
-    An abstract class for analysis that can be run in multiple parts
+    """An abstract class for analysis that can be run in multiple parts
     independently. Subclasses should implement the analysis to perform in
-    the run_analysis() function
+    the run_analysis() function.
     """
 
     def __init__(self, dataSet, parameters=None, analysisName=None):
@@ -293,6 +302,7 @@ class ParallelAnalysisTask(AnalysisTask):
         task are run in serial.
 
         Args:
+        ----
             fragmentIndex: the index of the analysis fragment to run or None
                 if all fragments should be run.
         """
