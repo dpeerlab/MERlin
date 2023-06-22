@@ -37,7 +37,7 @@ class Preprocess(analysistask.ParallelAnalysisTask):
 
 
 class DeconvolutionPreprocess(Preprocess):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "highpass_sigma" not in self.parameters:
@@ -166,7 +166,7 @@ class DeconvolutionPreprocess(Preprocess):
 
 
 class DeconvolutionPreprocessGuo(DeconvolutionPreprocess):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         # Check for 'decon_iterations' in parameters instead of

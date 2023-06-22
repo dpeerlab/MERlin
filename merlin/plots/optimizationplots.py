@@ -5,7 +5,7 @@ from merlin.plots._base import AbstractPlot
 
 
 class OptimizationScaleFactorsPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -24,7 +24,7 @@ class OptimizationScaleFactorsPlot(AbstractPlot):
 
 
 class ScaleFactorVsBitNumberPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -62,7 +62,7 @@ class ScaleFactorVsBitNumberPlot(AbstractPlot):
 
 
 class OptimizationBarcodeCountsPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):

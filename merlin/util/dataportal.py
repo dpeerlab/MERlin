@@ -13,7 +13,7 @@ class DataPortal(ABC):
     data storage service.
     """
 
-    def __init__(self, basePath: str):
+    def __init__(self, basePath: str) -> None:
         super().__init__()
 
         self._basePath = basePath
@@ -78,7 +78,7 @@ class DataPortal(ABC):
 class LocalDataPortal(DataPortal):
     """A class for accessing data that is stored in a local file system."""
 
-    def __init__(self, basePath: str):
+    def __init__(self, basePath: str) -> None:
         super().__init__(basePath)
 
     def is_available(self):
@@ -101,7 +101,7 @@ class LocalDataPortal(DataPortal):
 class S3DataPortal(DataPortal):
     """A class for accessing data that is stored in a S3 filesystem."""
 
-    def __init__(self, basePath: str, **kwargs):
+    def __init__(self, basePath: str, **kwargs) -> None:
         super().__init__(basePath)
 
         t = parse.urlparse(basePath)
@@ -137,7 +137,7 @@ class S3DataPortal(DataPortal):
 class GCloudDataPortal(DataPortal):
     """A class for accessing data that is stored in Google Cloud Storage."""
 
-    def __init__(self, basePath: str, **kwargs):
+    def __init__(self, basePath: str, **kwargs) -> None:
         super().__init__(basePath)
 
         t = parse.urlparse(basePath)
@@ -171,11 +171,11 @@ class GCloudDataPortal(DataPortal):
 class FilePortal(ABC):
     """A superclass for reading a specified file from a data storage service."""
 
-    def __init__(self, fileName: str):
+    def __init__(self, fileName: str) -> None:
         super().__init__()
         self._fileName = fileName
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.close()
 
     def __enter__(self):
@@ -251,7 +251,7 @@ class FilePortal(ABC):
 class LocalFilePortal(FilePortal):
     """A file portal for accessing a file in a local file system."""
 
-    def __init__(self, fileName: str):
+    def __init__(self, fileName: str) -> None:
         super().__init__(fileName)
         self._fileHandle = open(fileName, "rb")
 
@@ -276,7 +276,7 @@ class LocalFilePortal(FilePortal):
 class S3FilePortal(FilePortal):
     """A file portal for accessing a file from s3."""
 
-    def __init__(self, fileName: str, s3=None):
+    def __init__(self, fileName: str, s3=None) -> None:
         super().__init__(fileName)
         t = parse.urlparse(fileName)
         self._bucketName = t.netloc
@@ -314,7 +314,7 @@ class S3FilePortal(FilePortal):
 class GCloudFilePortal(FilePortal):
     """A file portal for accessing a file from Google Cloud."""
 
-    def __init__(self, fileName: str, client=None):
+    def __init__(self, fileName: str, client=None) -> None:
         super().__init__(fileName)
         if client is None:
             self._client = storage.Client()

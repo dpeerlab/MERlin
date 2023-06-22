@@ -7,7 +7,7 @@ from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class MinimumDistanceDistributionPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -33,7 +33,7 @@ class MinimumDistanceDistributionPlot(AbstractPlot):
 
 
 class AreaDistributionPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -58,7 +58,7 @@ class AreaDistributionPlot(AbstractPlot):
 
 
 class MeanIntensityDistributionPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -83,7 +83,7 @@ class MeanIntensityDistributionPlot(AbstractPlot):
 
 
 class DecodedBarcodeAbundancePlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -125,7 +125,7 @@ class DecodedBarcodeAbundancePlot(AbstractPlot):
 
 
 class AreaIntensityViolinPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -194,7 +194,7 @@ class AreaIntensityViolinPlot(AbstractPlot):
 
 
 class DecodedBarcodesMetadata(PlotMetadata):
-    def __init__(self, analysisTask, taskDict):
+    def __init__(self, analysisTask, taskDict) -> None:
         super().__init__(analysisTask, taskDict)
         self.decodeTask = self._taskDict["decode_task"]
         codebook = self.decodeTask.get_codebook()

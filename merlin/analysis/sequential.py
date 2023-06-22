@@ -13,7 +13,7 @@ class SumSignal(analysistask.ParallelAnalysisTask):
     RNA species that were stained individually.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "apply_highpass" not in self.parameters:
@@ -158,7 +158,7 @@ class SumSignal(analysistask.ParallelAnalysisTask):
 
 
 class ExportSumSignals(analysistask.AnalysisTask):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_estimated_memory(self):

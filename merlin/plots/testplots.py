@@ -5,7 +5,7 @@ from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class TestPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -21,7 +21,7 @@ class TestPlot(AbstractPlot):
 
 
 class TestPlotMetadata(PlotMetadata):
-    def __init__(self, analysisTask, taskDict):
+    def __init__(self, analysisTask, taskDict) -> None:
         super().__init__(analysisTask, taskDict)
         self.testTask = self._taskDict["test_task"]
         self.completeFragments = [False] * self.testTask.fragment_count()

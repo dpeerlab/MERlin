@@ -388,7 +388,7 @@ class SpatialFeature:
 class SpatialFeatureDB:
     """A database for storing spatial features."""
 
-    def __init__(self, dataSet, analysisTask):
+    def __init__(self, dataSet, analysisTask) -> None:
         self._dataSet = dataSet
         self._analysisTask = analysisTask
 
@@ -437,7 +437,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
     information.
     """
 
-    def __init__(self, dataSet: dataset.DataSet, analysisTask):
+    def __init__(self, dataSet: dataset.DataSet, analysisTask) -> None:
         super().__init__(dataSet, analysisTask)
 
     @staticmethod
@@ -602,7 +602,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
 class JSONSpatialFeatureDB(SpatialFeatureDB):
     """A database for storing spatial features with json serialization."""
 
-    def __init__(self, dataSet: dataset.DataSet, analysisTask):
+    def __init__(self, dataSet: dataset.DataSet, analysisTask) -> None:
         super().__init__(dataSet, analysisTask)
 
     def write_features(self, features: list[SpatialFeature], fov=None) -> None:

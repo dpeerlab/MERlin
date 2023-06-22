@@ -7,7 +7,7 @@ from merlin.plots._base import AbstractPlot, PlotMetadata
 
 
 class CodingBarcodeSpatialDistribution(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -36,7 +36,7 @@ class CodingBarcodeSpatialDistribution(AbstractPlot):
 
 
 class BlankBarcodeSpatialDistribution(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -65,7 +65,7 @@ class BlankBarcodeSpatialDistribution(AbstractPlot):
 
 
 class BarcodeRadialDensityPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -95,7 +95,7 @@ class BarcodeRadialDensityPlot(AbstractPlot):
 
 
 class CodingBarcodeFOVDistributionPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -124,7 +124,7 @@ class CodingBarcodeFOVDistributionPlot(AbstractPlot):
 
 
 class BlankBarcodeFOVDistributionPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -153,7 +153,7 @@ class BlankBarcodeFOVDistributionPlot(AbstractPlot):
 
 
 class FilteredBarcodeAbundancePlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -196,7 +196,7 @@ class FilteredBarcodeAbundancePlot(AbstractPlot):
 
 
 class AdaptiveFilterBarcodeDistributionPlots(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -289,7 +289,7 @@ class AdaptiveFilterBarcodeDistributionPlots(AbstractPlot):
 
 
 class AdaptiveFilterMisidentificationVsAbundance(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -336,7 +336,7 @@ class AdaptiveFilterMisidentificationVsAbundance(AbstractPlot):
 
 
 class AdaptiveFilterCountsPerArea(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):
@@ -373,7 +373,7 @@ class AdaptiveFilterCountsPerArea(AbstractPlot):
 
 
 class FOVSpatialDistributionMetadata(PlotMetadata):
-    def __init__(self, analysisTask, taskDict):
+    def __init__(self, analysisTask, taskDict) -> None:
         super().__init__(analysisTask, taskDict)
         self.filterTask = self._taskDict["filter_task"]
 
@@ -490,7 +490,7 @@ class FOVSpatialDistributionMetadata(PlotMetadata):
 
 
 class FilteredBarcodesMetadata(PlotMetadata):
-    def __init__(self, analysisTask, taskDict):
+    def __init__(self, analysisTask, taskDict) -> None:
         super().__init__(analysisTask, taskDict)
         filterTask = self._taskDict["filter_task"]
         codebook = filterTask.get_codebook()
@@ -529,7 +529,7 @@ class FilteredBarcodesMetadata(PlotMetadata):
 
 
 class GlobalSpatialDistributionMetadata(PlotMetadata):
-    def __init__(self, analysisTask, taskDict):
+    def __init__(self, analysisTask, taskDict) -> None:
         super().__init__(analysisTask, taskDict)
         filterTask = self._taskDict["filter_task"]
         globalTask = self._taskDict["global_align_task"]

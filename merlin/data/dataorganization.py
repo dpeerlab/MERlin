@@ -28,7 +28,7 @@ class DataOrganization:
     image files.
     """
 
-    def __init__(self, dataSet, filePath: str = None):
+    def __init__(self, dataSet, filePath: str = None) -> None:
         """Create a new DataOrganization for the data in the specified data set.
 
         If filePath is not specified, a previously stored DataOrganization

@@ -9,7 +9,7 @@ class PartitionBarcodes(analysistask.ParallelAnalysisTask):
     based on the boundaries determined during the segment task.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def fragment_count(self):
@@ -108,7 +108,7 @@ class ExportPartitionedBarcodes(analysistask.AnalysisTask):
     field of view into a single output file.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_estimated_memory(self):

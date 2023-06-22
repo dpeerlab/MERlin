@@ -14,7 +14,7 @@ from merlin.data import codebook as cb
 class MERFISHDataFactory:
     """A class for simulating MERFISH data sets."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.codebookPath = "L26E1.csv"
         self.psfSigma = 1.2
         self.imageSize = np.array([1024, 1024])

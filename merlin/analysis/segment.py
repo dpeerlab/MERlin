@@ -13,7 +13,9 @@ class FeatureSavingAnalysisTask(analysistask.ParallelAnalysisTask):
     database.
     """
 
-    def __init__(self, dataSet: dataset.DataSet, parameters=None, analysisName=None):
+    def __init__(
+        self, dataSet: dataset.DataSet, parameters=None, analysisName=None
+    ) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def _reset_analysis(self, fragmentIndex: int = None) -> None:
@@ -38,7 +40,7 @@ class WatershedSegment(FeatureSavingAnalysisTask):
     view boundary.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "seed_channel_name" not in self.parameters:
@@ -134,7 +136,7 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
     position.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         self.segmentTask = self.dataSet.load_analysis_task(
@@ -199,7 +201,7 @@ class CombineCleanedBoundaries(analysistask.AnalysisTask):
 
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         self.cleaningTask = self.dataSet.load_analysis_task(
@@ -238,7 +240,7 @@ class CombineCleanedBoundaries(analysistask.AnalysisTask):
 
 
 class RefineCellDatabases(FeatureSavingAnalysisTask):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         self.segmentTask = self.dataSet.load_analysis_task(
@@ -284,7 +286,7 @@ class RefineCellDatabases(FeatureSavingAnalysisTask):
 class ExportCellMetadata(analysistask.AnalysisTask):
     """An analysis task exports cell metadata."""
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         self.segmentTask = self.dataSet.load_analysis_task(

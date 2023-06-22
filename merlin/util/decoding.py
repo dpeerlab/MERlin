@@ -26,7 +26,7 @@ class PixelBasedDecoder:
         codebook: mcodebook.Codebook,
         scaleFactors: np.ndarray = None,
         backgrounds: np.ndarray = None,
-    ):
+    ) -> None:
         self._codebook = codebook
         self._decodingMatrix = self._calculate_normalized_barcodes()
         self._barcodeCount = self._decodingMatrix.shape[0]

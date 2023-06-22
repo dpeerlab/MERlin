@@ -23,7 +23,7 @@ class AnalysisTask(ABC):
     should implement the analysis to perform in the run_analysis() function.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         """Creates an AnalysisTask object that performs analysis on the
         specified DataSet.
 
@@ -269,7 +269,7 @@ class InternallyParallelAnalysisTask(AnalysisTask):
     should implement the analysis to perform in the run_analysis() function.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
         self.coreCount = multiprocessing.cpu_count()
 
@@ -292,7 +292,7 @@ class ParallelAnalysisTask(AnalysisTask):
     the run_analysis() function.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def run(self, fragmentIndex: int = None, overwrite=True) -> None:

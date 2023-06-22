@@ -16,7 +16,7 @@ class Codebook:
 
     def __init__(
         self, dataSet, filePath, codebookIndex: int = 0, codebookName: str = None
-    ):
+    ) -> None:
         """Create a new Codebook for the data in the specified data set.
 
         If filePath is not specified, a previously stored Codebook

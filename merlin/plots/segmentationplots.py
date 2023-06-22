@@ -4,7 +4,7 @@ from merlin.plots._base import AbstractPlot
 
 
 class SegmentationBoundaryPlot(AbstractPlot):
-    def __init__(self, analysisTask):
+    def __init__(self, analysisTask) -> None:
         super().__init__(analysisTask)
 
     def get_required_tasks(self):

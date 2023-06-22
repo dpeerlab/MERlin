@@ -11,7 +11,7 @@ class AbstractPlot(ABC):
     should inherit from this class.
     """
 
-    def __init__(self, analysisTask: analysistask.AnalysisTask):
+    def __init__(self, analysisTask: analysistask.AnalysisTask) -> None:
         """Create a new AbstractPlot.
 
         Args:
@@ -156,7 +156,7 @@ class PlotMetadata(ABC):
         self,
         analysisTask: analysistask.AnalysisTask,
         taskDict: dict[str, analysistask.AnalysisTask],
-    ):
+    ) -> None:
         """Create a new metadata object.
 
         Args:

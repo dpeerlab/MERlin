@@ -11,7 +11,7 @@ class GenerateMosaic(analysistask.AnalysisTask):
     field of views.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "microns_per_pixel" not in self.parameters:

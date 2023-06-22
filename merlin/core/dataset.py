@@ -32,7 +32,7 @@ class DataFormatException(Exception):
 class DataSet:
     def __init__(
         self, dataDirectoryName: str, dataHome: str = None, analysisHome: str = None
-    ):
+    ) -> None:
         """Create a dataset for the specified raw data.
 
         Args:
@@ -1040,7 +1040,7 @@ class ImageDataSet(DataSet):
         dataHome: str = None,
         analysisHome: str = None,
         microscopeParametersName: str = None,
-    ):
+    ) -> None:
         """Create a dataset for the specified raw data.
 
         Args:
@@ -1158,7 +1158,7 @@ class MERFISHDataSet(ImageDataSet):
         dataHome: str = None,
         analysisHome: str = None,
         microscopeParametersName: str = None,
-    ):
+    ) -> None:
         """Create a MERFISH dataset for the specified raw data.
 
         Args:

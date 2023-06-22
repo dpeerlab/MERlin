@@ -11,7 +11,7 @@ class Warp(analysistask.ParallelAnalysisTask):
     pixels align between images taken in different imaging rounds.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "write_fiducial_images" not in self.parameters:
@@ -188,7 +188,7 @@ class FiducialCorrelationWarp(Warp):
     rounds based on the crosscorrelation between fiducial images.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "highpass_sigma" not in self.parameters:

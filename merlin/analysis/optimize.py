@@ -14,7 +14,7 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
     optimization.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "fov_per_iteration" not in self.parameters:

@@ -16,7 +16,7 @@ class PlotPerformance(analysistask.AnalysisTask):
     decoding.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "exclude_plots" in self.parameters:

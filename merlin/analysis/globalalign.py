@@ -12,7 +12,7 @@ class GlobalAlignment(analysistask.AnalysisTask):
     a global alignment.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     @abstractmethod
@@ -117,7 +117,7 @@ class SimpleGlobalAlignment(GlobalAlignment):
     order to determine the relative positions of each field of view.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_estimated_memory(self):
@@ -226,7 +226,7 @@ class CorrelationGlobalAlignment(GlobalAlignment):
     # if the x-y orientation of the camera is not perfectly oriented with
     # the microscope stage
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_estimated_memory(self):

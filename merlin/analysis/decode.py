@@ -12,7 +12,9 @@ from merlin.util import barcodedb, barcodefilters, decoding
 class BarcodeSavingParallelAnalysisTask(analysistask.ParallelAnalysisTask):
     """An abstract analysis class that saves barcodes into a barcode database."""
 
-    def __init__(self, dataSet: dataset.DataSet, parameters=None, analysisName=None):
+    def __init__(
+        self, dataSet: dataset.DataSet, parameters=None, analysisName=None
+    ) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def _reset_analysis(self, fragmentIndex: int = None) -> None:
@@ -32,7 +34,7 @@ class Decode(BarcodeSavingParallelAnalysisTask):
 
     def __init__(
         self, dataSet: dataset.MERFISHDataSet, parameters=None, analysisName=None
-    ):
+    ) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "crop_width" not in self.parameters:

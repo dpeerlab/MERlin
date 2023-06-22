@@ -33,7 +33,7 @@ class BarcodeDB:
             bit i where i is an integer from 0 to the number of bits-1.
     """
 
-    def __init__(self, dataSet, analysisTask):
+    def __init__(self, dataSet, analysisTask) -> None:
         self._dataSet = dataSet
         self._analysisTask = analysisTask
         try:
@@ -194,7 +194,7 @@ class BarcodeDB:
 
 
 class PyTablesBarcodeDB(BarcodeDB):
-    def __init__(self, dataSet: dataset.DataSet, analysisTask):
+    def __init__(self, dataSet: dataset.DataSet, analysisTask) -> None:
         super().__init__(dataSet, analysisTask)
 
     def empty_database(self, fov: int = None) -> None:

@@ -19,7 +19,7 @@ class SlurmReport(analysistask.AnalysisTask):
     with every analysis task fragment run as a separate job.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "codebook_index" not in self.parameters:

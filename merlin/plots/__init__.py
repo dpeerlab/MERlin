@@ -25,7 +25,7 @@ def get_available_plots() -> set:
 
 
 class PlotEngine:
-    def __init__(self, plotTask, taskDict):
+    def __init__(self, plotTask, taskDict) -> None:
         """Create a new plot engine.
 
         Args:

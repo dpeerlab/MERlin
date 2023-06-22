@@ -9,7 +9,7 @@ from merlin.core import analysistask
 class AbstractFilterBarcodes(decode.BarcodeSavingParallelAnalysisTask):
     """An abstract class for filtering barcodes identified by pixel-based decoding."""
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_codebook(self):
@@ -22,7 +22,7 @@ class FilterBarcodes(AbstractFilterBarcodes):
     intensity.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "area_threshold" not in self.parameters:
@@ -66,7 +66,7 @@ class GenerateAdaptiveThreshold(analysistask.AnalysisTask):
     area, minimum distance histogram for barcodes as they are decoded.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "tolerance" not in self.parameters:
@@ -373,7 +373,7 @@ class AdaptiveFilterBarcodes(AbstractFilterBarcodes):
     is selected to achieve a specified misidentification rate.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "misidentification_rate" not in self.parameters:

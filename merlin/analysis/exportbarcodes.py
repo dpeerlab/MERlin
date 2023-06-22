@@ -6,7 +6,7 @@ class ExportBarcodes(analysistask.AnalysisTask):
     intensity.
     """
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
         if "columns" not in self.parameters:

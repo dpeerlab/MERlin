@@ -63,7 +63,7 @@ class Reader:
         Load the requested frame and return it as np array.
     """
 
-    def __init__(self, filename, verbose=False):
+    def __init__(self, filename, verbose=False) -> None:
         super().__init__()
         self.image_height = 0
         self.image_width = 0
@@ -74,7 +74,7 @@ class Reader:
         self.fileptr = None
         self.verbose = verbose
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.close()
 
     def __enter__(self):
@@ -160,7 +160,9 @@ class Reader:
 class DaxReader(Reader):
     """Dax reader class. This is a Zhuang lab custom format."""
 
-    def __init__(self, filePortal: dataportal.FilePortal, verbose: bool = False):
+    def __init__(
+        self, filePortal: dataportal.FilePortal, verbose: bool = False
+    ) -> None:
         super().__init__(filePortal.get_file_name(), verbose=verbose)
 
         self._filePortal = filePortal
@@ -248,7 +250,7 @@ class TifReader(Reader):
     3. Tiff files with multiple frames on multiple pages.
     """
 
-    def __init__(self, filename, verbose=False):
+    def __init__(self, filename, verbose=False) -> None:
         super().__init__(filename, verbose)
 
         self.page_data = None

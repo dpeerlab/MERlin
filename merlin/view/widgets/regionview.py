@@ -17,7 +17,7 @@ from merlin.util import binary
 
 
 class RegionViewWidget(QWidget):
-    def __init__(self, warpTask, barcodeDB, dataSet):
+    def __init__(self, warpTask, barcodeDB, dataSet) -> None:
         super().__init__()
 
         self.fov = 0
@@ -111,7 +111,9 @@ class RegionViewWidget(QWidget):
 
 
 class RegionImageViewWidget(QWidget):
-    def __init__(self, imageData, vSynchronize, bitIndex=None, barcodes=None, title=""):
+    def __init__(
+        self, imageData, vSynchronize, bitIndex=None, barcodes=None, title=""
+    ) -> None:
         super().__init__()
         self._synchronizer = vSynchronize
         self._synchronizer.updateViewSignal.connect(self.update)
@@ -282,7 +284,7 @@ class RegionImageViewWidget(QWidget):
 class ImageViewSynchronizer(QObject):
     updateViewSignal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.transform = QTransform()

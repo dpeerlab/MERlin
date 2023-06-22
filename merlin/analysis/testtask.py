@@ -6,7 +6,7 @@ from merlin.core import analysistask
 
 
 class SimpleAnalysisTask(analysistask.AnalysisTask):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def _run_analysis(self):
@@ -26,7 +26,7 @@ class SimpleAnalysisTask(analysistask.AnalysisTask):
 
 
 class SimpleParallelAnalysisTask(analysistask.ParallelAnalysisTask):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def _run_analysis(self, fragmentIndex):
@@ -51,7 +51,7 @@ class SimpleParallelAnalysisTask(analysistask.ParallelAnalysisTask):
 class RandomNumberParallelAnalysisTask(analysistask.ParallelAnalysisTask):
     """A test analysis task that generates random numbers."""
 
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def get_random_result(self, fragmentIndex):
@@ -81,7 +81,7 @@ class RandomNumberParallelAnalysisTask(analysistask.ParallelAnalysisTask):
 
 
 class SimpleInternallyParallelAnalysisTask(analysistask.InternallyParallelAnalysisTask):
-    def __init__(self, dataSet, parameters=None, analysisName=None):
+    def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
     def _run_analysis(self):

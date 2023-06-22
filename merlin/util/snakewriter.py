@@ -6,7 +6,9 @@ from merlin.core import analysistask, dataset
 
 
 class SnakemakeRule:
-    def __init__(self, analysisTask: analysistask.AnalysisTask, pythonPath=None):
+    def __init__(
+        self, analysisTask: analysistask.AnalysisTask, pythonPath=None
+    ) -> None:
         self._analysisTask = analysisTask
         self._pythonPath = pythonPath
 
@@ -158,7 +160,7 @@ class SnakemakeRule:
 class SnakefileGenerator:
     def __init__(
         self, analysisParameters, dataSet: dataset.DataSet, pythonPath: str = None
-    ):
+    ) -> None:
         self._analysisParameters = analysisParameters
         self._dataSet = dataSet
         self._pythonPath = pythonPath

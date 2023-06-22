@@ -31,7 +31,7 @@ class ChromaticCorrector(ABC):
 class IdentityChromaticCorrector(ChromaticCorrector):
     """A class for correcting chromatic aberration that performs no transformation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def transform_image(self, inputImage: np.ndarray, imageColor: str) -> np.ndarray:
@@ -47,7 +47,7 @@ class RigidChromaticCorrector(ChromaticCorrector):
         self,
         transformations: dict[str, dict[str, transform.EuclideanTransform]],
         referenceColor: str = None,
-    ):
+    ) -> None:
         """Creates a new RigidChromaticCorrector that transforms images
         using the specified transformations.
 

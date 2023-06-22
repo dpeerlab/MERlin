@@ -5,7 +5,7 @@ from merlin.core import analysistask
 
 
 class Executor:
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     @abstractmethod
@@ -36,7 +36,7 @@ class Executor:
 
 
 class LocalExecutor(Executor):
-    def __init__(self, coreCount=None):
+    def __init__(self, coreCount=None) -> None:
         super().__init__()
 
         if coreCount is None:
