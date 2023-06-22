@@ -7,7 +7,6 @@ import os
 import pickle
 import shutil
 import time
-from typing import TypeAlias
 
 import h5py
 import networkx as nx
@@ -23,7 +22,7 @@ from merlin.core import analysistask
 from merlin.data import codebook, dataorganization
 from merlin.util import dataportal, imagereader
 
-TaskOrName: TypeAlias = analysistask.AnalysisTask | str
+TaskOrName = analysistask.AnalysisTask | str
 
 
 class DataFormatException(Exception):
