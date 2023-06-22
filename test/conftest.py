@@ -103,7 +103,7 @@ def simple_merfish_data(merfish_files):
         positionFileName="test_positions.csv",
         microscopeParametersName="test_microscope_parameters.json",
     )
-    yield testMERFISHData
+    return testMERFISHData
 
 
 @pytest.fixture(scope="session")
@@ -123,7 +123,7 @@ def two_codebook_merfish_data(merfish_files):
     shutil.rmtree("test_analysis_two_codebook")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def single_task(simple_data):
     task = testtask.SimpleAnalysisTask(
         simple_data, parameters={"a": 5, "b": "b_string"}
@@ -133,7 +133,6 @@ def single_task(simple_data):
 
 
 @pytest.fixture(
-    scope="function",
     params=[
         testtask.SimpleAnalysisTask,
         testtask.SimpleParallelAnalysisTask,
@@ -147,7 +146,6 @@ def simple_task(simple_data, request):
 
 
 @pytest.fixture(
-    scope="function",
     params=[
         testtask.SimpleAnalysisTask,
         testtask.SimpleParallelAnalysisTask,

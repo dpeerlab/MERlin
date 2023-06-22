@@ -57,7 +57,7 @@ def test_save_environment(simple_task):
     assert environment == taskEnvironment
 
 
-@pytest.mark.slowtest
+@pytest.mark.slowtest()
 def test_task_run_with_executor(simple_task):
     task1 = simple_task
     assert not task1.is_complete()

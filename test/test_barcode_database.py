@@ -7,12 +7,12 @@ import pytest
 from merlin.util import barcodedb
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def barcode_db(single_task, simple_merfish_data):
-    yield barcodedb.PyTablesBarcodeDB(simple_merfish_data, single_task)
+    return barcodedb.PyTablesBarcodeDB(simple_merfish_data, single_task)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def barcode_db_with_barcodes(barcode_db):
     barcodeSet1 = pd.DataFrame([generate_random_barcode(0) for i in range(20)])
     barcodeSet2 = pd.DataFrame([generate_random_barcode(1) for i in range(20)])
@@ -133,7 +133,7 @@ def test_write_and_read_one_fov(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
 
 
-@pytest.mark.slowtest
+@pytest.mark.slowtest()
 def test_write_and_read_one_fov_many_barcodes(barcode_db):
     assert len(barcode_db.get_barcodes()) == 0
     barcodesToWrite = pd.DataFrame([generate_random_barcode(0) for i in range(200000)])
@@ -232,7 +232,7 @@ def test_get_barcode_intensities_with_area(barcode_db_with_barcodes):
 
 
 @pytest.mark.parametrize(
-    "test_function, column_name",
+    ("test_function", "column_name"),
     [
         ("get_barcode_intensities", "mean_intensity"),
         ("get_barcode_areas", "area"),

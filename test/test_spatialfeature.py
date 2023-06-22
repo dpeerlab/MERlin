@@ -83,7 +83,7 @@ def test_feature_from_label_matrix_transform():
 
 
 @pytest.mark.parametrize(
-    "feature, volume", [(feature1, 1), (feature2, 4), (feature3, 0.5)]
+    ("feature", "volume"), [(feature1, 1), (feature2, 4), (feature3, 0.5)]
 )
 def test_feature_get_volume(feature, volume):
     assert feature.get_volume() == volume

@@ -39,11 +39,9 @@ def gcloud_data_portal():
     )
 
 
-@pytest.fixture(
-    scope="function", params=[local_data_portal, s3_data_portal, gcloud_data_portal]
-)
+@pytest.fixture(params=[local_data_portal, s3_data_portal, gcloud_data_portal])
 def data_portal(request):
-    yield next(request.param())
+    return next(request.param())
 
 
 def test_portal_list_files(data_portal):
