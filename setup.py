@@ -1,4 +1,5 @@
 import os
+
 import setuptools
 
 CLASSIFIERS = [
@@ -12,8 +13,10 @@ CLASSIFIERS = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 
-install_requires = [line.rstrip() for line in open(
-    os.path.join(os.path.dirname(__file__), "requirements.txt"))]
+install_requires = [
+    line.rstrip()
+    for line in open(os.path.join(os.path.dirname(__file__), "requirements.txt"))
+]
 
 setuptools.setup(
     name="merlin",
@@ -24,8 +27,6 @@ setuptools.setup(
     license="Restricted use",
     packages=setuptools.find_packages(),
     install_requires=install_requires,
-    entry_points={
-        'console_scripts': ["merlin=merlin.merlin:merlin"]
-    },
-    classifiers=CLASSIFIERS
+    entry_points={"console_scripts": ["merlin=merlin.merlin:merlin"]},
+    classifiers=CLASSIFIERS,
 )

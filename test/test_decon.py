@@ -1,10 +1,9 @@
-import cv2
-import numpy as np
 import random
 
-import merlin.util.deconvolve as deconvolve
-import merlin.util.matlab as matlab
+import cv2
+import numpy as np
 
+import merlin.util.deconvolve as deconvolve
 
 decon_sigma = 2
 decon_filter_size = 9
@@ -14,7 +13,7 @@ def decon_diff(image, gt_image):
     on_gt = np.sum(image[(gt_image > 0)])
     off_gt = np.sum(image[gt_image == 0])
 
-    return (on_gt/(on_gt + off_gt))
+    return on_gt / (on_gt + off_gt)
 
 
 def make_image():
@@ -38,25 +37,23 @@ def test_deconvolve_lucyrichardson():
     [image, gt_image] = make_image()
 
     d1 = decon_diff(image, gt_image)
-    d_image = deconvolve.deconvolve_lucyrichardson(image,
-                                                   decon_filter_size,
-                                                   decon_sigma,
-                                                   20)
+    d_image = deconvolve.deconvolve_lucyrichardson(
+        image, decon_filter_size, decon_sigma, 20
+    )
     d2 = decon_diff(d_image, gt_image)
     print(d1, d2)
 
-    assert (d2 > d1)
+    assert d2 > d1
 
 
 def test_deconvolve_lucyrichardson_guo():
     [image, gt_image] = make_image()
 
     d1 = decon_diff(image, gt_image)
-    d_image = deconvolve.deconvolve_lucyrichardson_guo(image,
-                                                       decon_filter_size,
-                                                       decon_sigma,
-                                                       2)
+    d_image = deconvolve.deconvolve_lucyrichardson_guo(
+        image, decon_filter_size, decon_sigma, 2
+    )
     d2 = decon_diff(d_image, gt_image)
     print(d1, d2)
 
-    assert (d2 > d1)
+    assert d2 > d1

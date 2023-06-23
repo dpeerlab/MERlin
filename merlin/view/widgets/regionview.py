@@ -1,18 +1,23 @@
-import numpy as np
 import time
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+import numpy as np
+from PyQt5.QtCore import QObject, Qt, QTransform, pyqtSignal
+from PyQt5.QtGui import QColor, QImage, QPainter, QPen, QPolygon, QRect
+from PyQt5.QtWidgets import (
+    QFormLayout,
+    QGridLayout,
+    QGroupBox,
+    QLabel,
+    QScrollBar,
+    QVBoxLayout,
+    QWidget,
+)
 
-from merlin.core import dataset
 from merlin.util import binary
-from merlin.view.widgets import regionview
 
 
 class RegionViewWidget(QWidget):
-
-    def __init__(self, warpTask, barcodeDB, dataSet):
+    def __init__(self, warpTask, barcodeDB, dataSet) -> None:
         super().__init__()
 
         self.fov = 0
@@ -22,38 +27,43 @@ class RegionViewWidget(QWidget):
         self.barcodeDB = barcodeDB
 
         vSynchronize = ImageViewSynchronizer()
-        imageData =[self.warpTask.get_aligned_image(
-            self.fov, dc, self.zIndex) \
-                    for dc in self.dataSet.get_data_organization()\
-                        .get_data_channels()]
+        imageData = [
+            self.warpTask.get_aligned_image(self.fov, dc, self.zIndex)
+            for dc in self.dataSet.get_data_organization().get_data_channels()
+        ]
         imageCount = len(imageData)
 
-        zPosition = self.dataSet.get_data_organization().get_z_positions()[
-                self.zIndex]
+        zPosition = self.dataSet.get_data_organization().get_z_positions()[self.zIndex]
         barcodes = self.barcodeDB.get_barcodes(fov=self.fov)
-        selectBarcodes = barcodes[barcodes['z'] == zPosition]
+        selectBarcodes = barcodes[barcodes["z"] == zPosition]
 
-        self.imageViews = [RegionImageViewWidget(imageData[i],
-            vSynchronize, bitIndex=i, barcodes=selectBarcodes,
-            title=self.dataSet.get_data_organization()\
-                    .get_data_channel_name(i)) for i in range(imageCount)]
+        self.imageViews = [
+            RegionImageViewWidget(
+                imageData[i],
+                vSynchronize,
+                bitIndex=i,
+                barcodes=selectBarcodes,
+                title=self.dataSet.get_data_organization().get_data_channel_name(i),
+            )
+            for i in range(imageCount)
+        ]
 
         self._initialize_layout()
 
     def _initialize_layout(self):
-        fovLabel = QLabel('Field of view')
+        QLabel("Field of view")
         self.fovScrollBar = QScrollBar(Qt.Horizontal)
         self.fovScrollBar.setMaximum(np.max(self.dataSet.get_fovs()))
         self.fovScrollBar.sliderReleased.connect(self.fov_scroll_update)
 
         self.zScrollBar = QScrollBar(Qt.Horizontal)
-        self.zScrollBar.setMaximum(len(self.dataSet.get_z_positions())-1)
+        self.zScrollBar.setMaximum(len(self.dataSet.get_z_positions()) - 1)
         self.zScrollBar.sliderReleased.connect(self.z_scroll_update)
 
         self.controlForm = QGroupBox()
         controlFormLayout = QFormLayout()
-        controlFormLayout.addRow(QLabel('Field of view'), self.fovScrollBar)
-        controlFormLayout.addRow(QLabel('Z index'), self.zScrollBar)
+        controlFormLayout.addRow(QLabel("Field of view"), self.fovScrollBar)
+        controlFormLayout.addRow(QLabel("Z index"), self.zScrollBar)
         self.controlForm.setLayout(controlFormLayout)
         self.controlForm.setMaximumHeight(50)
 
@@ -63,11 +73,11 @@ class RegionViewWidget(QWidget):
         mainLayout.addLayout(imageLayout)
         columnCount = 6
         imageCount = len(self.imageViews)
-        rowCount = int(np.ceil(imageCount/columnCount))
+        rowCount = int(np.ceil(imageCount / columnCount))
 
         imageIndex = 0
-        for i in range(1,rowCount+1):
-            for j in range(1,columnCount+1):
+        for i in range(1, rowCount + 1):
+            for j in range(1, columnCount + 1):
                 if imageIndex < imageCount:
                     imageLayout.addWidget(self.imageViews[imageIndex], i, j)
                     imageIndex += 1
@@ -79,14 +89,13 @@ class RegionViewWidget(QWidget):
         self.set_z_index(self.zScrollBar.value())
 
     def _update_fov_data(self):
-        zPosition = self.dataSet.get_data_organization().get_z_positions()[
-                self.zIndex]
-        imageData = [self.warpTask.get_aligned_image(
-            self.fov, dc, self.zIndex) \
-                    for dc in self.dataSet.get_data_organization()\
-                        .get_data_channels()]
+        zPosition = self.dataSet.get_data_organization().get_z_positions()[self.zIndex]
+        imageData = [
+            self.warpTask.get_aligned_image(self.fov, dc, self.zIndex)
+            for dc in self.dataSet.get_data_organization().get_data_channels()
+        ]
         barcodes = self.barcodeDB.get_barcodes(fov=self.fov)
-        selectBarcodes = barcodes[barcodes['z'] == zPosition]
+        selectBarcodes = barcodes[barcodes["z"] == zPosition]
         for i, iView in enumerate(self.imageViews):
             iView.set_data(imageData[i], selectBarcodes)
 
@@ -102,8 +111,9 @@ class RegionViewWidget(QWidget):
 
 
 class RegionImageViewWidget(QWidget):
-    def __init__(self, imageData, vSynchronize, bitIndex=None, barcodes=None,
-            title=''):
+    def __init__(
+        self, imageData, vSynchronize, bitIndex=None, barcodes=None, title=""
+    ) -> None:
         super().__init__()
         self._synchronizer = vSynchronize
         self._synchronizer.updateViewSignal.connect(self.update)
@@ -123,14 +133,21 @@ class RegionImageViewWidget(QWidget):
 
         if barcodes is not None:
             self.barcodePositions = np.array(
-                    [[bc['x'], bc['y'], i, binary.k_bit_set(
-                        int(bc['barcode']), self.bitIndex)] for i,bc in 
-                        self.barcodes.iterrows()])
-            self.barcodePositions = self.barcodePositions[\
-                    self.barcodePositions[:,0].argsort()]
+                [
+                    [
+                        bc["x"],
+                        bc["y"],
+                        i,
+                        binary.k_bit_set(int(bc["barcode"]), self.bitIndex),
+                    ]
+                    for i, bc in self.barcodes.iterrows()
+                ]
+            )
+            self.barcodePositions = self.barcodePositions[
+                self.barcodePositions[:, 0].argsort()
+            ]
         else:
             self.barcodePositions = None
-
 
         self.update()
 
@@ -138,17 +155,20 @@ class RegionImageViewWidget(QWidget):
         imageMax = np.max(inputImage)
         imageMin = np.min(inputImage)
 
-        lookupTable = np.arange(2**16, dtype='uint16')
+        lookupTable = np.arange(2**16, dtype="uint16")
         lookupTable.clip(imageMin, imageMax, out=lookupTable)
         lookupTable -= imageMin
-        np.floor_divide(lookupTable, (imageMax-imageMin+1)/256,
-                out=lookupTable, casting='unsafe')
-        lookupTable = lookupTable.astype('uint8')
+        np.floor_divide(
+            lookupTable,
+            (imageMax - imageMin + 1) / 256,
+            out=lookupTable,
+            casting="unsafe",
+        )
+        lookupTable = lookupTable.astype("uint8")
 
         return np.take(lookupTable, inputImage)
 
     def paintEvent(self, event):
-
         start = time.time()
         painter = QPainter(self)
 
@@ -158,10 +178,10 @@ class RegionImageViewWidget(QWidget):
         painter.setTransform(transform)
         painter.setRenderHint(QPainter.Antialiasing, True)
 
-        windowSize = self.size()
+        self.size()
         clippingBounds = inverseTransform.map(
-                QPolygon(QRect(0, 0, self.width(), self.height())))\
-                        .boundingRect()
+            QPolygon(QRect(0, 0, self.width(), self.height()))
+        ).boundingRect()
 
         self._paint_image(painter)
         self._paint_barcodes(painter, clippingBounds)
@@ -169,48 +189,56 @@ class RegionImageViewWidget(QWidget):
         rawCursorPosition = self._synchronizer.get_cursor_position()
         if rawCursorPosition:
             cursorPosition = inverseTransform.map(
-                    self._synchronizer.get_cursor_position())
+                self._synchronizer.get_cursor_position()
+            )
 
             cursorPen = QPen(QColor(20, 255, 20, 20))
-            cursorPen.setWidthF(0.01*clippingBounds.width())
+            cursorPen.setWidthF(0.01 * clippingBounds.width())
             painter.setPen(cursorPen)
-            painter.drawLine(clippingBounds.left(), cursorPosition.y(),
-                    clippingBounds.right(), cursorPosition.y())
-            painter.drawLine(cursorPosition.x(), clippingBounds.top(),
-                    cursorPosition.x(), clippingBounds.bottom())
+            painter.drawLine(
+                clippingBounds.left(),
+                cursorPosition.y(),
+                clippingBounds.right(),
+                cursorPosition.y(),
+            )
+            painter.drawLine(
+                cursorPosition.x(),
+                clippingBounds.top(),
+                cursorPosition.x(),
+                clippingBounds.bottom(),
+            )
 
         painter.resetTransform()
         painter.setPen(QColor(255, 255, 255))
-        painter.drawText(10, 20, self.title) 
+        painter.drawText(10, 20, self.title)
 
-        print(time.time()-start)
+        print(time.time() - start)
 
     def _paint_image(self, painter):
         height, width = self.imageData.shape
-        qimage = QImage(
-                self.imageData, height, width, QImage.Format_Grayscale8)
+        qimage = QImage(self.imageData, height, width, QImage.Format_Grayscale8)
         painter.drawImage(0, 0, qimage)
 
     def _paint_barcodes(self, painter, clippingBounds):
-        regionTooLarge = clippingBounds.width() > 500 \
-                or clippingBounds.height() > 500 
+        regionTooLarge = clippingBounds.width() > 500 or clippingBounds.height() > 500
 
         if self.barcodePositions is not None and not regionTooLarge:
-            indexBounds = np.searchsorted(self.barcodePositions[:,0],
-                    [clippingBounds.left(), clippingBounds.right()])
-            for currentBarcode in \
-                    self.barcodePositions[indexBounds[0]:indexBounds[1]]:
-                if clippingBounds.contains(
-                        currentBarcode[0], currentBarcode[1]):
-
+            indexBounds = np.searchsorted(
+                self.barcodePositions[:, 0],
+                [clippingBounds.left(), clippingBounds.right()],
+            )
+            for currentBarcode in self.barcodePositions[
+                indexBounds[0] : indexBounds[1]
+            ]:
+                if clippingBounds.contains(currentBarcode[0], currentBarcode[1]):
                     if currentBarcode[3]:
                         painter.setPen(QColor(191, 0, 0, 150))
                     else:
                         painter.setPen(QColor(3, 129, 255, 50))
 
                     painter.drawEllipse(
-                            currentBarcode[0]-2, currentBarcode[1]-2,
-                            4, 4)
+                        currentBarcode[0] - 2, currentBarcode[1] - 2, 4, 4
+                    )
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -225,8 +253,9 @@ class RegionImageViewWidget(QWidget):
             positionDifference = event.globalPos() - self._pressPosition
             transform = self._synchronizer.get_transform()
             transform.translate(
-                    positionDifference.x()/transform.m11(),
-                    positionDifference.y()/transform.m22())
+                positionDifference.x() / transform.m11(),
+                positionDifference.y() / transform.m22(),
+            )
             self._pressPosition = event.globalPos()
 
         self._synchronizer.set_cursor_position(event.localPos())
@@ -238,22 +267,24 @@ class RegionImageViewWidget(QWidget):
         if angleDelta:
             transform = self._synchronizer.get_transform()
 
-            scaleFactor = np.exp(angleDelta.y()/(10*8*15))
+            scaleFactor = np.exp(angleDelta.y() / (10 * 8 * 15))
             oldCenter = transform.inverted()[0].map(
-                    0.5*self.width(), 0.5*self.height())
-            transform.scale(scaleFactor,  scaleFactor)
+                0.5 * self.width(), 0.5 * self.height()
+            )
+            transform.scale(scaleFactor, scaleFactor)
             newCenter = transform.inverted()[0].map(
-                    0.5*self.width(), 0.5*self.height())
-            transform.translate(newCenter[0] - oldCenter[0],
-                    newCenter[1] - oldCenter[1])
+                0.5 * self.width(), 0.5 * self.height()
+            )
+            transform.translate(
+                newCenter[0] - oldCenter[0], newCenter[1] - oldCenter[1]
+            )
             self._synchronizer.updateViewSignal.emit()
 
 
 class ImageViewSynchronizer(QObject):
-
     updateViewSignal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.transform = QTransform()
@@ -274,5 +305,3 @@ class ImageViewSynchronizer(QObject):
 
     def set_selected_barcode(self, newSelection):
         self.selectedBarcode = newSelection
-
-

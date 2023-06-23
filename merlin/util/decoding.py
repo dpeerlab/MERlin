@@ -1,13 +1,13 @@
-import numpy as np
-import pandas
-import cv2
 from typing import Tuple
-from typing import Dict
+
+import cv2
+import numpy as np
+import pandas as pd
 from skimage import measure
 from sklearn.neighbors import NearestNeighbors
 
-from merlin.util import binary
 from merlin.data import codebook as mcodebook
+from merlin.util import binary
 
 """
 Utility functions for pixel based decoding.
@@ -17,15 +17,18 @@ Utility functions for pixel based decoding.
 def normalize(x):
     norm = np.linalg.norm(x)
     if norm > 0:
-        return x/norm
+        return x / norm
     else:
         return x
 
 
-class PixelBasedDecoder(object):
-
-    def __init__(self, codebook: mcodebook.Codebook,
-                 scaleFactors: np.ndarray=None, backgrounds: np.ndarray=None):
+class PixelBasedDecoder:
+    def __init__(
+        self,
+        codebook: mcodebook.Codebook,
+        scaleFactors: np.ndarray = None,
+        backgrounds: np.ndarray = None,
+    ) -> None:
         self._codebook = codebook
         self._decodingMatrix = self._calculate_normalized_barcodes()
         self._barcodeCount = self._decodingMatrix.shape[0]
@@ -43,12 +46,15 @@ class PixelBasedDecoder(object):
 
         self.refactorAreaThreshold = 4
 
-    def decode_pixels(self, imageData: np.ndarray,
-                      scaleFactors: np.ndarray=None,
-                      backgrounds: np.ndarray=None,
-                      distanceThreshold: float=0.5176,
-                      magnitudeThreshold: float=1,
-                      lowPassSigma: float=1):
+    def decode_pixels(
+        self,
+        imageData: np.ndarray,
+        scaleFactors: np.ndarray = None,
+        backgrounds: np.ndarray = None,
+        distanceThreshold: float = 0.5176,
+        magnitudeThreshold: float = 1,
+        lowPassSigma: float = 1,
+    ):
         """Assign barcodes to the pixels in the provided image stock.
 
         Each pixel is assigned to the nearest barcode from the codebook if
@@ -56,6 +62,7 @@ class PixelBasedDecoder(object):
         less than the distance threshold.
 
         Args:
+        ----
             imageData: input image stack. The first dimension indexes the bit
                 number and the second and third dimensions contain the
                 corresponding image.
@@ -73,7 +80,9 @@ class PixelBasedDecoder(object):
                 in the decoded image.
             lowPassSigma: standard deviation for the low pass filter that is
                 applied to the images prior to decoding.
+
         Returns:
+        -------
             Four results are returned as a tuple (decodedImage, pixelMagnitudes,
                 normalizedPixelTraces, distances). decodedImage is an image
                 indicating the barcode index assigned to each pixel. Pixels
@@ -94,36 +103,46 @@ class PixelBasedDecoder(object):
         filterSize = int(2 * np.ceil(2 * lowPassSigma) + 1)
         for i in range(imageData.shape[0]):
             filteredImages[i, :, :] = cv2.GaussianBlur(
-                imageData[i, :, :], (filterSize, filterSize), lowPassSigma)
+                imageData[i, :, :], (filterSize, filterSize), lowPassSigma
+            )
 
         pixelTraces = np.reshape(
-                filteredImages, 
-                (filteredImages.shape[0], np.prod(filteredImages.shape[1:])))
+            filteredImages, (filteredImages.shape[0], np.prod(filteredImages.shape[1:]))
+        )
         scaledPixelTraces = np.transpose(
-                np.array([(p-b)/s for p, s, b in zip(pixelTraces, scaleFactors,
-                                                   backgrounds)]))
+            np.array(
+                [(p - b) / s for p, s, b in zip(pixelTraces, scaleFactors, backgrounds)]
+            )
+        )
 
         pixelMagnitudes = np.array(
-            [np.linalg.norm(x) for x in scaledPixelTraces], dtype=np.float32)
+            [np.linalg.norm(x) for x in scaledPixelTraces], dtype=np.float32
+        )
         pixelMagnitudes[pixelMagnitudes == 0] = 1
 
-        normalizedPixelTraces = scaledPixelTraces/pixelMagnitudes[:, None]
+        normalizedPixelTraces = scaledPixelTraces / pixelMagnitudes[:, None]
 
-        neighbors = NearestNeighbors(n_neighbors=1, algorithm='ball_tree')
+        neighbors = NearestNeighbors(n_neighbors=1, algorithm="ball_tree")
         neighbors.fit(self._decodingMatrix)
 
         distances, indexes = neighbors.kneighbors(
-                normalizedPixelTraces, return_distance=True)
+            normalizedPixelTraces, return_distance=True
+        )
 
         decodedImage = np.reshape(
-            np.array([i[0] if d[0] <= distanceThreshold else -1
-                      for i, d in zip(indexes, distances)], dtype=np.int16),
-            filteredImages.shape[1:])
+            np.array(
+                [
+                    i[0] if d[0] <= distanceThreshold else -1
+                    for i, d in zip(indexes, distances)
+                ],
+                dtype=np.int16,
+            ),
+            filteredImages.shape[1:],
+        )
 
         pixelMagnitudes = np.reshape(pixelMagnitudes, filteredImages.shape[1:])
         normalizedPixelTraces = np.moveaxis(normalizedPixelTraces, 1, 0)
-        normalizedPixelTraces = np.reshape(
-                normalizedPixelTraces, filteredImages.shape)
+        normalizedPixelTraces = np.reshape(normalizedPixelTraces, filteredImages.shape)
         distances = np.reshape(distances, filteredImages.shape[1:])
 
         decodedImage[pixelMagnitudes < magnitudeThreshold] = -1
@@ -131,15 +150,23 @@ class PixelBasedDecoder(object):
         return decodedImage, pixelMagnitudes, normalizedPixelTraces, distances
 
     def extract_barcodes_with_index(
-            self, barcodeIndex: int, decodedImage: np.ndarray,
-            pixelMagnitudes: np.ndarray, pixelTraces: np.ndarray,
-            distances: np.ndarray, fov: int, cropWidth: int, zIndex: int = None,
-            globalAligner=None, minimumArea: int = 0
-    ) -> pandas.DataFrame:
+        self,
+        barcodeIndex: int,
+        decodedImage: np.ndarray,
+        pixelMagnitudes: np.ndarray,
+        pixelTraces: np.ndarray,
+        distances: np.ndarray,
+        fov: int,
+        cropWidth: int,
+        zIndex: int = None,
+        globalAligner=None,
+        minimumArea: int = 0,
+    ) -> pd.DataFrame:
         """Extract the barcode information from the decoded image for barcodes
         that were decoded to the specified barcode index.
 
         Args:
+        ----
             barcodeIndex: the index of the barcode to extract the corresponding
                 barcodes
             decodedImage: the image indicating the barcode index assigned to
@@ -158,138 +185,171 @@ class PixelBasedDecoder(object):
                 coordinates to global x,y coordinates
             minimumArea: the minimum area of barcodes to identify. Barcodes
                 less than the specified minimum area are ignored.
+
         Returns:
+        -------
             a pandas dataframe containing all the barcodes decoded with the
                 specified barcode index
         """
         properties = measure.regionprops(
             measure.label(decodedImage == barcodeIndex),
             intensity_image=pixelMagnitudes,
-            cache=False)
+            cache=False,
+        )
         is3D = len(pixelTraces.shape) == 4
 
-        columnNames = ['barcode_id', 'fov', 'mean_intensity', 'max_intensity',
-                       'area', 'mean_distance', 'min_distance', 'x', 'y', 'z',
-                       'global_x', 'global_y', 'global_z', 'cell_index']
+        columnNames = [
+            "barcode_id",
+            "fov",
+            "mean_intensity",
+            "max_intensity",
+            "area",
+            "mean_distance",
+            "min_distance",
+            "x",
+            "y",
+            "z",
+            "global_x",
+            "global_y",
+            "global_z",
+            "cell_index",
+        ]
         if is3D:
-            intensityColumns = ['intensity_{}'.format(i) for i in
-                                range(pixelTraces.shape[1])]
+            intensityColumns = [f"intensity_{i}" for i in range(pixelTraces.shape[1])]
         else:
-            intensityColumns = ['intensity_{}'.format(i) for i in
-                                range(pixelTraces.shape[0])]
+            intensityColumns = [f"intensity_{i}" for i in range(pixelTraces.shape[0])]
         if len(properties) == 0:
-            return pandas.DataFrame(columns=columnNames + intensityColumns)
+            return pd.DataFrame(columns=columnNames + intensityColumns)
 
         allCoords = [list(p.coords) for p in properties]
 
         if is3D:
-            centroidCoords = np.array(
-                [prop.weighted_centroid for prop in properties])
+            centroidCoords = np.array([prop.weighted_centroid for prop in properties])
             centroids = centroidCoords[:, [0, 2, 1]]
             d = [[distances[y[0], y[1], y[2]] for y in x] for x in allCoords]
-            intensityAndAreas = np.array([[x.mean_intensity,
-                                           x.max_intensity,
-                                           x.area] for x in properties])
+            intensityAndAreas = np.array(
+                [[x.mean_intensity, x.max_intensity, x.area] for x in properties]
+            )
             intensities = [
-                [pixelTraces[y[0], :, y[1], y[2]] for y in x] for x in
-                allCoords]
-            intensities = pandas.DataFrame(
+                [pixelTraces[y[0], :, y[1], y[2]] for y in x] for x in allCoords
+            ]
+            intensities = pd.DataFrame(
                 [np.mean(x, 0) if len(x) > 1 else x[0] for x in intensities],
-                columns=intensityColumns)
+                columns=intensityColumns,
+            )
 
         else:
             intensityAndCoords = [
                 np.array([[y[0], y[1], pixelMagnitudes[y[0], y[1]]] for y in x])
-                for x in allCoords]
+                for x in allCoords
+            ]
             centroidCoords = np.array(
-                [[(r[:, 0] * (r[:, -1] / r[:, -1].sum())).sum(),
-                  (r[:, 1] * (r[:, -1] / r[:, -1].sum())).sum()]
-                 if r.shape[0] > 1 else [r[0][0], r[0][1]]
-                 for r in intensityAndCoords])
+                [
+                    [
+                        (r[:, 0] * (r[:, -1] / r[:, -1].sum())).sum(),
+                        (r[:, 1] * (r[:, -1] / r[:, -1].sum())).sum(),
+                    ]
+                    if r.shape[0] > 1
+                    else [r[0][0], r[0][1]]
+                    for r in intensityAndCoords
+                ]
+            )
             centroids = np.zeros((centroidCoords.shape[0], 3))
             centroids[:, 0] = zIndex
             centroids[:, [1, 2]] = centroidCoords[:, [1, 0]]
             d = [[distances[y[0], y[1]] for y in x] for x in allCoords]
-            intensityAndAreas = np.array([[x[:, 2].mean(),
-                                           x[:, 2].max(),
-                                           x.shape[0]]
-                                          for x in intensityAndCoords])
-            intensities = [[pixelTraces[:, y[0], y[1]] for y in x] for
-                           x in allCoords]
-            intensities = pandas.DataFrame(
+            intensityAndAreas = np.array(
+                [
+                    [x[:, 2].mean(), x[:, 2].max(), x.shape[0]]
+                    for x in intensityAndCoords
+                ]
+            )
+            intensities = [[pixelTraces[:, y[0], y[1]] for y in x] for x in allCoords]
+            intensities = pd.DataFrame(
                 [np.mean(x, 0) if len(x) > 1 else x[0] for x in intensities],
-                columns=intensityColumns)
+                columns=intensityColumns,
+            )
 
         if globalAligner is not None:
             globalCentroids = globalAligner.fov_coordinate_array_to_global(
-                fov, centroids)
+                fov, centroids
+            )
         else:
             globalCentroids = centroids
 
-        df = pandas.DataFrame(np.zeros((len(properties), len(columnNames))),
-                              columns=columnNames)
-        df['barcode_id'] = barcodeIndex
-        df['fov'] = fov
-        df.loc[:, ['mean_intensity', 'max_intensity', 'area']] = \
-            intensityAndAreas
-        df.loc[:, ['mean_distance', 'min_distance']] = np.array(
-            [[np.mean(x), np.min(x)] if len(x) > 1 else [x[0], x[0]] for x in
-             d])
-        df.loc[:, ['x', 'y', 'z']] = centroids[:, [1, 2, 0]]
-        df.loc[:, ['global_x', 'global_y', 'global_z']] = \
-            globalCentroids[:, [1, 2, 0]]
-        df['cell_index'] = -1
+        df = pd.DataFrame(
+            np.zeros((len(properties), len(columnNames))), columns=columnNames
+        )
+        df["barcode_id"] = barcodeIndex
+        df["fov"] = fov
+        df.loc[:, ["mean_intensity", "max_intensity", "area"]] = intensityAndAreas
+        df.loc[:, ["mean_distance", "min_distance"]] = np.array(
+            [[np.mean(x), np.min(x)] if len(x) > 1 else [x[0], x[0]] for x in d]
+        )
+        df.loc[:, ["x", "y", "z"]] = centroids[:, [1, 2, 0]]
+        df.loc[:, ["global_x", "global_y", "global_z"]] = globalCentroids[:, [1, 2, 0]]
+        df["cell_index"] = -1
 
-        fullDF = pandas.concat([df, intensities], 1)
-        fullDF = fullDF[(fullDF['x'].between(cropWidth,
-                                             decodedImage.shape[0] - cropWidth,
-                                             inclusive=False)) &
-                        (fullDF['y'].between(cropWidth,
-                                             decodedImage.shape[1] - cropWidth,
-                                             inclusive=False)) &
-                        (fullDF['area'] >= minimumArea)]
+        fullDF = pd.concat([df, intensities], axis=1)
+        fullDF = fullDF[
+            (
+                fullDF["x"].between(
+                    cropWidth, decodedImage.shape[0] - cropWidth, inclusive="neither"
+                )
+            )
+            & (
+                fullDF["y"].between(
+                    cropWidth, decodedImage.shape[1] - cropWidth, inclusive="neither"
+                )
+            )
+            & (fullDF["area"] >= minimumArea)
+        ]
 
         return fullDF
 
-    def _calculate_normalized_barcodes(
-            self, ignoreBlanks=False, includeErrors=False):
+    def _calculate_normalized_barcodes(self, ignoreBlanks=False, includeErrors=False):
         """Normalize the barcodes present in the provided codebook so that
         their L2 norm is 1.
 
         Args:
+        ----
             ignoreBlanks: Flag to set if the barcodes corresponding to blanks
                 should be ignored. If True, barcodes corresponding to a name
                 that contains 'Blank' are ignored.
-            includeErrors: Flag to set if barcodes corresponding to single bit 
+            includeErrors: Flag to set if barcodes corresponding to single bit
                 errors should be added.
+
         Returns:
+        -------
             A 2d numpy array where each row is a normalized barcode and each
                 column is the corresponding normalized bit value.
         """
-        
         barcodeSet = self._codebook.get_barcodes(ignoreBlanks=ignoreBlanks)
-        magnitudes = np.sqrt(np.sum(barcodeSet*barcodeSet, axis=1))
-       
+        magnitudes = np.sqrt(np.sum(barcodeSet * barcodeSet, axis=1))
+
         if not includeErrors:
             weightedBarcodes = np.array(
-                [normalize(x) for x, m in zip(barcodeSet, magnitudes)])
+                [normalize(x) for x, m in zip(barcodeSet, magnitudes)]
+            )
             return weightedBarcodes
 
         else:
             barcodesWithSingleErrors = []
             for b in barcodeSet:
-                barcodeSet = np.array([b]
-                                      + [binary.flip_bit(b, i)
-                                         for i in range(len(b))])
-                bcMagnitudes = np.sqrt(np.sum(barcodeSet*barcodeSet, axis=1))
-                weightedBC = np.array(
-                    [x/m for x, m in zip(barcodeSet, bcMagnitudes)])
+                barcodeSet = np.array(
+                    [b] + [binary.flip_bit(b, i) for i in range(len(b))]
+                )
+                bcMagnitudes = np.sqrt(np.sum(barcodeSet * barcodeSet, axis=1))
+                weightedBC = np.array([x / m for x, m in zip(barcodeSet, bcMagnitudes)])
                 barcodesWithSingleErrors.append(weightedBC)
             return np.array(barcodesWithSingleErrors)
 
     def extract_refactors(
-            self, decodedImage, pixelMagnitudes, normalizedPixelTraces,
-            extractBackgrounds = False
+        self,
+        decodedImage,
+        pixelMagnitudes,
+        normalizedPixelTraces,
+        extractBackgrounds=False,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Calculate the scale factors that would result in the mean
         on bit intensity for each bit to be equal.
@@ -301,6 +361,7 @@ class PixelBasedDecoder(object):
         used for the decoding.
 
         Args:
+        ----
             imageSet: the image stack to decode in order to determine the
                 scale factors
         Returns:
@@ -311,41 +372,53 @@ class PixelBasedDecoder(object):
                 for bit i. If extractBackgrounds is false, the returned
                 background array is all zeros.
         """
-
         if extractBackgrounds:
             backgroundRefactors = self._extract_backgrounds(
-                decodedImage, pixelMagnitudes, normalizedPixelTraces)
+                decodedImage, pixelMagnitudes, normalizedPixelTraces
+            )
         else:
             backgroundRefactors = np.zeros(self._bitCount)
 
         sumPixelTraces = np.zeros((self._barcodeCount, self._bitCount))
         barcodesSeen = np.zeros(self._barcodeCount)
         for b in range(self._barcodeCount):
-            barcodeRegions = [x for x in measure.regionprops(
-                        measure.label((decodedImage == b).astype(np.int)))
-                              if x.area >= self.refactorAreaThreshold]
+            barcodeRegions = [
+                x
+                for x in measure.regionprops(
+                    measure.label((decodedImage == b).astype(int))
+                )
+                if x.area >= self.refactorAreaThreshold
+            ]
             barcodesSeen[b] = len(barcodeRegions)
             for br in barcodeRegions:
-                meanPixelTrace = \
-                    np.mean([normalizedPixelTraces[:, y[0],
-                             y[1]]*pixelMagnitudes[y[0], y[1]]
-                             for y in br.coords], axis=0) - backgroundRefactors
-                normPixelTrace = meanPixelTrace/np.linalg.norm(meanPixelTrace)
-                sumPixelTraces[b, :] += normPixelTrace/barcodesSeen[b]
+                meanPixelTrace = (
+                    np.mean(
+                        [
+                            normalizedPixelTraces[:, y[0], y[1]]
+                            * pixelMagnitudes[y[0], y[1]]
+                            for y in br.coords
+                        ],
+                        axis=0,
+                    )
+                    - backgroundRefactors
+                )
+                normPixelTrace = meanPixelTrace / np.linalg.norm(meanPixelTrace)
+                sumPixelTraces[b, :] += normPixelTrace / barcodesSeen[b]
 
         sumPixelTraces[self._decodingMatrix == 0] = np.nan
         onBitIntensity = np.nanmean(sumPixelTraces, axis=0)
-        refactors = onBitIntensity/np.mean(onBitIntensity)
+        refactors = onBitIntensity / np.mean(onBitIntensity)
 
         return refactors, backgroundRefactors, barcodesSeen
 
     def _extract_backgrounds(
-            self, decodedImage, pixelMagnitudes, normalizedPixelTraces
+        self, decodedImage, pixelMagnitudes, normalizedPixelTraces
     ) -> np.ndarray:
         """Calculate the backgrounds to be subtracted for the the mean off
         bit intensity for each bit to be equal to zero.
 
         Args:
+        ----
             imageSet: the image stack to decode in order to determine the
                 scale factors
         Returns:
@@ -357,21 +430,30 @@ class PixelBasedDecoder(object):
         # TODO this core functionality is very similar to that above. They
         # can be abstracted
         for b in range(self._barcodeCount):
-            barcodeRegions = [x for x in measure.regionprops(
-                measure.label((decodedImage == b).astype(np.int)))
-                              if x.area >= 5]
+            barcodeRegions = [
+                x
+                for x in measure.regionprops(
+                    measure.label((decodedImage == b).astype(int))
+                )
+                if x.area >= 5
+            ]
             barcodesSeen[b] = len(barcodeRegions)
             for br in barcodeRegions:
-                minPixelTrace = \
-                    np.min([normalizedPixelTraces[:, y[0],
-                            y[1]] * pixelMagnitudes[y[0], y[1]]
-                            for y in br.coords], axis=0)
+                minPixelTrace = np.min(
+                    [
+                        normalizedPixelTraces[:, y[0], y[1]]
+                        * pixelMagnitudes[y[0], y[1]]
+                        for y in br.coords
+                    ],
+                    axis=0,
+                )
                 sumMinPixelTraces[b, :] += minPixelTrace
 
         offPixelTraces = sumMinPixelTraces.copy()
         offPixelTraces[self._decodingMatrix > 0] = np.nan
         offBitIntensity = np.nansum(offPixelTraces, axis=0) / np.sum(
-            (self._decodingMatrix == 0) * barcodesSeen[:, np.newaxis], axis=0)
+            (self._decodingMatrix == 0) * barcodesSeen[:, np.newaxis], axis=0
+        )
         backgroundRefactors = offBitIntensity
 
         return backgroundRefactors
