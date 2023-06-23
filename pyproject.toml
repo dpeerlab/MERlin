@@ -2,6 +2,7 @@
 
 [tool.ruff]
 select = ["E", "F", "I", "UP"]
+target-version = "py38"
 
 [tool.pytest.ini_options]
 markers = [
