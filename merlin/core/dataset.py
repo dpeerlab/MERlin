@@ -227,7 +227,7 @@ class DataSet:
         analysisTask: TaskOrName,
         imageBaseName: str,
         imageIndex: int = None,
-        imagej: bool = True,
+        imagej: bool = False,
     ) -> tifffile.TiffWriter:
         """Get a writer for writing tiff files from an analysis task.
 
@@ -331,7 +331,8 @@ class DataSet:
         savePath = self._analysis_result_save_path(
             resultName, analysisTask, resultIndex, subdirectory, ".gpickle"
         )
-        nx.readwrite.gpickle.write_gpickle(graph, savePath)
+        with open(savePath, "wb") as f:
+            pickle.dump(graph, f, pickle.HIGHEST_PROTOCOL)
 
     def load_graph_from_gpickle(
         self,
@@ -358,7 +359,9 @@ class DataSet:
         savePath = self._analysis_result_save_path(
             resultName, analysisTask, resultIndex, subdirectory, ".gpickle"
         )
-        return nx.readwrite.gpickle.read_gpickle(savePath)
+        with open(savePath, "rb") as f:
+            G = pickle.load(f)
+        return G
 
     def save_dataframe_to_csv(
         self,

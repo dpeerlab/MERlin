@@ -39,7 +39,7 @@ class PlotPerformance(analysistask.AnalysisTask):
         return 180
 
     def get_dependencies(self):
-        return []
+        return [v for k, v in self.parameters.items() if k in self.taskTypes]
 
     def _run_analysis(self):
         taskDict = {

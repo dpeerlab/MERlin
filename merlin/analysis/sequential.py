@@ -111,7 +111,7 @@ class SumSignal(analysistask.ParallelAnalysisTask):
         # adding num of pixels
         signals.append(self._extract_signal(cells, img, zIndex).iloc[:, [1]])
 
-        compiledSignal = pd.concat(signals, 1)
+        compiledSignal = pd.concat(signals, axis=1)
         compiledSignal.columns = channels + ["Pixels"]
 
         return compiledSignal
