@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import cv2
 import numpy as np
 from pyclustering.cluster import kmedoids
@@ -129,7 +131,7 @@ def separate_merged_seeds(seedsIn: np.ndarray) -> np.ndarray:
 
 def prepare_watershed_images(
     watershedImageStack: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray]:
     """Prepare the given images as the input image for watershedding.
 
     A watershed mask is determined using an adaptive threshold and the watershed

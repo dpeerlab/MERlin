@@ -1,8 +1,10 @@
+from typing import List
+
 import numpy as np
 
 
-def bit_list_to_int(bitList: list[bool]) -> int:
-    """Converts a binary list to an integer.
+def bit_list_to_int(bitList: List[bool]) -> int:
+    """Converts a binary list to an integer
 
     Args:
     ----
@@ -16,7 +18,7 @@ def bit_list_to_int(bitList: list[bool]) -> int:
     return out
 
 
-def int_to_bit_list(intIn: int, bitCount: int) -> list[bool]:
+def int_to_bit_list(intIn: int, bitCount: int) -> List[bool]:
     """Converts an integer to a binary list with the specified number of bits.
 
     Args:
@@ -48,7 +50,7 @@ def k_bit_set(n: int, k: int) -> bool:
     return bool(n & 1 << k)
 
 
-def flip_bit(barcode: list[bool], bitIndex: int) -> list[bool]:
+def flip_bit(barcode: List[bool], bitIndex: int) -> List[bool]:
     """Generates a version of the provided barcode where the bit at the
     specified index is inverted.
 

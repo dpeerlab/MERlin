@@ -1,4 +1,5 @@
 import itertools
+from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -155,7 +156,7 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
             barcodesSeen, "barcode_counts", self.analysisName, resultIndex=fragmentIndex
         )
 
-    def _get_used_colors(self) -> list[str]:
+    def _get_used_colors(self) -> List[str]:
         dataOrganization = self.dataSet.get_data_organization()
         codebook = self.get_codebook()
         return sorted(
@@ -208,7 +209,7 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
 
     def _get_previous_chromatic_transformations(
         self,
-    ) -> dict[str, dict[str, transform.SimilarityTransform]]:
+    ) -> Dict[str, Dict[str, transform.SimilarityTransform]]:
         if "previous_iteration" not in self.parameters:
             usedColors = self._get_used_colors()
             return {
@@ -241,7 +242,7 @@ class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
 
     def _get_chromatic_transformations(
         self,
-    ) -> dict[str, dict[str, transform.SimilarityTransform]]:
+    ) -> Dict[str, Dict[str, transform.SimilarityTransform]]:
         """Get the estimated chromatic corrections from this optimization
         iteration.
 

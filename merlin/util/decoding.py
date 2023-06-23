@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import cv2
 import numpy as np
 import pandas as pd
@@ -348,7 +350,7 @@ class PixelBasedDecoder:
         pixelMagnitudes,
         normalizedPixelTraces,
         extractBackgrounds=False,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Calculate the scale factors that would result in the mean
         on bit intensity for each bit to be equal.
 

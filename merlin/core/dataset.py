@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import contextlib
 import datetime
 import importlib
@@ -9,6 +7,7 @@ import os
 import pickle
 import shutil
 import time
+from typing import Dict, List, Optional, Tuple, Union
 
 import h5py
 import networkx as nx
@@ -24,7 +23,7 @@ from merlin.core import analysistask
 from merlin.data import codebook, dataorganization
 from merlin.util import dataportal, imagereader
 
-TaskOrName = analysistask.AnalysisTask | str
+TaskOrName = Union[analysistask.AnalysisTask, str]
 
 
 class DataFormatException(Exception):
@@ -247,7 +246,7 @@ class DataSet:
         )
 
     @staticmethod
-    def analysis_tiff_description(sliceCount: int, frameCount: int) -> dict:
+    def analysis_tiff_description(sliceCount: int, frameCount: int) -> Dict:
         imageDescription = {
             "ImageJ": "1.47a\n",
             "images": sliceCount * frameCount,
@@ -295,7 +294,7 @@ class DataSet:
         subdirectory: str = None,
         extension: str = None,
         fullPath: bool = True,
-    ) -> list[str]:
+    ) -> List[str]:
         basePath = self._analysis_result_save_path(
             "", analysisTask, subdirectory=subdirectory
         )
@@ -370,9 +369,9 @@ class DataSet:
         subdirectory: str = None,
         **kwargs,
     ) -> None:
-        """Save a pandas data frame to a csv file stored in this dataset.
+        """Save a DataFrame to a csv file stored in this dataset.
 
-        If a previous pandas data frame has been save with the same resultName,
+        If a previous DataFrame has been save with the same resultName,
         it will be overwritten
 
         Args:
@@ -403,8 +402,8 @@ class DataSet:
         resultIndex: int = None,
         subdirectory: str = None,
         **kwargs,
-    ) -> pd.DataFrame | None:
-        """Load a pandas data frame from a csv file stored in this data set.
+    ) -> Union[pd.DataFrame, None]:
+        """Load a DataFrame from a csv file stored in this data set.
 
         Args:
         ----
@@ -414,7 +413,7 @@ class DataSet:
             subdirectory:
             **kwargs:
         Returns:
-            the pandas data frame
+            DataFrame
         Raises:
               FileNotFoundError: if the file does not exist
         """
@@ -561,7 +560,7 @@ class DataSet:
 
     def save_json_analysis_result(
         self,
-        analysisResult: dict,
+        analysisResult: Dict,
         resultName: str,
         analysisName: str,
         resultIndex: int = None,
@@ -579,7 +578,7 @@ class DataSet:
         analysisName: str,
         resultIndex: int = None,
         subdirectory: str = None,
-    ) -> dict:
+    ) -> Dict:
         savePath = self._analysis_result_save_path(
             resultName, analysisName, resultIndex, subdirectory, ".json"
         )
@@ -592,7 +591,7 @@ class DataSet:
         analysisName: str,
         resultIndex: int = None,
         subdirectory: str = None,
-    ) -> dict:
+    ) -> Dict:
         savePath = self._analysis_result_save_path(
             resultName, analysisName, resultIndex, subdirectory, ".pkl"
         )
@@ -776,8 +775,9 @@ class DataSet:
         analysisDirectory = self.get_analysis_subdirectory(analysisTask)
         shutil.rmtree(analysisDirectory)
 
-    def get_analysis_tasks(self) -> list[str]:
-        """Get a list of the analysis tasks within this dataset.
+    def get_analysis_tasks(self) -> List[str]:
+        """
+        Get a list of the analysis tasks within this dataset.
 
         Returns: A list of the analysis task names.
         """
@@ -1134,7 +1134,7 @@ class ImageDataSet(DataSet):
         """
         return self.imageDimensions
 
-    def get_image_xml_metadata(self, imagePath: str) -> dict:
+    def get_image_xml_metadata(self, imagePath: str) -> Dict:
         """Get the xml metadata stored for the specified image.
 
         Args:
@@ -1152,7 +1152,7 @@ class MERFISHDataSet(ImageDataSet):
     def __init__(
         self,
         dataDirectoryName: str,
-        codebookNames: list[str] = None,
+        codebookNames: List[str] = None,
         dataOrganizationName: str = None,
         positionFileName: str = None,
         dataHome: str = None,
@@ -1253,7 +1253,7 @@ class MERFISHDataSet(ImageDataSet):
                 index=False,
             )
 
-    def load_codebooks(self) -> list[codebook.Codebook]:
+    def load_codebooks(self) -> List[codebook.Codebook]:
         """Get all the codebooks stored within this dataset.
 
         Returns
@@ -1271,7 +1271,7 @@ class MERFISHDataSet(ImageDataSet):
 
         return codebookList
 
-    def load_codebook(self, codebookIndex: int = 0) -> codebook.Codebook | None:
+    def load_codebook(self, codebookIndex: int = 0) -> Optional[codebook.Codebook]:
         """Load the codebook stored within this dataset with the specified
         index.
 
@@ -1296,7 +1296,7 @@ class MERFISHDataSet(ImageDataSet):
         )
         return codebook.Codebook(self, codebookFile[0], codebookIndex, codebookName)
 
-    def get_stored_codebook_name(self, codebookIndex: int = 0) -> str | None:
+    def get_stored_codebook_name(self, codebookIndex: int = 0) -> Optional[str]:
         """Get the name of the codebook stored within this dataset with the
         specified index.
 
@@ -1322,7 +1322,7 @@ class MERFISHDataSet(ImageDataSet):
             os.path.splitext(os.path.basename(codebookFile[0]))[0].split("_")[2:]
         )
 
-    def get_codebooks(self) -> list[codebook.Codebook]:
+    def get_codebooks(self) -> List[codebook.Codebook]:
         """Get the codebooks associated with this dataset.
 
         Returns
@@ -1337,10 +1337,10 @@ class MERFISHDataSet(ImageDataSet):
     def get_data_organization(self) -> dataorganization.DataOrganization:
         return self.dataOrganization
 
-    def get_stage_positions(self) -> list[list[float]]:
+    def get_stage_positions(self) -> List[List[float]]:
         return self.positions
 
-    def get_fov_offset(self, fov: int) -> tuple[float, float]:
+    def get_fov_offset(self, fov: int) -> Tuple[float, float]:
         """Get the offset of the specified fov in the global coordinate system.
         This offset is based on the anticipated stage position.
 
@@ -1372,7 +1372,7 @@ class MERFISHDataSet(ImageDataSet):
 
         return zIndex[0]
 
-    def get_z_positions(self) -> list[float]:
+    def get_z_positions(self) -> List[float]:
         """Get the z positions present in this dataset.
 
         Returns
@@ -1381,10 +1381,10 @@ class MERFISHDataSet(ImageDataSet):
         """
         return self.dataOrganization.get_z_positions()
 
-    def get_fovs(self) -> list[int]:
+    def get_fovs(self) -> List[int]:
         return self.dataOrganization.get_fovs()
 
-    def get_imaging_rounds(self) -> list[int]:
+    def get_imaging_rounds(self) -> List[int]:
         # TODO - check this function
         return np.unique(self.dataOrganization.fileMap["imagingRound"])
 

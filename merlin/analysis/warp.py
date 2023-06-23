@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import List, Union
 
 import cv2
 import numpy as np
@@ -149,7 +149,7 @@ class Warp(analysistask.ParallelAnalysisTask):
 
         self._save_transformations(transformationList, fov)
 
-    def _save_transformations(self, transformationList: list, fov: int) -> None:
+    def _save_transformations(self, transformationList: List, fov: int) -> None:
         self.dataSet.save_numpy_analysis_result(
             np.array(transformationList),
             "offsets",
@@ -160,7 +160,7 @@ class Warp(analysistask.ParallelAnalysisTask):
 
     def get_transformation(
         self, fov: int, dataChannel: int = None
-    ) -> transform.EuclideanTransform | list[transform.EuclideanTransform]:
+    ) -> Union[transform.EuclideanTransform, List[transform.EuclideanTransform]]:
         """Get the transformations for aligning images for the specified field
         of view.
 

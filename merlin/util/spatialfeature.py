@@ -1,5 +1,6 @@
 import uuid
 from abc import abstractmethod
+from typing import Dict, List, Tuple
 
 import cv2
 import h5py
@@ -20,7 +21,7 @@ class SpatialFeature:
 
     def __init__(
         self,
-        boundaryList: list[list[geometry.Polygon]],
+        boundaryList: List[List[geometry.Polygon]],
         fov: int,
         zCoordinates: np.array = None,
         uniqueID: int = None,
@@ -103,7 +104,7 @@ class SpatialFeature:
         )
 
     @staticmethod
-    def _extract_boundaries(labelMatrix: np.ndarray) -> list[np.ndarray]:
+    def _extract_boundaries(labelMatrix: np.ndarray) -> List[np.ndarray]:
         """Determine the boundaries of the feature indicated in the
         label matrix.
 
@@ -121,8 +122,8 @@ class SpatialFeature:
 
     @staticmethod
     def _transform_boundaries(
-        boundaries: list[np.ndarray], transformationMatrix: np.ndarray
-    ) -> list[np.ndarray]:
+        boundaries: List[np.ndarray], transformationMatrix: np.ndarray
+    ) -> List[np.ndarray]:
         transformedList = []
         for b in boundaries:
             reshapedBoundaries = np.reshape(b, (1, b.shape[0], 2)).astype(float)
@@ -135,8 +136,8 @@ class SpatialFeature:
 
     @staticmethod
     def _remove_interior_boundaries(
-        inPolygons: list[geometry.Polygon],
-    ) -> list[geometry.Polygon]:
+        inPolygons: List[geometry.Polygon],
+    ) -> List[geometry.Polygon]:
         goodPolygons = []
 
         for p in inPolygons:
@@ -147,8 +148,8 @@ class SpatialFeature:
 
     @staticmethod
     def _remove_invalid_boundaries(
-        inPolygons: list[geometry.Polygon],
-    ) -> list[geometry.Polygon]:
+        inPolygons: List[geometry.Polygon],
+    ) -> List[geometry.Polygon]:
         return [p for p in inPolygons if p.is_valid]
 
     def set_fov(self, newFOV: int) -> None:
@@ -163,7 +164,7 @@ class SpatialFeature:
     def get_fov(self) -> int:
         return self._fov
 
-    def get_boundaries(self) -> list[list[geometry.Polygon]]:
+    def get_boundaries(self) -> List[List[geometry.Polygon]]:
         return self._boundaryList
 
     def get_feature_id(self) -> int:
@@ -172,7 +173,7 @@ class SpatialFeature:
     def get_z_coordinates(self) -> np.ndarray:
         return self._zCoordinates
 
-    def get_bounding_box(self) -> tuple[float, float, float, float]:
+    def get_bounding_box(self) -> Tuple[float, float, float, float]:
         """Get the 2d box that contains all boundaries in all z plans of this
         feature.
 
@@ -333,8 +334,8 @@ class SpatialFeature:
         return containmentList
 
     def get_overlapping_features(
-        self, featuresToCheck: list["SpatialFeature"]
-    ) -> list["SpatialFeature"]:
+        self, featuresToCheck: List["SpatialFeature"]
+    ) -> List["SpatialFeature"]:
         """Determine which features within the provided list overlap with this
         feature.
 
@@ -362,7 +363,7 @@ class SpatialFeature:
 
         return overlapping
 
-    def to_json_dict(self) -> dict:
+    def to_json_dict(self) -> Dict:
         return {
             "fov": self._fov,
             "id": self._uniqueID,
@@ -373,7 +374,7 @@ class SpatialFeature:
         }
 
     @staticmethod
-    def from_json_dict(jsonIn: dict):
+    def from_json_dict(jsonIn: Dict):
         boundaries = [[geometry.shape(y) for y in x] for x in jsonIn["boundaries"]]
 
         return SpatialFeature(
@@ -389,7 +390,7 @@ class SpatialFeatureDB:
         self._analysisTask = analysisTask
 
     @abstractmethod
-    def write_features(self, features: list[SpatialFeature], fov=None) -> None:
+    def write_features(self, features: List[SpatialFeature], fov=None) -> None:
         """Write the features into this database.
 
         If features already exist in the database with feature IDs equal to
@@ -404,8 +405,8 @@ class SpatialFeatureDB:
         """
 
     @abstractmethod
-    def read_features(self, fov: int = None) -> list[SpatialFeature]:
-        """Read the features in this database.
+    def read_features(self, fov: int = None) -> List[SpatialFeature]:
+        """Read the features in this database
 
         Args:
         ----
@@ -493,7 +494,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
 
         return loadedFeature
 
-    def write_features(self, features: list[SpatialFeature], fov=None) -> None:
+    def write_features(self, features: List[SpatialFeature], fov=None) -> None:
         if fov is None:
             uniqueFOVs = np.unique([f.get_fov() for f in features])
             for currentFOV in uniqueFOVs:
@@ -509,7 +510,7 @@ class HDF5SpatialFeatureDB(SpatialFeatureDB):
                 for currentFeature in features:
                     self._save_feature_to_hdf5_group(featureGroup, currentFeature, fov)
 
-    def read_features(self, fov: int = None) -> list[SpatialFeature]:
+    def read_features(self, fov: int = None) -> List[SpatialFeature]:
         if fov is None:
             featureList = [
                 f for x in self._dataSet.get_fovs() for f in self.read_features(x)
@@ -599,7 +600,7 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
     def __init__(self, dataSet: dataset.DataSet, analysisTask) -> None:
         super().__init__(dataSet, analysisTask)
 
-    def write_features(self, features: list[SpatialFeature], fov=None) -> None:
+    def write_features(self, features: List[SpatialFeature], fov=None) -> None:
         if fov is None:
             raise NotImplementedError
 
@@ -626,7 +627,7 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
             featuresAsJSON, "feature_data", self._analysisTask, fov, "features"
         )
 
-    def read_features(self, fov: int = None) -> list[SpatialFeature]:
+    def read_features(self, fov: int = None) -> List[SpatialFeature]:
         if fov is None:
             raise NotImplementedError
 
@@ -643,7 +644,7 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
         pass
 
     @staticmethod
-    def _extract_feature_metadata(feature: SpatialFeature) -> dict:
+    def _extract_feature_metadata(feature: SpatialFeature) -> Dict:
         boundingBox = feature.get_bounding_box()
         return {
             "fov": feature.get_fov(),
@@ -656,8 +657,9 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
         }
 
 
-def simple_clean_cells(cells: list) -> list:
-    """Removes cells that lack a bounding box or have a volume equal to 0.
+def simple_clean_cells(cells: List) -> List:
+    """
+    Removes cells that lack a bounding box or have a volume equal to 0
 
     Args:
     ----
@@ -675,7 +677,7 @@ def simple_clean_cells(cells: list) -> list:
     ]
 
 
-def append_cells_to_spatial_tree(tree: rtree.index.Index, cells: list, idToNum: dict):
+def append_cells_to_spatial_tree(tree: rtree.index.Index, cells: List, idToNum: Dict):
     for element in cells:
         tree.insert(
             idToNum[element.get_feature_id()], element.get_bounding_box(), obj=element
@@ -683,10 +685,10 @@ def append_cells_to_spatial_tree(tree: rtree.index.Index, cells: list, idToNum: 
 
 
 def construct_tree(
-    cells: list,
+    cells: List,
     spatialIndex: rtree.index.Index = rtree.index.Index(),
     count: int = 0,
-    idToNum: dict = {},
+    idToNum: Dict = dict(),
 ):
     """Builds or adds to an rtree with a list of cells.
 
@@ -711,8 +713,9 @@ def construct_tree(
     return spatialIndex, count, idToNum
 
 
-def return_overlapping_cells(currentCell, cells: list):
-    """Determines if there is overlap between a cell of interest and a list of
+def return_overlapping_cells(currentCell, cells: List):
+    """
+    Determines if there is overlap between a cell of interest and a list of
     other cells. In the event that the cell of interest is entirely contained
     within one of the cells in the cells it is being compared to, an empty
     list is returned. Otherwise, the cell of interest and any overlapping

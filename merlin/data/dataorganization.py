@@ -1,5 +1,6 @@
 import os
 import re
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -233,7 +234,7 @@ class DataOrganization:
 
         return frame
 
-    def get_z_positions(self) -> list[float]:
+    def get_z_positions(self) -> List[float]:
         """Get the z positions present in this data organization.
 
         Returns
@@ -245,15 +246,10 @@ class DataOrganization:
     def get_fovs(self) -> np.ndarray:
         return np.unique(self.fileMap["fov"])
 
-    def get_sequential_rounds(self) -> tuple[list[int], list[str]]:
-        """Get the rounds that are not present in your codebook.
-
-        Returns
-        -------
-            A tuple of two lists, the first list contains the channel number
-            for all the rounds not contained in the codebook, the second list
-            contains the name associated with that channel in the data
-            organization file.
+    def get_sequential_rounds(self) -> Tuple[List[int], List[str]]:
+        """Get the rounds that are not present in your codebook
+        for all the rounds not contained in the codebook, the second list
+        contains the name associated with that channel in the data
         """
         multiplexBits = {
             b for x in self._dataSet.get_codebooks() for b in x.get_bit_names()
@@ -326,8 +322,8 @@ class DataOrganization:
                 if not matchingFiles:
                     raise dataset.DataFormatException(
                         "Unable to identify image files matching regular "
-                        + f"expression {self.data.imageRegExp[currentIndex]} "
-                        + f"for image type {currentType}."
+                        f"expression {self.data.imageRegExp[currentIndex]} "
+                        f"for image type {currentType}."
                     )
 
             self.fileMap = pd.DataFrame(fileData)

@@ -1,5 +1,6 @@
 import hashlib
 import re
+from typing import List
 
 import numpy as np
 import tifffile
@@ -173,7 +174,7 @@ class DaxReader(Reader):
     def close(self):
         self._filePortal.close()
 
-    def _parse_inf(self, inf_lines: list[str]) -> None:
+    def _parse_inf(self, inf_lines: List[str]) -> None:
         size_re = re.compile(r"frame dimensions = ([\d]+) x ([\d]+)")
         length_re = re.compile(r"number of frames = ([\d]+)")
         endian_re = re.compile(r" (big|little) endian")

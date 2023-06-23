@@ -1,6 +1,5 @@
 import struct
-from collections.abc import Iterator
-from typing import BinaryIO
+from typing import BinaryIO, Dict, Iterator, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -49,7 +48,7 @@ def _chunker(seq, size: int) -> Iterator:
     return (seq[pos : pos + size] for pos in range(0, len(seq), size))
 
 
-def _read_binary_header(bFile: BinaryIO) -> tuple[int, int, list[dict]]:
+def _read_binary_header(bFile: BinaryIO) -> Tuple[int, int, List[Dict]]:
     struct.unpack(typeNames["uint8"], bFile.read(1))[0]
     bFile.read(1)
     entryCount = struct.unpack(typeNames["uint32"], bFile.read(4))[0]
@@ -62,7 +61,7 @@ def _read_binary_header(bFile: BinaryIO) -> tuple[int, int, list[dict]]:
     return entryCount, headerLength, entryList
 
 
-def _parse_entry_bytes(byteList, entryFormat: list[dict]):
+def _parse_entry_bytes(byteList, entryFormat: List[Dict]):
     entryData = {}
     byteIndex = 0
     for currentEntry in entryFormat:

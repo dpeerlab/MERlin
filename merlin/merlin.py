@@ -5,7 +5,7 @@ import json
 import os
 import sys
 import time
-from typing import TextIO
+from typing import Dict, TextIO
 
 import requests
 import snakemake
@@ -189,7 +189,7 @@ def run_with_snakemake(
     dataSet: dataset.MERFISHDataSet,
     snakefilePath: str,
     coreCount: int,
-    snakemakeParameters: dict = {},
+    snakemakeParameters: Dict = {},
     report: bool = True,
 ):
     print("Running MERlin pipeline through snakemake")

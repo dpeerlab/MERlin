@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Dict, List, Tuple
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -28,7 +29,7 @@ class AbstractPlot(ABC):
         return type(self).__name__
 
     @abstractmethod
-    def get_required_tasks(self) -> dict[str, tuple[type]]:
+    def get_required_tasks(self) -> Dict[str, Tuple[type]]:
         """Get the tasks that are required to be complete prior to
         generating this plot.
 
@@ -41,7 +42,7 @@ class AbstractPlot(ABC):
         """
 
     @abstractmethod
-    def get_required_metadata(self) -> list[object]:
+    def get_required_metadata(self) -> List[object]:
         """Get the plot metadata that is required to generate this plot.
 
         Returns: A list of class references for the metadata
@@ -51,8 +52,8 @@ class AbstractPlot(ABC):
     @abstractmethod
     def _generate_plot(
         self,
-        inputTasks: dict[str, analysistask.AnalysisTask],
-        inputMetadata: dict[str, "PlotMetadata"],
+        inputTasks: Dict[str, analysistask.AnalysisTask],
+        inputMetadata: Dict[str, "PlotMetadata"],
     ) -> plt.Figure:
         """Generate the plot.
 
@@ -70,7 +71,7 @@ class AbstractPlot(ABC):
         Returns: the figure handle to the newly generated figure
         """
 
-    def is_relevant(self, inputTasks: dict[str, analysistask.AnalysisTask]) -> bool:
+    def is_relevant(self, inputTasks: Dict[str, analysistask.AnalysisTask]) -> bool:
         """Determine if this plot is relevant given the analysis tasks
         provided.
 
@@ -88,7 +89,7 @@ class AbstractPlot(ABC):
                 return False
         return True
 
-    def is_ready(self, completeTasks: list[str], completeMetadata: list[str]) -> bool:
+    def is_ready(self, completeTasks: List[str], completeMetadata: List[str]) -> bool:
         """Determine if all requirements for generating this plot are
         satisfied.
 
@@ -115,8 +116,8 @@ class AbstractPlot(ABC):
 
     def plot(
         self,
-        inputTasks: dict[str, analysistask.AnalysisTask],
-        inputMetadata: dict[str, "PlotMetadata"],
+        inputTasks: Dict[str, analysistask.AnalysisTask],
+        inputMetadata: Dict[str, "PlotMetadata"],
     ) -> None:
         """Generate this plot and save it within the analysis task.
 
@@ -149,8 +150,8 @@ class PlotMetadata(ABC):
     def __init__(
         self,
         analysisTask: analysistask.AnalysisTask,
-        taskDict: dict[str, analysistask.AnalysisTask],
-    ) -> None:
+        taskDict: Dict[str, analysistask.AnalysisTask],
+    ):
         """Create a new metadata object.
 
         Args:

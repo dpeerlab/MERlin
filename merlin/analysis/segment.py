@@ -1,3 +1,5 @@
+from typing import List
+
 import cv2
 import networkx as nx
 import numpy as np
@@ -62,7 +64,7 @@ class WatershedSegment(FeatureSavingAnalysisTask):
     def get_dependencies(self):
         return [self.parameters["warp_task"], self.parameters["global_align_task"]]
 
-    def get_cell_boundaries(self) -> list[spatialfeature.SpatialFeature]:
+    def get_cell_boundaries(self) -> List[spatialfeature.SpatialFeature]:
         featureDB = self.get_feature_database()
         return featureDB.read_features()
 

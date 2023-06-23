@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import List, Tuple
 
 import numpy as np
 from shapely import geometry
@@ -17,8 +18,8 @@ class GlobalAlignment(analysistask.AnalysisTask):
 
     @abstractmethod
     def fov_coordinates_to_global(
-        self, fov: int, fovCoordinates: tuple[float, float]
-    ) -> tuple[float, float]:
+        self, fov: int, fovCoordinates: Tuple[float, float]
+    ) -> Tuple[float, float]:
         """Calculates the global coordinates based on the local coordinates
         in the specified field of view.
 
@@ -36,8 +37,8 @@ class GlobalAlignment(analysistask.AnalysisTask):
 
     @abstractmethod
     def global_coordinates_to_fov(
-        self, fov: int, globalCoordinates: list[tuple[float, float]]
-    ) -> list[tuple[float, float]]:
+        self, fov: int, globalCoordinates: List[Tuple[float, float]]
+    ) -> List[Tuple[float, float]]:
         """Calculates the fov pixel coordinates for a list of global coordinates
         in the specified field of view.
 
@@ -68,7 +69,7 @@ class GlobalAlignment(analysistask.AnalysisTask):
         """
 
     @abstractmethod
-    def get_global_extent(self) -> tuple[float, float, float, float]:
+    def get_global_extent(self) -> Tuple[float, float, float, float]:
         """Get the extent of the global coordinate system.
 
         Returns
@@ -93,8 +94,9 @@ class GlobalAlignment(analysistask.AnalysisTask):
             numpy array of the global [z, x, y] coordinates.
         """
 
-    def get_fov_boxes(self) -> list:
-        """Creates a list of shapely boxes for each fov containing the global
+    def get_fov_boxes(self) -> List:
+        """
+        Creates a list of shapely boxes for each fov containing the global
         coordinates as the box coordinates.
 
         Returns
@@ -154,9 +156,10 @@ class SimpleGlobalAlignment(GlobalAlignment):
         globalCentroids[:, 0] = fovCoordArray[:, 0]
         return globalCentroids
 
-    def fov_global_extent(self, fov: int) -> list[float]:
-        """Returns the global extent of a fov, output interleaved as
-        xmin, ymin, xmax, ymax.
+    def fov_global_extent(self, fov: int) -> List[float]:
+        """
+        Returns the global extent of a fov, output interleaved as
+        xmin, ymin, xmax, ymax
 
         Args:
         ----

@@ -3,6 +3,7 @@ import importlib
 import importlib.metadata
 import json
 import os
+from typing import List
 
 import dotenv
 
@@ -72,7 +73,7 @@ def is_compatible(testVersion: str, baseVersion: str = None) -> bool:
     return testVersion.split(".")[0] == baseVersion.split(".")[0]
 
 
-def get_analysis_datasets(maxDepth=2) -> list[dataset.DataSet]:
+def get_analysis_datasets(maxDepth=2) -> List[dataset.DataSet]:
     """Get a list of all datasets currently stored in analysis home.
 
     Args:
