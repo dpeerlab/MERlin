@@ -9,8 +9,7 @@ from sklearn.neighbors import NearestNeighbors
 def extract_control_points(
     referencePoints: np.ndarray, movingPoints: np.ndarray, gridSpacing: float = 0.5
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    If fewer than 10 points are provided for either the reference or the moving
+    """If fewer than 10 points are provided for either the reference or the moving
     list, this returns no points.
 
     Args:

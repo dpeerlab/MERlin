@@ -8,7 +8,7 @@ from merlin.plots._base import AbstractPlot
 
 
 def get_available_plots() -> Set:
-    """Get all plots defined within any submodule of merlin.plots
+    """Get all plots defined within any submodule of merlin.plots.
 
     Returns: a set of references to the plots
     """

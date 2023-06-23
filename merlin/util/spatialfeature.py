@@ -406,7 +406,7 @@ class SpatialFeatureDB:
 
     @abstractmethod
     def read_features(self, fov: int = None) -> List[SpatialFeature]:
-        """Read the features in this database
+        """Read the features in this database.
 
         Args:
         ----
@@ -658,8 +658,7 @@ class JSONSpatialFeatureDB(SpatialFeatureDB):
 
 
 def simple_clean_cells(cells: List) -> List:
-    """
-    Removes cells that lack a bounding box or have a volume equal to 0
+    """Removes cells that lack a bounding box or have a volume equal to 0.
 
     Args:
     ----
@@ -714,8 +713,7 @@ def construct_tree(
 
 
 def return_overlapping_cells(currentCell, cells: List):
-    """
-    Determines if there is overlap between a cell of interest and a list of
+    """Determines if there is overlap between a cell of interest and a list of
     other cells. In the event that the cell of interest is entirely contained
     within one of the cells in the cells it is being compared to, an empty
     list is returned. Otherwise, the cell of interest and any overlapping

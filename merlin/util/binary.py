@@ -4,7 +4,7 @@ import numpy as np
 
 
 def bit_list_to_int(bitList: List[bool]) -> int:
-    """Converts a binary list to an integer
+    """Converts a binary list to an integer.
 
     Args:
     ----

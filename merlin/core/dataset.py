@@ -776,8 +776,7 @@ class DataSet:
         shutil.rmtree(analysisDirectory)
 
     def get_analysis_tasks(self) -> List[str]:
-        """
-        Get a list of the analysis tasks within this dataset.
+        """Get a list of the analysis tasks within this dataset.
 
         Returns: A list of the analysis task names.
         """

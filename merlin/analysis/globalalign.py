@@ -95,8 +95,7 @@ class GlobalAlignment(analysistask.AnalysisTask):
         """
 
     def get_fov_boxes(self) -> List:
-        """
-        Creates a list of shapely boxes for each fov containing the global
+        """Creates a list of shapely boxes for each fov containing the global
         coordinates as the box coordinates.
 
         Returns
@@ -157,9 +156,8 @@ class SimpleGlobalAlignment(GlobalAlignment):
         return globalCentroids
 
     def fov_global_extent(self, fov: int) -> List[float]:
-        """
-        Returns the global extent of a fov, output interleaved as
-        xmin, ymin, xmax, ymax
+        """Returns the global extent of a fov, output interleaved as
+        xmin, ymin, xmax, ymax.
 
         Args:
         ----
