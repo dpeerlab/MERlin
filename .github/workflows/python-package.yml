@@ -44,7 +44,7 @@ jobs:
     - name: Install package
       run: python -m pip install -e .
     - name: Mock .merlinenv
-      run: printf 'DATA_HOME=~\nANALYSIS_HOME=~\nPARAMETERS_HOME=~\n' >.merlinenv
+      run: printf 'DATA_HOME=~\nANALYSIS_HOME=~\nPARAMETERS_HOME=~\n' > ~/.merlinenv
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
