@@ -77,10 +77,8 @@ class DataOrganization:
             "fiducialRegExp",
         ]
         self.data[stringColumns] = self.data[stringColumns].astype("str")
-        self.fileMap = self._map_image_files("imageRegExp", "filemap")
-        self.fiducialFileMap = self._map_image_files(
-            "fiducialRegExp", "fiducial_filemap"
-        )
+        self.fileMap = self._map_image_files()
+        self.fiducialFileMap = self._map_image_files(fiducial=True)
 
     def get_data_channels(self) -> np.array:
         """Get the data channels for the MERFISH data set.
@@ -292,7 +290,10 @@ class DataOrganization:
         head, tail = os.path.split(path)
         return tail
 
-    def _map_image_files(self, regExpKey, filename) -> None:
+    def _map_image_files(self, fiducial=False) -> None:
+        regExpKey = "fiducialRegExp" if fiducial else "imageRegExp"
+        filename = "fiducial_filemap" if fiducial else "filemap"
+
         try:
             fileMap = self._dataSet.load_dataframe_from_csv(filename)
             fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
@@ -339,14 +340,13 @@ class DataOrganization:
             )
             fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
 
-            self._validate_file_map(fileMap)
+            self._validate_file_map(fileMap, fiducial)
 
             self._dataSet.save_dataframe_to_csv(fileMap, filename, index=False)
         return fileMap
 
-    def _validate_file_map(self, fileMap) -> None:
-        """This function ensures that all the files specified in the file map
-        of the raw images are present.
+    def _validate_file_map(self, fileMap, fiducial) -> None:
+        """Checks all files specified in the file map are present.
 
         Raises
         ------
@@ -366,8 +366,8 @@ class DataOrganization:
                     )
                 except IndexError:
                     raise FileNotFoundError(
-                        "Unable to find image path for %s, fov=%i, round=%i"
-                        % (channelInfo["imageType"], fov, channelInfo["imagingRound"])
+                        f"Unable to find image path for {channelInfo['imageType']}, "
+                        f"fov={fov}, round={channelInfo['imagingRound']}"
                     )
 
                 if not self._dataSet.rawDataPortal.open_file(imagePath).exists():
@@ -386,14 +386,13 @@ class DataOrganization:
                     )
                     raise InputDataError(msg)
 
-                frames = channelInfo["frame"]
-
-                # this assumes fiducials are stored in the same image file
-                requiredFrames = max(np.max(frames), channelInfo["fiducialFrame"])
-                if requiredFrames >= imageSize[2]:
+                frames = (
+                    channelInfo["fiducialFrame"] if fiducial else channelInfo["frame"]
+                )
+                if np.max(frames) >= imageSize[2]:
                     msg = (
                         f"Insufficient frames in data for channel {dataChannel} and "
-                        f"fov {fov}. Expected {requiredFrames} frames but only found "
+                        f"fov {fov}. Expected {np.max(frames)} frames but only found "
                         f"{imageSize[2]} in file {imagePath}"
                     )
                     raise InputDataError(msg)
