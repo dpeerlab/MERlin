@@ -27,6 +27,11 @@ class InputDataError(Exception):
 class DataOrganization:
     """A class to specify the organization of raw images in the original
     image files.
+
+    Attributes:
+        data: DataFrame of the provided data organization .csv
+        fileMap: DataFrame of the image files of channels to process
+        fiducialFileMap: DataFrame of the image files of fiducial bead channels
     """
 
     def __init__(self, dataSet, filePath: str = None) -> None:
@@ -72,7 +77,10 @@ class DataOrganization:
             "fiducialRegExp",
         ]
         self.data[stringColumns] = self.data[stringColumns].astype("str")
-        self._map_image_files()
+        self.fileMap = self._map_image_files("imageRegExp", "filemap")
+        self.fiducialFileMap = self._map_image_files(
+            "fiducialRegExp", "fiducial_filemap"
+        )
 
     def get_data_channels(self) -> np.array:
         """Get the data channels for the MERFISH data set.
@@ -173,7 +181,7 @@ class DataOrganization:
         """
         imageType = self.data.loc[dataChannel, "fiducialImageType"]
         imagingRound = self.data.loc[dataChannel, "fiducialImagingRound"]
-        return self._get_image_path(imageType, fov, imagingRound)
+        return self._get_image_path(self.fiducialFileMap, imageType, fov, imagingRound)
 
     def get_fiducial_frame_index(self, dataChannel: int) -> int:
         """Get the index of the frame containing the fiducial image
@@ -200,7 +208,7 @@ class DataOrganization:
         """
         channelInfo = self.data.iloc[dataChannel]
         imagePath = self._get_image_path(
-            channelInfo["imageType"], fov, channelInfo["imagingRound"]
+            self.fileMap, channelInfo["imageType"], fov, channelInfo["imagingRound"]
         )
         return imagePath
 
@@ -243,8 +251,11 @@ class DataOrganization:
         """
         return sorted(np.unique([y for x in self.data["zPos"] for y in x]))
 
-    def get_fovs(self) -> np.ndarray:
-        return np.unique(self.fileMap["fov"])
+    def get_fovs(self, fileMap=None) -> np.ndarray:
+        if fileMap is None:
+            fileMap = self.fileMap
+
+        return np.unique(fileMap["fov"])
 
     def get_sequential_rounds(self) -> Tuple[List[int], List[str]]:
         """Get the rounds that are not present in your codebook
@@ -264,11 +275,13 @@ class DataOrganization:
         ]
         return sequentialChannels, sequentialGeneNames
 
-    def _get_image_path(self, imageType: str, fov: int, imagingRound: int) -> str:
-        selection = self.fileMap[
-            (self.fileMap["imageType"] == imageType)
-            & (self.fileMap["fov"] == fov)
-            & (self.fileMap["imagingRound"] == imagingRound)
+    def _get_image_path(
+        self, fileMap, imageType: str, fov: int, imagingRound: int
+    ) -> str:
+        selection = fileMap[
+            (fileMap["imageType"] == imageType)
+            & (fileMap["fov"] == fov)
+            & (fileMap["imagingRound"] == imagingRound)
         ]
         filemapPath = selection["imagePath"].values[0]
         return os.path.join(
@@ -279,20 +292,14 @@ class DataOrganization:
         head, tail = os.path.split(path)
         return tail
 
-    def _map_image_files(self) -> None:
-        # TODO: This doesn't map the fiducial image types and currently assumes
-        # that the fiducial image types and regular expressions are part of the
-        # standard image types.
-
+    def _map_image_files(self, regExpKey, filename) -> None:
         try:
-            self.fileMap = self._dataSet.load_dataframe_from_csv("filemap")
-            self.fileMap["imagePath"] = self.fileMap["imagePath"].apply(
-                self._truncate_file_path
-            )
+            fileMap = self._dataSet.load_dataframe_from_csv(filename)
+            fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
 
         except FileNotFoundError:
             uniqueEntries = self.data.drop_duplicates(
-                subset=["imageType", "imageRegExp"], keep="first"
+                subset=["imageType", regExpKey], keep="first"
             )
 
             uniqueTypes = uniqueEntries["imageType"]
@@ -305,7 +312,7 @@ class DataOrganization:
                 )
             fileData = []
             for currentType, currentIndex in zip(uniqueTypes, uniqueIndexes):
-                matchRE = re.compile(self.data.imageRegExp[currentIndex])
+                matchRE = re.compile(self.data[regExpKey][currentIndex])
 
                 matchingFiles = False
                 for currentFile in fileNames:
@@ -322,23 +329,22 @@ class DataOrganization:
                 if not matchingFiles:
                     raise dataset.DataFormatException(
                         "Unable to identify image files matching regular "
-                        f"expression {self.data.imageRegExp[currentIndex]} "
+                        f"expression {self.data[regExpKey][currentIndex]} "
                         f"for image type {currentType}."
                     )
 
-            self.fileMap = pd.DataFrame(fileData)
-            self.fileMap[["imagingRound", "fov"]] = self.fileMap[
-                ["imagingRound", "fov"]
-            ].astype(int)
-            self.fileMap["imagePath"] = self.fileMap["imagePath"].apply(
-                self._truncate_file_path
+            fileMap = pd.DataFrame(fileData)
+            fileMap[["imagingRound", "fov"]] = fileMap[["imagingRound", "fov"]].astype(
+                int
             )
+            fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
 
-            self._validate_file_map()
+            self._validate_file_map(fileMap)
 
-            self._dataSet.save_dataframe_to_csv(self.fileMap, "filemap", index=False)
+            self._dataSet.save_dataframe_to_csv(fileMap, filename, index=False)
+        return fileMap
 
-    def _validate_file_map(self) -> None:
+    def _validate_file_map(self, fileMap) -> None:
         """This function ensures that all the files specified in the file map
         of the raw images are present.
 
@@ -349,11 +355,14 @@ class DataOrganization:
         """
         expectedImageSize = None
         for dataChannel in self.get_data_channels():
-            for fov in self.get_fovs():
+            for fov in self.get_fovs(fileMap):
                 channelInfo = self.data.iloc[dataChannel]
                 try:
                     imagePath = self._get_image_path(
-                        channelInfo["imageType"], fov, channelInfo["imagingRound"]
+                        fileMap,
+                        channelInfo["imageType"],
+                        fov,
+                        channelInfo["imagingRound"],
                     )
                 except IndexError:
                     raise FileNotFoundError(
