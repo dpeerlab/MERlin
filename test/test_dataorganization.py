@@ -79,7 +79,7 @@ def test_dataorganization_get_image_information(simple_merfish_data):
     assert data.get_image_frame_index(1, 0) == 0
     assert data.get_image_frame_index(16, 0) == 3
     assert os.path.normpath(data.get_image_filename(0, 0)) == os.path.normpath(
-        os.path.abspath("test_data/merfish_test/test_0_0.tif")
+        os.path.abspath("test_data/merfish_test/test_0_0_main.tif")
     )
     assert os.path.normpath(data.get_image_filename(0, 1)) == os.path.normpath(
         os.path.abspath("test_data/merfish_test/test_1_0.tif")
