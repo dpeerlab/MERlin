@@ -79,6 +79,8 @@ class DataOrganization:
         self.data[stringColumns] = self.data[stringColumns].astype("str")
         self.fileMap = self._map_image_files()
         self.fiducialFileMap = self._map_image_files(fiducial=True)
+        self._validate_file_map()
+        self._validate_file_map(fiducial=True)
 
     def get_data_channels(self) -> np.array:
         """Get the data channels for the MERFISH data set.
@@ -177,9 +179,7 @@ class DataOrganization:
         Returns:
             The full path to the image file containing the fiducials
         """
-        imageType = self.data.loc[dataChannel, "fiducialImageType"]
-        imagingRound = self.data.loc[dataChannel, "fiducialImagingRound"]
-        return self._get_image_path(self.fiducialFileMap, imageType, fov, imagingRound)
+        return self._get_image_path(dataChannel, fov, fiducial=True)
 
     def get_fiducial_frame_index(self, dataChannel: int) -> int:
         """Get the index of the frame containing the fiducial image
@@ -204,11 +204,7 @@ class DataOrganization:
         Returns:
             The full path to the image file containing the fiducials
         """
-        channelInfo = self.data.iloc[dataChannel]
-        imagePath = self._get_image_path(
-            self.fileMap, channelInfo["imageType"], fov, channelInfo["imagingRound"]
-        )
-        return imagePath
+        return self._get_image_path(dataChannel, fov)
 
     def get_image_frame_index(self, dataChannel: int, zPosition: float) -> int:
         """Get the index of the frame containing the image
@@ -249,10 +245,8 @@ class DataOrganization:
         """
         return sorted(np.unique([y for x in self.data["zPos"] for y in x]))
 
-    def get_fovs(self, fileMap=None) -> np.ndarray:
-        if fileMap is None:
-            fileMap = self.fileMap
-
+    def get_fovs(self, fiducial=False) -> np.ndarray:
+        fileMap = self.fiducialFileMap if fiducial else self.fileMap
         return np.unique(fileMap["fov"])
 
     def get_sequential_rounds(self) -> Tuple[List[int], List[str]]:
@@ -274,13 +268,38 @@ class DataOrganization:
         return sequentialChannels, sequentialGeneNames
 
     def _get_image_path(
-        self, fileMap, imageType: str, fov: int, imagingRound: int
+        self,
+        dataChannel: int,
+        fov: int,
+        fiducial: bool = False,
     ) -> str:
-        selection = fileMap[
-            (fileMap["imageType"] == imageType)
-            & (fileMap["fov"] == fov)
-            & (fileMap["imagingRound"] == imagingRound)
+        """Get the path for the image file for the provided data channel and fov.
+
+        Raises:
+            InputDataError: if 0 or >1 files are found for the data channel and fov
+        """
+        fileMap = self.fiducialFileMap if fiducial else self.fileMap
+        channelName, imageType, imagingRound, bitNumber = self.data.iloc[dataChannel][
+            [
+                "channelName",
+                "fiducialImageType" if fiducial else "imageType",
+                "fiducialImagingRound" if fiducial else "imagingRound",
+                "bitNumber",
+            ]
         ]
+        selection = fileMap[
+            (fileMap["fov"] == fov)
+            & (fileMap["imageType"] == imageType)
+            & (fileMap["imagingRound"] == imagingRound)
+            & (fileMap["bitNumber"] == bitNumber)
+        ]
+        if len(selection) != 1:
+            msg = (
+                f"Found {len(selection)} image files for {channelName} channel "
+                f"for image type {imageType}, fov {fov}, and "
+                f"imagingRound {imagingRound} but expected one image file."
+            )
+            raise InputDataError(msg)
         filemapPath = selection["imagePath"].values[0]
         return os.path.join(
             self._dataSet.dataHome, self._dataSet.dataSetName, filemapPath
@@ -292,122 +311,98 @@ class DataOrganization:
 
     def _map_image_files(self, fiducial=False) -> None:
         regExpKey = "fiducialRegExp" if fiducial else "imageRegExp"
-        filename = "fiducial_filemap" if fiducial else "filemap"
+        filemap_name = "fiducial_filemap" if fiducial else "filemap"
 
         try:
-            fileMap = self._dataSet.load_dataframe_from_csv(filename)
+            fileMap = self._dataSet.load_dataframe_from_csv(filemap_name)
             fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
 
         except FileNotFoundError:
-            uniqueEntries = self.data.drop_duplicates(
-                subset=["imageType", regExpKey], keep="first"
-            )
-
-            uniqueTypes = uniqueEntries["imageType"]
-            uniqueIndexes = uniqueEntries.index.values.tolist()
-
-            fileNames = self._dataSet.get_image_file_names()
-            if len(fileNames) == 0:
-                raise dataset.DataFormatException(
-                    "No image files found at %s." % self._dataSet.rawDataPath
-                )
+            filenames = self._dataSet.get_image_file_names()
+            if len(filenames) == 0:
+                msg = f"No image files found at {self._dataSet.rawDataPath}"
+                raise dataset.DataFormatException(msg)
             fileData = []
-            for currentType, currentIndex in zip(uniqueTypes, uniqueIndexes):
-                matchRE = re.compile(self.data[regExpKey][currentIndex])
+            for _, channel in self.data.iterrows():
+                channelName, imageType, bitNumber, regExp = channel[
+                    ["channelName", "imageType", "bitNumber", regExpKey]
+                ]
+                matchRE = re.compile(regExp)
+                foundMatch = False
+                for filename in filenames:
+                    match = matchRE.match(os.path.split(filename)[-1])
+                    if match is not None:
+                        match = match.groupdict()
+                        if match["imageType"] == imageType:
+                            if "imagingRound" not in match:
+                                match["imagingRound"] = -1
+                            match["imagePath"] = filename
+                            match["bitNumber"] = bitNumber
+                            foundMatch = True
+                            fileData.append(match)
 
-                matchingFiles = False
-                for currentFile in fileNames:
-                    matchedName = matchRE.match(os.path.split(currentFile)[-1])
-                    if matchedName is not None:
-                        transformedName = matchedName.groupdict()
-                        if transformedName["imageType"] == currentType:
-                            if "imagingRound" not in transformedName:
-                                transformedName["imagingRound"] = -1
-                            transformedName["imagePath"] = currentFile
-                            matchingFiles = True
-                            fileData.append(transformedName)
-
-                if not matchingFiles:
-                    raise dataset.DataFormatException(
-                        "Unable to identify image files matching regular "
-                        f"expression {self.data[regExpKey][currentIndex]} "
-                        f"for image type {currentType}."
+                if not foundMatch:
+                    msg = (
+                        "Unable to find image files matching regular "
+                        f"expression {regExp} "
+                        f"for channel {channelName} and image type {imageType}."
                     )
+                    raise dataset.DataFormatException(msg)
 
             fileMap = pd.DataFrame(fileData)
-            fileMap[["imagingRound", "fov"]] = fileMap[["imagingRound", "fov"]].astype(
-                int
-            )
+            convert_to_int = ["imagingRound", "fov", "bitNumber"]
+            fileMap[convert_to_int] = fileMap[convert_to_int].astype(int)
             fileMap["imagePath"] = fileMap["imagePath"].apply(self._truncate_file_path)
 
-            self._validate_file_map(fileMap, fiducial)
-
-            self._dataSet.save_dataframe_to_csv(fileMap, filename, index=False)
+            self._dataSet.save_dataframe_to_csv(fileMap, filemap_name, index=False)
         return fileMap
 
-    def _validate_file_map(self, fileMap, fiducial) -> None:
-        """Checks all files specified in the file map are present.
+    def _validate_file_map(self, fiducial=False) -> None:
+        """Checks a unique file is present and valid for each data channel and fov.
 
-        Raises
-        ------
-            InputDataError: If the set of raw data is incomplete or the
-                    format of the raw data deviates from expectations.
+        Raises:
+            InputDataError: If image files are missing, non-unique, or invalid.
         """
-        expectedImageSize = None
+        expectedSize = None
         for dataChannel in self.get_data_channels():
-            for fov in self.get_fovs(fileMap):
-                channelInfo = self.data.iloc[dataChannel]
-                try:
-                    imagePath = self._get_image_path(
-                        fileMap,
-                        channelInfo["imageType"],
-                        fov,
-                        channelInfo["imagingRound"],
-                    )
-                except IndexError:
-                    raise FileNotFoundError(
-                        f"Unable to find image path for {channelInfo['imageType']}, "
-                        f"fov={fov}, round={channelInfo['imagingRound']}"
-                    )
+            for fov in self.get_fovs(fiducial=fiducial):
+                path = self._get_image_path(dataChannel, fov, fiducial=fiducial)
 
-                if not self._dataSet.rawDataPortal.open_file(imagePath).exists():
+                if not self._dataSet.rawDataPortal.open_file(path).exists():
                     msg = (
                         f"Image data for channel {dataChannel} and fov {fov} "
-                        f"not found. Expected at {imagePath}"
+                        f"not found. Expected at {path}"
                     )
                     raise InputDataError(msg)
 
                 try:
-                    imageSize = self._dataSet.image_stack_size(imagePath)
+                    size = self._dataSet.image_stack_size(path)
                 except Exception:
                     msg = (
                         f"Unable to determine image stack size for fov {fov} "
-                        f"from data channel {dataChannel} at {imagePath}"
+                        f"from data channel {dataChannel} at {path}"
                     )
                     raise InputDataError(msg)
 
-                frames = (
-                    channelInfo["fiducialFrame"] if fiducial else channelInfo["frame"]
-                )
-                if np.max(frames) >= imageSize[2]:
+                frames = self.data.iloc[dataChannel][
+                    "fiducialFrame" if fiducial else "frame"
+                ]
+                if np.max(frames) >= size[2]:
                     msg = (
                         f"Insufficient frames in data for channel {dataChannel} and "
                         f"fov {fov}. Expected {np.max(frames)} frames but only found "
-                        f"{imageSize[2]} in file {imagePath}"
+                        f"{size[2]} in file {path}"
                     )
                     raise InputDataError(msg)
 
-                if expectedImageSize is None:
-                    expectedImageSize = [imageSize[0], imageSize[1]]
+                if expectedSize is None:
+                    expectedSize = [size[0], size[1]]
                 else:
-                    if (
-                        expectedImageSize[0] != imageSize[0]
-                        or expectedImageSize[1] != imageSize[1]
-                    ):
+                    if expectedSize[0] != size[0] or expectedSize[1] != size[1]:
                         msg = (
                             f"Image data for channel {dataChannel} and fov {fov}"
                             " has unexpected dimensions. Expected "
-                            f"{expectedImageSize[0]}x{expectedImageSize[1]} but found "
-                            f"{imageSize[0]}x{imageSize[1]} in image file {imagePath}"
+                            f"{expectedSize[0]}x{expectedSize[1]} but found "
+                            f"{size[0]}x{size[1]} in image file {path}"
                         )
                         raise InputDataError(msg)
