@@ -60,7 +60,7 @@ def test_dataorganization_get_fiducial_information(simple_merfish_data):
     for d in data.get_data_channels():
         assert data.get_fiducial_frame_index(d) == 2
     assert os.path.normpath(data.get_fiducial_filename(0, 0)) == os.path.normpath(
-        os.path.abspath("test_data/merfish_test/test_0_0_fiducial.tif")
+        os.path.abspath("test_data/merfish_test/test_0_0.tif")
     )
     assert os.path.normpath(data.get_fiducial_filename(0, 1)) == os.path.normpath(
         os.path.abspath("test_data/merfish_test/test_1_0.tif")
@@ -71,6 +71,12 @@ def test_dataorganization_get_fiducial_information(simple_merfish_data):
     assert os.path.normpath(data.get_fiducial_filename(2, 1)) == os.path.normpath(
         os.path.abspath("test_data/merfish_test/test_1_1.tif")
     )
+    for bit, fov in zip([14, 15], [0, 1]):
+        assert os.path.normpath(
+            data.get_fiducial_filename(bit, fov)
+        ) == os.path.normpath(
+            os.path.abspath(f"test_data/merfish_test/test_{fov}_7_fiducial.tif")
+        )
 
 
 def test_dataorganization_get_image_information(simple_merfish_data):
@@ -79,7 +85,7 @@ def test_dataorganization_get_image_information(simple_merfish_data):
     assert data.get_image_frame_index(1, 0) == 0
     assert data.get_image_frame_index(16, 0) == 3
     assert os.path.normpath(data.get_image_filename(0, 0)) == os.path.normpath(
-        os.path.abspath("test_data/merfish_test/test_0_0_main.tif")
+        os.path.abspath("test_data/merfish_test/test_0_0.tif")
     )
     assert os.path.normpath(data.get_image_filename(0, 1)) == os.path.normpath(
         os.path.abspath("test_data/merfish_test/test_1_0.tif")
@@ -90,6 +96,10 @@ def test_dataorganization_get_image_information(simple_merfish_data):
     assert os.path.normpath(data.get_image_filename(2, 1)) == os.path.normpath(
         os.path.abspath("test_data/merfish_test/test_1_1.tif")
     )
+    for bit, fov in zip([14, 15], [0, 1]):
+        assert os.path.normpath(data.get_image_filename(bit, fov)) == os.path.normpath(
+            os.path.abspath(f"test_data/merfish_test/test_{fov}_7_main.tif")
+        )
 
 
 def test_dataorganization_load_from_dataset(simple_merfish_data):
