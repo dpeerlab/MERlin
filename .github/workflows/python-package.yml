@@ -38,7 +38,7 @@ jobs:
       run: printf 'DATA_HOME=~\nANALYSIS_HOME=~\nPARAMETERS_HOME=~\n' > ~/.merlinenv
     - name: Test with pytest
       run: |
-        pytest --cov --cov-report=xml
+        pytest --cov
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
-      env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
