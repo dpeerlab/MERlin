@@ -245,6 +245,9 @@ class DataSet:
             imagej=imagej,
         )
 
+    # TODO: make slice vs. frame clearer
+    # believe that sliceCount is the number of z-slices in a stack
+    # and frameCount is the number of channels?
     @staticmethod
     def analysis_tiff_description(sliceCount: int, frameCount: int) -> Dict:
         imageDescription = {
