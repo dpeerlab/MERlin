@@ -1,8 +1,7 @@
+"""Dummy analysis tasks for running tests."""
 import numpy as np
 
 from merlin.core import analysistask
-
-"""This module contains dummy analysis tasks for running tests"""
 
 
 class SimpleAnalysisTask(analysistask.AnalysisTask):
@@ -49,7 +48,7 @@ class SimpleParallelAnalysisTask(analysistask.ParallelAnalysisTask):
 
 
 class RandomNumberParallelAnalysisTask(analysistask.ParallelAnalysisTask):
-    """A test analysis task that generates random numbers."""
+    """Generates random numbers."""
 
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)

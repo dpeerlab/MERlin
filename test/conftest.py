@@ -5,7 +5,7 @@ import shutil
 import pytest
 
 import merlin
-from merlin.analysis import testtask
+import test.simple_tasks as simple_tasks
 from merlin.core import dataset
 
 root = os.path.join(os.path.dirname(merlin.__file__), "..", "test")
@@ -125,7 +125,7 @@ def two_codebook_merfish_data(merfish_files):
 
 @pytest.fixture()
 def single_task(simple_data):
-    task = testtask.SimpleAnalysisTask(
+    task = simple_tasks.SimpleAnalysisTask(
         simple_data, parameters={"a": 5, "b": "b_string"}
     )
     yield task
@@ -134,9 +134,9 @@ def single_task(simple_data):
 
 @pytest.fixture(
     params=[
-        testtask.SimpleAnalysisTask,
-        testtask.SimpleParallelAnalysisTask,
-        testtask.SimpleInternallyParallelAnalysisTask,
+        simple_tasks.SimpleAnalysisTask,
+        simple_tasks.SimpleParallelAnalysisTask,
+        simple_tasks.SimpleInternallyParallelAnalysisTask,
     ],
 )
 def simple_task(simple_data, request):
@@ -147,9 +147,9 @@ def simple_task(simple_data, request):
 
 @pytest.fixture(
     params=[
-        testtask.SimpleAnalysisTask,
-        testtask.SimpleParallelAnalysisTask,
-        testtask.SimpleInternallyParallelAnalysisTask,
+        simple_tasks.SimpleAnalysisTask,
+        simple_tasks.SimpleParallelAnalysisTask,
+        simple_tasks.SimpleInternallyParallelAnalysisTask,
     ],
 )
 def simple_merfish_task(simple_merfish_data, request):
