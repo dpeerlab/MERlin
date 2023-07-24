@@ -1036,6 +1036,15 @@ class DataSet:
 
 
 class ImageDataSet(DataSet):
+    """
+    Attributes:
+        flipHorizontal (bool): Whether to flip the image horizontally when loading.
+        flipVertical (bool): Whether to flip the image vertically when loading.
+        transpose (bool): Whether to transpose the image when loading.
+        micronsPexPixel (float): Conversion factor to convert pixels to microns.
+        imageDimensions (tuple[int, int]): width and height of each image in pixels
+    """
+
     def __init__(
         self,
         dataDirectoryName: str,
@@ -1046,7 +1055,6 @@ class ImageDataSet(DataSet):
         """Create a dataset for the specified raw data.
 
         Args:
-        ----
             dataDirectoryName: the relative directory to the raw data
             dataHome: the base path to the data. The data is expected
                     to be in dataHome/dataDirectoryName. If dataHome
