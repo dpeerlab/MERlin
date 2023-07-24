@@ -1382,11 +1382,22 @@ class MERFISHDataSet(ImageDataSet):
             self.dataOrganization.get_image_frame_index(dataChannel, zPosition),
         )
 
-    def get_fiducial_image(self, dataChannel, fov):
-        return self.load_image(
-            self.dataOrganization.get_fiducial_filename(dataChannel, fov),
-            self.dataOrganization.get_fiducial_frame_index(dataChannel),
-        )
+    def get_fiducial_image(self, channel, fov, z=None) -> np.ndarray:
+        """Get the fiducial image for the specified channel, fov, and z-slice.
+
+        Args:
+            channel (_type_): Channel of image.
+            fov (_type_): Field of view of image.
+            z (int, optional): Z-slice within fiducial bead file of image.
+                Uses fiducialFrame from data organization .csv when not specified.
+
+        Returns:
+            np.ndarray with image of fiducial beads
+        """
+        if z is None:
+            z = self.dataOrganization.get_fiducial_frame_index(channel)
+        filename = self.dataOrganization.get_fiducial_filename(channel, fov)
+        return self.load_image(filename, z)
 
     def _import_positions_from_metadata(self):
         positionData = []
