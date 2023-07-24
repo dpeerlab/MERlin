@@ -380,8 +380,8 @@ class FOVSpatialDistributionMetadata(PlotMetadata):
         self.filterTask = self._taskDict["filter_task"]
 
         dataSet = self._analysisTask.dataSet
-        self._width = dataSet.get_image_dimensions()[0]
-        self._height = dataSet.get_image_dimensions()[1]
+        self._width = dataSet.imageDimensions[0]
+        self._height = dataSet.imageDimensions[1]
         imageSize = max(self._height, self._width)
         self.radialBins = self._load_numpy_metadata(
             "radial_bins", np.arange(0, 0.5 * imageSize, (0.5 * imageSize) / 200)

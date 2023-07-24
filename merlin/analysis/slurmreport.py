@@ -263,8 +263,8 @@ class SlurmReport(analysistask.AnalysisTask):
         self._plot_slurm_summary(reportDict)
 
         datasetMeta = {
-            "image_width": self.dataSet.get_image_dimensions()[0],
-            "image_height": self.dataSet.get_image_dimensions()[1],
+            "image_width": self.dataSet.imageDimensions[0],
+            "image_height": self.dataSet.imageDimensions[1],
             "barcode_length": self.dataSet.get_codebook(
                 self.parameters["codebook_index"]
             ).get_bit_count(),

@@ -1123,19 +1123,6 @@ class ImageDataSet(DataSet):
             "image_dimensions", [2048, 2048]
         )
 
-    def get_microns_per_pixel(self):
-        """Get the conversion factor to convert pixels to microns."""
-        return self.micronsPerPixel
-
-    def get_image_dimensions(self):
-        """Get the dimensions of the images in this data set.
-
-        Returns
-        -------
-            A tuple containing the width and height of each image in pixels.
-        """
-        return self.imageDimensions
-
     def get_image_xml_metadata(self, imagePath: str) -> Dict:
         """Get the xml metadata stored for the specified image.
 
