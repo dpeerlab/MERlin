@@ -105,25 +105,22 @@ class Reader:
             self.fileptr.close()
             self.fileptr = None
 
-    def film_filename(self):
-        """Returns the film name."""
-        return self.filename
-
-    def film_size(self):
-        """Returns the film size."""
+    @property
+    def size(self):
+        """Returns the image size."""
         return [self.image_width, self.image_height, self.number_frames]
 
-    def film_location(self):
-        """Returns the picture x,y location, if available."""
-        if hasattr(self, "stage_x"):
+    @property
+    def location(self):
+        """Returns the image (x, y) location, if available."""
+        if hasattr(self, "stage_x") and hasattr(self, "stage_y"):
             return [self.stage_x, self.stage_y]
         else:
             return [0.0, 0.0]
 
-    def film_scale(self):
-        """Returns the scale used to display the film when
-        the picture was taken.
-        """
+    @property
+    def scale(self):
+        """Scale used to display the film when the image was taken."""
         if hasattr(self, "scalemin") and hasattr(self, "scalemax"):
             return [self.scalemin, self.scalemax]
         else:
