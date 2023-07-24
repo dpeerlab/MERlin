@@ -22,6 +22,22 @@ dataDirectory = os.sep.join([merlin.DATA_HOME, "test"])
 merfishDataDirectory = os.sep.join([merlin.DATA_HOME, "merfish_test"])
 
 
+def copy_test_files(folder):
+    to_copy = [
+        (merlin.DATA_ORGANIZATION_HOME, "test_data_organization.csv"),
+        (merlin.CODEBOOK_HOME, "test_codebook.csv"),
+        (merlin.CODEBOOK_HOME, "test_codebook2.csv"),
+        (merlin.POSITION_HOME, "test_positions.csv"),
+        (merlin.ANALYSIS_PARAMETERS_HOME, "test_analysis_parameters.json"),
+        (merlin.MICROSCOPE_PARAMETERS_HOME, "test_microscope_parameters.json"),
+    ]
+    for home_folder, filename in to_copy:
+        shutil.copyfile(
+            os.sep.join([root, folder, filename]),
+            os.sep.join([home_folder, filename]),
+        )
+
+
 @pytest.fixture(scope="session")
 def base_files():
     folderList = [
@@ -38,32 +54,7 @@ def base_files():
             shutil.rmtree(folder)
         os.makedirs(folder)
 
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_data_organization.csv"]),
-        os.sep.join([merlin.DATA_ORGANIZATION_HOME, "test_data_organization.csv"]),
-    )
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_codebook.csv"]),
-        os.sep.join([merlin.CODEBOOK_HOME, "test_codebook.csv"]),
-    )
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_codebook2.csv"]),
-        os.sep.join([merlin.CODEBOOK_HOME, "test_codebook2.csv"]),
-    )
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_positions.csv"]),
-        os.sep.join([merlin.POSITION_HOME, "test_positions.csv"]),
-    )
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_analysis_parameters.json"]),
-        os.sep.join([merlin.ANALYSIS_PARAMETERS_HOME, "test_analysis_parameters.json"]),
-    )
-    shutil.copyfile(
-        os.sep.join([root, "auxiliary_files", "test_microscope_parameters.json"]),
-        os.sep.join(
-            [merlin.MICROSCOPE_PARAMETERS_HOME, "test_microscope_parameters.json"]
-        ),
-    )
+    copy_test_files("auxiliary_files")
 
     yield
 
