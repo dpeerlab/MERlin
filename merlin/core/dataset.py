@@ -1085,17 +1085,16 @@ class ImageDataSet(DataSet):
                 imageIn = np.flip(imageIn, axis=0)
             return imageIn
 
-    def image_stack_size(self, imagePath):
+    def image_stack_size(self, path: str) -> Tuple[int, int, int]:
         """Get the size of the image stack stored in the specified image path.
 
-        Returns
-        -------
-            a three element list with [width, height, frameCount] or None
-                    if the file does not exist
+        Args:
+            path (str): path to the image file
+
+        Returns:
+            tuple[int, int, int]: width, height, and n_frames of images
         """
-        with imagereader.infer_reader(
-            self.rawDataPortal.open_file(imagePath)
-        ) as reader:
+        with imagereader.infer_reader(self.rawDataPortal.open_file(path)) as reader:
             return reader.film_size()
 
     def _import_microscope_parameters(self, microscopeParametersName):
