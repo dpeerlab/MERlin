@@ -1072,11 +1072,18 @@ class ImageDataSet(DataSet):
             self.rawDataPortal.list_files(extensionList=[".dax", ".tif", ".tiff"])
         )
 
-    def load_image(self, imagePath, frameIndex):
-        with imagereader.infer_reader(
-            self.rawDataPortal.open_file(imagePath)
-        ) as reader:
-            imageIn = reader.load_frame(int(frameIndex))
+    def load_image(self, path: str, frame: int) -> np.ndarray:
+        """Loads a frame from an image file.
+
+        Args:
+            path (str): Path to image.
+            frame (int): Frame within the image to load.
+
+        Returns:
+            np.ndarray: Image data for given frame.
+        """
+        with imagereader.infer_reader(self.rawDataPortal.open_file(path)) as reader:
+            imageIn = reader.load_frame(int(frame))
             if self.transpose:
                 imageIn = np.transpose(imageIn)
             if self.flipHorizontal:
