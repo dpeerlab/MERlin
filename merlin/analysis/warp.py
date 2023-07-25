@@ -206,7 +206,11 @@ class FiducialCorrelationWarp(Warp):
         return 5
 
     def get_dependencies(self):
-        return []
+        return (
+            [self.parameters["fiducial_task"]]
+            if "fiducial_task" in self.parameters
+            else []
+        )
 
     def _filter(self, inputImage: np.ndarray) -> np.ndarray:
         highPassSigma = self.parameters["highpass_sigma"]
@@ -218,6 +222,14 @@ class FiducialCorrelationWarp(Warp):
             highPassSigma,
             borderType=cv2.BORDER_REPLICATE,
         )
+
+    def _get_fiducial_image(self, fov: int):
+        if "fiducial_task" in self.parameters:
+            fiducial_task = self.dataSet.load_analysis_task(
+                self.parameters["fiducial_task"]
+            )
+            return fiducial_task.get_image(fov)
+        return self.dataSet.get_fiducial_image(0, fov)
 
     def _run_analysis(self, fragmentIndex: int):
         # TODO - this can be more efficient since some images should

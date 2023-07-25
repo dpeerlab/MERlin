@@ -1113,7 +1113,7 @@ class ImageDataSet(DataSet):
             tuple[int, int, int]: width, height, and n_frames of images
         """
         with imagereader.infer_reader(self.rawDataPortal.open_file(path)) as reader:
-            return reader.film_size()
+            return reader.size
 
     def _import_microscope_parameters(self, microscopeParametersName):
         sourcePath = os.sep.join(
@@ -1360,9 +1360,9 @@ class MERFISHDataSet(ImageDataSet):
         # TODO - this should be implemented using the position of the fov.
         return self.positions.loc[fov]["X"], self.positions.loc[fov]["Y"]
 
-    def z_index_to_position(self, zIndex: int) -> float:
+    def z_index_to_position(self, z: int) -> float:
         """Get the z position associated with the provided z index."""
-        return self.get_z_positions()[zIndex]
+        return self.get_z_positions()[z]
 
     def position_to_z_index(self, zPosition: float) -> int:
         """Get the z index associated with the specified z position.
@@ -1381,8 +1381,7 @@ class MERFISHDataSet(ImageDataSet):
     def get_z_positions(self) -> List[float]:
         """Get the z positions present in this dataset.
 
-        Returns
-        -------
+        Returns:
             A sorted list of all unique z positions
         """
         return self.dataOrganization.get_z_positions()

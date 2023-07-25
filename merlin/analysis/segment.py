@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import cv2
 import networkx as nx
@@ -62,38 +62,60 @@ class WatershedSegment(FeatureSavingAnalysisTask):
         return 5
 
     def get_dependencies(self):
-        return [self.parameters["warp_task"], self.parameters["global_align_task"]]
+        dependencies = [
+            self.parameters["warp_task"],
+            self.parameters["global_align_task"],
+        ]
+        if "watershed_channel_task" in self.parameters:
+            dependencies.append(self.parameters["watershed_channel_task"])
+        return dependencies
 
     def get_cell_boundaries(self) -> List[spatialfeature.SpatialFeature]:
         featureDB = self.get_feature_database()
         return featureDB.read_features()
+
+    def _get_seeds(self, fragmentIndex: int) -> np.ndarray:
+        seedIndex = self.dataSet.get_data_organization().get_data_channel_index(
+            self.parameters["seed_channel_name"]
+        )
+        seedImages = self._read_and_filter_image_stack(fragmentIndex, seedIndex, 5)
+        seeds = watershed.separate_merged_seeds(watershed.extract_seeds(seedImages))
+        return seeds
+
+    def _get_watershed_images(
+        self, fragmentIndex: int
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        if "watershed_channel_task" in self.parameters:
+            watershedTask = self.dataSet.load_analysis_task(
+                self.parameters["watershed_channel_task"]
+            )
+            watershedImages = watershedTask.get_images(fragmentIndex)
+
+        else:
+            watershedIndex = (
+                self.dataSet.get_data_organization().get_data_channel_index(
+                    self.parameters["watershed_channel_name"]
+                )
+            )
+            watershedImages = self._read_and_filter_image_stack(
+                fragmentIndex, watershedIndex, 5
+            )
+        normalized_images, mask = watershed.prepare_watershed_images(watershedImages)
+        return normalized_images, mask
 
     def _run_analysis(self, fragmentIndex):
         globalTask = self.dataSet.load_analysis_task(
             self.parameters["global_align_task"]
         )
 
-        seedIndex = self.dataSet.get_data_organization().get_data_channel_index(
-            self.parameters["seed_channel_name"]
-        )
-        seedImages = self._read_and_filter_image_stack(fragmentIndex, seedIndex, 5)
+        seeds = self._get_seeds(fragmentIndex)
+        images, mask = self._get_watershed_images(fragmentIndex)
 
-        watershedIndex = self.dataSet.get_data_organization().get_data_channel_index(
-            self.parameters["watershed_channel_name"]
-        )
-        watershedImages = self._read_and_filter_image_stack(
-            fragmentIndex, watershedIndex, 5
-        )
-        seeds = watershed.separate_merged_seeds(watershed.extract_seeds(seedImages))
-        normalizedWatershed, watershedMask = watershed.prepare_watershed_images(
-            watershedImages
-        )
-
-        seeds[np.invert(watershedMask)] = 0
-        watershedOutput = segmentation.watershed(
-            normalizedWatershed,
+        seeds[np.invert(mask)] = 0
+        watershed = segmentation.watershed(
+            images,
             measure.label(seeds),
-            mask=watershedMask,
+            mask=mask,
             connectivity=np.ones((3, 3, 3)),
             watershed_line=True,
         )
@@ -101,12 +123,12 @@ class WatershedSegment(FeatureSavingAnalysisTask):
         zPos = np.array(self.dataSet.get_data_organization().get_z_positions())
         featureList = [
             spatialfeature.SpatialFeature.feature_from_label_matrix(
-                (watershedOutput == i),
+                (watershed == i),
                 fragmentIndex,
                 globalTask.fov_to_global_transform(fragmentIndex),
                 zPos,
             )
-            for i in np.unique(watershedOutput)
+            for i in np.unique(watershed)
             if i != 0
         ]
 

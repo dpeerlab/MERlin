@@ -29,6 +29,7 @@ def copy_test_files(folder):
         (merlin.CODEBOOK_HOME, "test_codebook2.csv"),
         (merlin.POSITION_HOME, "test_positions.csv"),
         (merlin.ANALYSIS_PARAMETERS_HOME, "test_analysis_parameters.json"),
+        (merlin.ANALYSIS_PARAMETERS_HOME, "test_max_project.json"),
         (merlin.MICROSCOPE_PARAMETERS_HOME, "test_microscope_parameters.json"),
     ]
     for home_folder, filename in to_copy:
