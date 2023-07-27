@@ -92,66 +92,67 @@ class Warp(analysistask.ParallelAnalysisTask):
                 inputImage, transformation, preserve_range=True
             ).astype(inputImage.dtype)
 
-    def _process_transformations(self, transformationList, fov) -> None:
+    def _process_transformations(
+        self, transformations: List[transform.EuclideanTransform], fov: int
+    ) -> None:
         """Process the transformations determined for a given fov.
 
-        The list of transformation is used to write registered images and
-        the transformation list is archived.
+        Writes registered images and archives the transformations.
 
         Args:
-        ----
-            transformationList: A list of transformations that contains a
-                transformation for each data channel.
-            fov: The fov that is being transformed.
+            transformations (list[transform.EuclideanTransform]):
+                Transformations for each channel.
+            fov (int):
+                The fov to transform.
         """
-        dataChannels = self.dataSet.get_data_organization().get_data_channels()
+        channels = self.dataSet.get_data_organization().get_data_channels()
 
         if self.parameters["write_aligned_images"]:
             zPositions = self.dataSet.get_z_positions()
 
-            imageDescription = self.dataSet.analysis_tiff_description(
-                len(zPositions), len(dataChannels)
+            metadata = self.dataSet.analysis_tiff_description(
+                len(zPositions), len(channels)
             )
 
             with self.dataSet.writer_for_analysis_images(
                 self, "aligned_images", fov
-            ) as outputTif:
-                for t, x in zip(transformationList, dataChannels):
+            ) as tiff:
+                for transformation, channel in zip(transformations, channels):
                     for z in zPositions:
-                        inputImage = self.dataSet.get_raw_image(x, fov, z)
-                        transformedImage = transform.warp(
-                            inputImage, t, preserve_range=True
-                        ).astype(inputImage.dtype)
-                        outputTif.save(
-                            transformedImage,
+                        image = self.dataSet.get_raw_image(channel, fov, z)
+                        transformed = transform.warp(
+                            image, transformation, preserve_range=True
+                        ).astype(image.dtype)
+                        tiff.save(
+                            transformed,
                             photometric="MINISBLACK",
-                            metadata=imageDescription,
+                            metadata=metadata,
                         )
 
         if self.writeAlignedFiducialImages:
-            fiducialImageDescription = self.dataSet.analysis_tiff_description(
-                1, len(dataChannels)
-            )
+            metadata = self.dataSet.analysis_tiff_description(1, len(channels))
 
             with self.dataSet.writer_for_analysis_images(
                 self, "aligned_fiducial_images", fov
-            ) as outputTif:
-                for t, x in zip(transformationList, dataChannels):
-                    inputImage = self.dataSet.get_fiducial_image(x, fov)
-                    transformedImage = transform.warp(
-                        inputImage, t, preserve_range=True
-                    ).astype(inputImage.dtype)
-                    outputTif.save(
-                        transformedImage,
+            ) as tiff:
+                for transformation, channel in zip(transformations, channels):
+                    image = self._get_fiducial_image(channel, fov)
+                    transformed = transform.warp(
+                        image, transformation, preserve_range=True
+                    ).astype(image.dtype)
+                    tiff.save(
+                        transformed,
                         photometric="MINISBLACK",
-                        metadata=fiducialImageDescription,
+                        metadata=metadata,
                     )
 
-        self._save_transformations(transformationList, fov)
+        self._save_transformations(transformations, fov)
 
-    def _save_transformations(self, transformationList: List, fov: int) -> None:
+    def _save_transformations(
+        self, transformations: List[transform.EuclideanTransform], fov: int
+    ) -> None:
         self.dataSet.save_numpy_analysis_result(
-            np.array([np.array(t) for t in transformationList]),
+            np.array([np.array(t) for t in transformations]),
             "offsets",
             self.get_analysis_name(),
             resultIndex=fov,
@@ -223,25 +224,23 @@ class FiducialCorrelationWarp(Warp):
             borderType=cv2.BORDER_REPLICATE,
         )
 
-    def _get_fiducial_image(self, fov: int):
+    def _get_fiducial_image(self, channel: int, fov: int):
         if "fiducial_task" in self.parameters:
-            fiducial_task = self.dataSet.load_analysis_task(
-                self.parameters["fiducial_task"]
-            )
-            return fiducial_task.get_image(fov)
-        return self.dataSet.get_fiducial_image(0, fov)
+            task = self.dataSet.load_analysis_task(self.parameters["fiducial_task"])
+            return task.get_fiducial_image(channel, fov)
+        return self.dataSet.get_fiducial_image(channel, fov)
 
     def _run_analysis(self, fragmentIndex: int):
         # TODO - this can be more efficient since some images should
         # use the same alignment if they are from the same imaging round
-        fixedImage = self._filter(self.dataSet.get_fiducial_image(0, fragmentIndex))
+        fixedImage = self._filter(self._get_fiducial_image(0, fragmentIndex))
         offsets = [
             registration.phase_cross_correlation(
                 fixedImage,
-                self._filter(self.dataSet.get_fiducial_image(x, fragmentIndex)),
+                self._filter(self._get_fiducial_image(channel, fragmentIndex)),
                 upsample_factor=100,
             )[0]
-            for x in self.dataSet.get_data_organization().get_data_channels()
+            for channel in self.dataSet.get_data_organization().get_data_channels()
         ]
         transformations = [
             transform.SimilarityTransform(translation=[-x[1], -x[0]]) for x in offsets

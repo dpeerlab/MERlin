@@ -1,4 +1,5 @@
 import re
+from abc import abstractmethod
 from typing import List
 
 import numpy as np
@@ -28,15 +29,6 @@ class MaxProject(analysistask.ParallelAnalysisTask):
     def channel_names(self) -> np.ndarray:
         return self.dataSet.get_data_organization().data["channelName"]
 
-    def _write_images(self, fov, images):
-        metadata = self.dataSet.analysis_tiff_description(
-            len(self.z_positions), len(self.channels)
-        )
-        with self.dataSet.writer_for_analysis_images(self, "max_projected", fov) as f:
-            for c in range(len(self.channels)):
-                for z in range(len(self.z_positions)):
-                    f.save(images[c, z], photometric="MINISBLACK", metadata=metadata)
-
     def get_image(self, channel, fov, z):
         """Get an image for a specific channel, fov, and z position."""
         return self.dataSet.get_raw_image(
@@ -63,6 +55,7 @@ class MaxProject(analysistask.ParallelAnalysisTask):
             ]
         )
 
+    @abstractmethod
     def _run_analysis(self, fov):
         # This analysis task does not need computation
         pass
@@ -88,16 +81,18 @@ class MaxProjectFiducial(MaxProject):
 
     def get_image(self, channel: int, fov: int, z: int) -> np.ndarray:
         """Get an image for a specific channel, fov, and z position."""
-        return self.dataSet.get_fiducial_image(
-            channel,
-            fov,
-            # TODO: make z_index_to_position internal to dataSet?
-            self.dataSet.z_index_to_position(z),
-        )
+        return self.dataSet.get_fiducial_image(channel, fov, z)
 
     def get_images(self, fov: int) -> np.ndarray:
         images = super().get_images(fov)
         projected = np.max(images, axis=1)
+        return projected
+
+    def get_fiducial_image(self, channel: int, fov: int) -> np.ndarray:
+        return self.get_images(fov)[channel]
+
+    def _run_analysis(self, fov):
+        projected = self.get_images(fov)
         if self.write_images:
             metadata = self.dataSet.analysis_tiff_description(1, len(self.channels))
 
@@ -108,8 +103,6 @@ class MaxProjectFiducial(MaxProject):
                     f.save(
                         projected[channel], photometric="MINISBLACK", metadata=metadata
                     )
-
-        return projected
 
 
 class MaxProjectBits(MaxProject):
@@ -150,18 +143,18 @@ class MaxProjectBits(MaxProject):
             np.ndarray: Image array of shape (z, x, y) with the projected bits.
         """
         images = super().get_images(fov)
-        print(self.channel_names)
-        print(re.match(self.channel_regex, self.channel_names.iloc[0]))
-        print(re.match(self.channel_regex, self.channel_names.iloc[-1]))
         is_bit = np.array(
             [re.match(self.channel_regex, name) for name in self.channel_names],
             dtype=bool,
         )
         bit_images = images[is_bit]
         projected = np.max(bit_images, axis=0)
+        return projected
+
+    def _run_analysis(self, fov):
+        projected = self.get_images(fov)
         if self.write_images:
             metadata = self.dataSet.analysis_tiff_description(len(self.z_positions), 1)
             with self.dataSet.writer_for_analysis_images(self, "polyT", fov) as f:
                 for z in range(len(self.z_positions)):
                     f.save(projected[z], photometric="MINISBLACK", metadata=metadata)
-        return projected
