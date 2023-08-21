@@ -181,6 +181,10 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
     def return_exported_data(self, fov: int) -> nx.Graph:
         return self.dataSet.load_graph_from_gpickle("cleaned_cells", self, fov)
 
+    # Wrapper so CleanCellBoundaries can be used as segment_task for PlotPerformance
+    def get_feature_database(self) -> spatialfeature.SpatialFeatureDB:
+        return self.segment_task.get_feature_database()
+
     def _run_analysis(self, fov: int) -> None:
         fovs = np.array(self.dataSet.get_fovs())
         boxes = self.align_task.get_fov_boxes()
