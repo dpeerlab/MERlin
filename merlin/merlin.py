@@ -227,8 +227,8 @@ def run_with_snakemake(
             for t in dataSet.get_analysis_tasks()
         }
         datasetMeta = {
-            "image_width": dataSet.get_image_dimensions()[0],
-            "image_height": dataSet.get_image_dimensions()[1],
+            "image_width": dataSet.imageDimensions[0],
+            "image_height": dataSet.imageDimensions[1],
             "barcode_length": dataSet.get_codebook().get_bit_count(),
             "barcode_count": dataSet.get_codebook().get_barcode_count(),
             "fov_count": len(dataSet.get_fovs()),

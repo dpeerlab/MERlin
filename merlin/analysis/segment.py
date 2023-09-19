@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import cv2
 import networkx as nx
@@ -20,9 +20,9 @@ class FeatureSavingAnalysisTask(analysistask.ParallelAnalysisTask):
     ) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
-    def _reset_analysis(self, fragmentIndex: int = None) -> None:
-        super()._reset_analysis(fragmentIndex)
-        self.get_feature_database().empty_database(fragmentIndex)
+    def _reset_analysis(self, fov: int = None) -> None:
+        super()._reset_analysis(fov)
+        self.get_feature_database().empty_database(fov)
 
     def get_feature_database(self) -> spatialfeature.SpatialFeatureDB:
         """Get the spatial feature database this analysis task saves
@@ -62,72 +62,90 @@ class WatershedSegment(FeatureSavingAnalysisTask):
         return 5
 
     def get_dependencies(self):
-        return [self.parameters["warp_task"], self.parameters["global_align_task"]]
+        dependencies = [
+            self.parameters["warp_task"],
+            self.parameters["global_align_task"],
+        ]
+        if "watershed_channel_task" in self.parameters:
+            dependencies.append(self.parameters["watershed_channel_task"])
+        return dependencies
 
     def get_cell_boundaries(self) -> List[spatialfeature.SpatialFeature]:
         featureDB = self.get_feature_database()
         return featureDB.read_features()
 
-    def _run_analysis(self, fragmentIndex):
-        globalTask = self.dataSet.load_analysis_task(
-            self.parameters["global_align_task"]
-        )
-
-        seedIndex = self.dataSet.get_data_organization().get_data_channel_index(
+    def _get_seeds(self, fov: int) -> np.ndarray:
+        index = self.dataSet.get_data_organization().get_data_channel_index(
             self.parameters["seed_channel_name"]
         )
-        seedImages = self._read_and_filter_image_stack(fragmentIndex, seedIndex, 5)
+        images = self._read_image_stack(fov, index)
+        images = self._filter_image_stack(images, 5)
+        seeds = watershed.separate_merged_seeds(watershed.extract_seeds(images))
+        return seeds
 
-        watershedIndex = self.dataSet.get_data_organization().get_data_channel_index(
-            self.parameters["watershed_channel_name"]
-        )
-        watershedImages = self._read_and_filter_image_stack(
-            fragmentIndex, watershedIndex, 5
-        )
-        seeds = watershed.separate_merged_seeds(watershed.extract_seeds(seedImages))
-        normalizedWatershed, watershedMask = watershed.prepare_watershed_images(
-            watershedImages
-        )
+    def _get_watershed_images(self, fov: int) -> Tuple[np.ndarray, np.ndarray]:
+        if "watershed_channel_task" in self.parameters:
+            task = self.dataSet.load_analysis_task(
+                self.parameters["watershed_channel_task"]
+            )
+            images = task.get_images(fov)
 
-        seeds[np.invert(watershedMask)] = 0
-        watershedOutput = segmentation.watershed(
-            normalizedWatershed,
+        else:
+            watershedIndex = (
+                self.dataSet.get_data_organization().get_data_channel_index(
+                    self.parameters["watershed_channel_name"]
+                )
+            )
+            images = self._read_image_stack(fov, watershedIndex)
+        images = self._filter_image_stack(images, 5)
+        normalized_images, mask = watershed.prepare_watershed_images(images)
+        return normalized_images, mask
+
+    def _run_analysis(self, fov: int) -> None:
+        task = self.dataSet.load_analysis_task(self.parameters["global_align_task"])
+
+        seeds = self._get_seeds(fov)
+        images, mask = self._get_watershed_images(fov)
+
+        seeds[np.invert(mask)] = 0
+        watershed = segmentation.watershed(
+            images,
             measure.label(seeds),
-            mask=watershedMask,
+            mask=mask,
             connectivity=np.ones((3, 3, 3)),
             watershed_line=True,
         )
 
-        zPos = np.array(self.dataSet.get_data_organization().get_z_positions())
-        featureList = [
+        z_positions = np.array(self.dataSet.get_data_organization().get_z_positions())
+        features = [
             spatialfeature.SpatialFeature.feature_from_label_matrix(
-                (watershedOutput == i),
-                fragmentIndex,
-                globalTask.fov_to_global_transform(fragmentIndex),
-                zPos,
+                (watershed == i),
+                fov,
+                task.fov_to_global_transform(fov),
+                z_positions,
             )
-            for i in np.unique(watershedOutput)
+            for i in np.unique(watershed)
             if i != 0
         ]
 
         featureDB = self.get_feature_database()
-        featureDB.write_features(featureList, fragmentIndex)
+        featureDB.write_features(features, fov)
 
-    def _read_and_filter_image_stack(
-        self, fov: int, channelIndex: int, filterSigma: float
-    ) -> np.ndarray:
-        filterSize = int(2 * np.ceil(2 * filterSigma) + 1)
-        warpTask = self.dataSet.load_analysis_task(self.parameters["warp_task"])
-        return np.array(
-            [
-                cv2.GaussianBlur(
-                    warpTask.get_aligned_image(fov, channelIndex, z),
-                    (filterSize, filterSize),
-                    filterSigma,
-                )
-                for z in range(len(self.dataSet.get_z_positions()))
-            ]
-        )
+    def _read_image_stack(self, fov: int, channel: int) -> np.ndarray:
+        task = self.dataSet.load_analysis_task(self.parameters["warp_task"])
+        z_positions = self.dataSet.get_z_positions()
+        images = [
+            task.get_aligned_image(fov, channel, z) for z in range(len(z_positions))
+        ]
+        return np.array(images)
+
+    def _filter_image_stack(self, images: np.ndarray, sigma: float) -> np.ndarray:
+        size = int(2 * np.ceil(2 * sigma) + 1)
+        n_slices = images.shape[0]
+        filtered = [
+            cv2.GaussianBlur(images[z], (size, size), sigma) for z in range(n_slices)
+        ]
+        return np.array(filtered)
 
 
 class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
@@ -141,10 +159,10 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
-        self.segmentTask = self.dataSet.load_analysis_task(
+        self.segment_task = self.dataSet.load_analysis_task(
             self.parameters["segment_task"]
         )
-        self.alignTask = self.dataSet.load_analysis_task(
+        self.align_task = self.dataSet.load_analysis_task(
             self.parameters["global_align_task"]
         )
 
@@ -160,38 +178,40 @@ class CleanCellBoundaries(analysistask.ParallelAnalysisTask):
     def get_dependencies(self):
         return [self.parameters["segment_task"], self.parameters["global_align_task"]]
 
-    def return_exported_data(self, fragmentIndex) -> nx.Graph:
-        return self.dataSet.load_graph_from_gpickle(
-            "cleaned_cells", self, fragmentIndex
-        )
+    def return_exported_data(self, fov: int) -> nx.Graph:
+        return self.dataSet.load_graph_from_gpickle("cleaned_cells", self, fov)
 
-    def _run_analysis(self, fragmentIndex) -> None:
-        allFOVs = np.array(self.dataSet.get_fovs())
-        fovBoxes = self.alignTask.get_fov_boxes()
-        fovIntersections = sorted(
-            [i for i, x in enumerate(fovBoxes) if fovBoxes[fragmentIndex].intersects(x)]
-        )
-        intersectingFOVs = list(allFOVs[np.array(fovIntersections)])
+    # Wrapper so CleanCellBoundaries can be used as segment_task for PlotPerformance
+    def get_feature_database(self) -> spatialfeature.SpatialFeatureDB:
+        return self.segment_task.get_feature_database()
 
-        spatialTree = rtree.index.Index()
+    def _run_analysis(self, fov: int) -> None:
+        fovs = np.array(self.dataSet.get_fovs())
+        boxes = self.align_task.get_fov_boxes()
+        intersections = sorted(
+            [i for i, box in enumerate(boxes) if boxes[fov].intersects(box)]
+        )
+        intersecting_fovs = list(fovs[np.array(intersections)])
+
+        spatial_tree = rtree.index.Index()
         count = 0
-        idToNum = {}
-        for currentFOV in intersectingFOVs:
-            cells = self.segmentTask.get_feature_database().read_features(currentFOV)
+        id_to_num = {}
+        for fov_ in intersecting_fovs:
+            cells = self.segment_task.get_feature_database().read_features(fov_)
             cells = spatialfeature.simple_clean_cells(cells)
 
-            spatialTree, count, idToNum = spatialfeature.construct_tree(
-                cells, spatialTree, count, idToNum
+            spatial_tree, count, id_to_num = spatialfeature.construct_tree(
+                cells, spatial_tree, count, id_to_num
             )
 
         graph = nx.Graph()
-        cells = self.segmentTask.get_feature_database().read_features(fragmentIndex)
+        cells = self.segment_task.get_feature_database().read_features(fov)
         cells = spatialfeature.simple_clean_cells(cells)
         graph = spatialfeature.construct_graph(
-            graph, cells, spatialTree, fragmentIndex, allFOVs, fovBoxes
+            graph, cells, spatial_tree, fov, fovs, boxes
         )
 
-        self.dataSet.save_graph_as_gpickle(graph, "cleaned_cells", self, fragmentIndex)
+        self.dataSet.save_graph_as_gpickle(graph, "cleaned_cells", self, fov)
 
 
 class CombineCleanedBoundaries(analysistask.AnalysisTask):
@@ -206,7 +226,7 @@ class CombineCleanedBoundaries(analysistask.AnalysisTask):
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
-        self.cleaningTask = self.dataSet.load_analysis_task(
+        self.cleaning_task = self.dataSet.load_analysis_task(
             self.parameters["cleaning_task"]
         )
 
@@ -228,16 +248,16 @@ class CombineCleanedBoundaries(analysistask.AnalysisTask):
         )
 
     def _run_analysis(self):
-        allFOVs = self.dataSet.get_fovs()
+        fovs = self.dataSet.get_fovs()
         graph = nx.Graph()
-        for currentFOV in allFOVs:
-            subGraph = self.cleaningTask.return_exported_data(currentFOV)
-            graph = nx.compose(graph, subGraph)
+        for currentFOV in fovs:
+            subgraph = self.cleaning_task.return_exported_data(currentFOV)
+            graph = nx.compose(graph, subgraph)
 
-        cleanedCells = spatialfeature.remove_overlapping_cells(graph)
+        cleaned_cells = spatialfeature.remove_overlapping_cells(graph)
 
         self.dataSet.save_dataframe_to_csv(
-            cleanedCells, "all_cleaned_cells", analysisTask=self
+            cleaned_cells, "all_cleaned_cells", analysisTask=self
         )
 
 
@@ -245,10 +265,10 @@ class RefineCellDatabases(FeatureSavingAnalysisTask):
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
-        self.segmentTask = self.dataSet.load_analysis_task(
+        self.segment_task = self.dataSet.load_analysis_task(
             self.parameters["segment_task"]
         )
-        self.cleaningTask = self.dataSet.load_analysis_task(
+        self.cleaning_task = self.dataSet.load_analysis_task(
             self.parameters["combine_cleaning_task"]
         )
 
@@ -269,20 +289,20 @@ class RefineCellDatabases(FeatureSavingAnalysisTask):
             self.parameters["combine_cleaning_task"],
         ]
 
-    def _run_analysis(self, fragmentIndex):
-        cleanedCells = self.cleaningTask.return_exported_data()
-        originalCells = self.segmentTask.get_feature_database().read_features(
-            fragmentIndex
-        )
-        featureDB = self.get_feature_database()
-        cleanedC = cleanedCells[cleanedCells["originalFOV"] == fragmentIndex]
-        cleanedGroups = cleanedC.groupby("assignedFOV")
-        for k, g in cleanedGroups:
-            cellsToConsider = g["cell_id"].values.tolist()
-            featureList = [
-                x for x in originalCells if str(x.get_feature_id()) in cellsToConsider
+    def _run_analysis(self, fov: int) -> None:
+        cleaned_cells = self.cleaning_task.return_exported_data()
+        original_cells = self.segment_task.get_feature_database().read_features(fov)
+        feature_database = self.get_feature_database()
+        cleaned_cells_in_fov = cleaned_cells[cleaned_cells["originalFOV"] == fov]
+        cleaned_groups = cleaned_cells_in_fov.groupby("assignedFOV")
+        for _, group in cleaned_groups:
+            cells_to_consider = group["cell_id"].values.tolist()
+            features = [
+                x
+                for x in original_cells
+                if str(x.get_feature_id()) in cells_to_consider
             ]
-            featureDB.write_features(featureList, fragmentIndex)
+            feature_database.write_features(features, fov)
 
 
 class ExportCellMetadata(analysistask.AnalysisTask):
@@ -291,7 +311,7 @@ class ExportCellMetadata(analysistask.AnalysisTask):
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)
 
-        self.segmentTask = self.dataSet.load_analysis_task(
+        self.segment_task = self.dataSet.load_analysis_task(
             self.parameters["segment_task"]
         )
 
@@ -305,6 +325,6 @@ class ExportCellMetadata(analysistask.AnalysisTask):
         return [self.parameters["segment_task"]]
 
     def _run_analysis(self):
-        df = self.segmentTask.get_feature_database().read_feature_metadata()
+        df = self.segment_task.get_feature_database().read_feature_metadata()
 
         self.dataSet.save_dataframe_to_csv(df, "feature_metadata", self.analysisName)

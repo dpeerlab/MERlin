@@ -245,6 +245,9 @@ class DataSet:
             imagej=imagej,
         )
 
+    # TODO: make slice vs. frame clearer
+    # believe that sliceCount is the number of z-slices in a stack
+    # and frameCount is the number of channels?
     @staticmethod
     def analysis_tiff_description(sliceCount: int, frameCount: int) -> Dict:
         imageDescription = {
@@ -1036,6 +1039,15 @@ class DataSet:
 
 
 class ImageDataSet(DataSet):
+    """
+    Attributes:
+        flipHorizontal (bool): Whether to flip the image horizontally when loading.
+        flipVertical (bool): Whether to flip the image vertically when loading.
+        transpose (bool): Whether to transpose the image when loading.
+        micronsPexPixel (float): Conversion factor to convert pixels to microns.
+        imageDimensions (tuple[int, int]): width and height of each image in pixels
+    """
+
     def __init__(
         self,
         dataDirectoryName: str,
@@ -1046,7 +1058,6 @@ class ImageDataSet(DataSet):
         """Create a dataset for the specified raw data.
 
         Args:
-        ----
             dataDirectoryName: the relative directory to the raw data
             dataHome: the base path to the data. The data is expected
                     to be in dataHome/dataDirectoryName. If dataHome
@@ -1072,11 +1083,18 @@ class ImageDataSet(DataSet):
             self.rawDataPortal.list_files(extensionList=[".dax", ".tif", ".tiff"])
         )
 
-    def load_image(self, imagePath, frameIndex):
-        with imagereader.infer_reader(
-            self.rawDataPortal.open_file(imagePath)
-        ) as reader:
-            imageIn = reader.load_frame(int(frameIndex))
+    def load_image(self, path: str, frame: int) -> np.ndarray:
+        """Loads a frame from an image file.
+
+        Args:
+            path (str): Path to image.
+            frame (int): Frame within the image to load.
+
+        Returns:
+            np.ndarray: Image data for given frame.
+        """
+        with imagereader.infer_reader(self.rawDataPortal.open_file(path)) as reader:
+            imageIn = reader.load_frame(int(frame))
             if self.transpose:
                 imageIn = np.transpose(imageIn)
             if self.flipHorizontal:
@@ -1085,18 +1103,17 @@ class ImageDataSet(DataSet):
                 imageIn = np.flip(imageIn, axis=0)
             return imageIn
 
-    def image_stack_size(self, imagePath):
+    def image_stack_size(self, path: str) -> Tuple[int, int, int]:
         """Get the size of the image stack stored in the specified image path.
 
-        Returns
-        -------
-            a three element list with [width, height, frameCount] or None
-                    if the file does not exist
+        Args:
+            path (str): path to the image file
+
+        Returns:
+            tuple[int, int, int]: width, height, and n_frames of images
         """
-        with imagereader.infer_reader(
-            self.rawDataPortal.open_file(imagePath)
-        ) as reader:
-            return reader.film_size()
+        with imagereader.infer_reader(self.rawDataPortal.open_file(path)) as reader:
+            return reader.size
 
     def _import_microscope_parameters(self, microscopeParametersName):
         sourcePath = os.sep.join(
@@ -1122,19 +1139,6 @@ class ImageDataSet(DataSet):
         self.imageDimensions = self.microscopeParameters.get(
             "image_dimensions", [2048, 2048]
         )
-
-    def get_microns_per_pixel(self):
-        """Get the conversion factor to convert pixels to microns."""
-        return self.micronsPerPixel
-
-    def get_image_dimensions(self):
-        """Get the dimensions of the images in this data set.
-
-        Returns
-        -------
-            A tuple containing the width and height of each image in pixels.
-        """
-        return self.imageDimensions
 
     def get_image_xml_metadata(self, imagePath: str) -> Dict:
         """Get the xml metadata stored for the specified image.
@@ -1356,9 +1360,9 @@ class MERFISHDataSet(ImageDataSet):
         # TODO - this should be implemented using the position of the fov.
         return self.positions.loc[fov]["X"], self.positions.loc[fov]["Y"]
 
-    def z_index_to_position(self, zIndex: int) -> float:
+    def z_index_to_position(self, z: int) -> float:
         """Get the z position associated with the provided z index."""
-        return self.get_z_positions()[zIndex]
+        return self.get_z_positions()[z]
 
     def position_to_z_index(self, zPosition: float) -> int:
         """Get the z index associated with the specified z position.
@@ -1377,8 +1381,7 @@ class MERFISHDataSet(ImageDataSet):
     def get_z_positions(self) -> List[float]:
         """Get the z positions present in this dataset.
 
-        Returns
-        -------
+        Returns:
             A sorted list of all unique z positions
         """
         return self.dataOrganization.get_z_positions()
@@ -1396,11 +1399,22 @@ class MERFISHDataSet(ImageDataSet):
             self.dataOrganization.get_image_frame_index(dataChannel, zPosition),
         )
 
-    def get_fiducial_image(self, dataChannel, fov):
-        return self.load_image(
-            self.dataOrganization.get_fiducial_filename(dataChannel, fov),
-            self.dataOrganization.get_fiducial_frame_index(dataChannel),
-        )
+    def get_fiducial_image(self, channel, fov, z=None) -> np.ndarray:
+        """Get the fiducial image for the specified channel, fov, and z-slice.
+
+        Args:
+            channel (_type_): Channel of image.
+            fov (_type_): Field of view of image.
+            z (int, optional): Z-slice within fiducial bead file of image.
+                Uses fiducialFrame from data organization .csv when not specified.
+
+        Returns:
+            np.ndarray with image of fiducial beads
+        """
+        if z is None:
+            z = self.dataOrganization.get_fiducial_frame_index(channel)
+        filename = self.dataOrganization.get_fiducial_filename(channel, fov)
+        return self.load_image(filename, z)
 
     def _import_positions_from_metadata(self):
         positionData = []

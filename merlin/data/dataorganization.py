@@ -126,14 +126,17 @@ class DataOrganization:
         -------
             the index of the data channel where the data channel name is
                 dataChannelName
+
         Raises:
-            # TODO this should raise a meaningful exception if the data channel
-            # is not found
+            ValueError if the data channel is not found
         """
-        return self.data[
-            self.data["channelName"].apply(lambda x: str(x).lower())
-            == str(dataChannelName).lower()
-        ].index.values.tolist()[0]
+        channels = self.data["channelName"].apply(lambda x: str(x).lower())
+        channel = str(dataChannelName).lower()
+        try:
+            return self.data[channels == channel].index.values.tolist()[0]
+        except IndexError:
+            msg = f"{channel} not found among data channels {', '.join(channels)}."
+            raise ValueError(msg)
 
     def get_data_channel_color(self, dataChannel: int) -> str:
         """Get the color used for measuring the specified data channel.

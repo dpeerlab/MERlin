@@ -1,0 +1,41 @@
+{
+    "analysis_tasks": [
+        {
+            "task": "MaxProjectFiducial",
+            "module": "merlin.analysis.maxproject",
+            "parameters": {
+                "write_images": true
+            }
+        },
+        {
+            "task": "FiducialCorrelationWarp",
+            "module": "merlin.analysis.warp",
+            "parameters": {
+                "write_aligned_images": true,
+                "fiducial_task": "MaxProjectFiducial"
+            }
+        },
+        {
+            "task": "SimpleGlobalAlignment",
+            "module": "merlin.analysis.globalalign"
+        },
+        {
+            "task": "MaxProjectBits",
+            "module": "merlin.analysis.maxproject",
+            "parameters": {
+                "channel_regex": "bit\\d+",
+                "write_images": true,
+                "warp_task": "FiducialCorrelationWarp"
+            }
+        },
+        {
+            "task": "WatershedSegment",
+            "module": "merlin.analysis.segment",
+            "parameters": {
+                "warp_task": "FiducialCorrelationWarp",
+                "global_align_task": "SimpleGlobalAlignment",
+                "watershed_channel_task": "MaxProjectBits"
+            }
+        }
+    ]
+}

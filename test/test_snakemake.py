@@ -26,7 +26,7 @@ def test_snakemake_generator_one_task(simple_merfish_data):
         "analysis_tasks": [
             {
                 "task": "SimpleAnalysisTask",
-                "module": "merlin.analysis.testtask",
+                "module": "test.simple_tasks",
                 "parameters": {},
             }
         ]
@@ -47,19 +47,19 @@ def test_snakemake_generator_task_chain(simple_merfish_data):
         "analysis_tasks": [
             {
                 "task": "SimpleAnalysisTask",
-                "module": "merlin.analysis.testtask",
+                "module": "test.simple_tasks",
                 "analysis_name": "Task1",
                 "parameters": {},
             },
             {
                 "task": "SimpleParallelAnalysisTask",
-                "module": "merlin.analysis.testtask",
+                "module": "test.simple_tasks",
                 "analysis_name": "Task2",
                 "parameters": {"dependencies": ["Task1"]},
             },
             {
                 "task": "SimpleParallelAnalysisTask",
-                "module": "merlin.analysis.testtask",
+                "module": "test.simple_tasks",
                 "analysis_name": "Task3",
                 "parameters": {"dependencies": ["Task2"]},
             },

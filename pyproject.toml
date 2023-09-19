@@ -4,6 +4,9 @@
 select = ["E", "F", "I", "UP"]
 target-version = "py38"
 
+[tool.ruff.isort]
+known-first-party = ["merlin", "test"]
+
 [tool.pytest.ini_options]
 markers = [
     "slowtest: a test that takes longer than a couple seconds",

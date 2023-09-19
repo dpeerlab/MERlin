@@ -1,12 +1,12 @@
 import numpy as np
 
+import test.simple_tasks as simple_tasks
 from merlin import plots
-from merlin.analysis import testtask
 from merlin.plots import testplots
 
 
 def test_metadata(simple_merfish_data):
-    randomTask = testtask.RandomNumberParallelAnalysisTask(simple_merfish_data)
+    randomTask = simple_tasks.RandomNumberParallelAnalysisTask(simple_merfish_data)
     randomMetadata = testplots.TestPlotMetadata(randomTask, {"test_task": randomTask})
     assert not randomTask.is_complete()
     assert not randomMetadata.is_complete()
@@ -35,7 +35,7 @@ def test_metadata(simple_merfish_data):
 
 
 def test_plotengine(simple_merfish_data):
-    randomTask = testtask.RandomNumberParallelAnalysisTask(simple_merfish_data)
+    randomTask = simple_tasks.RandomNumberParallelAnalysisTask(simple_merfish_data)
     assert not randomTask.is_complete()
 
     plotEngine = plots.PlotEngine(randomTask, {"test_task": randomTask})

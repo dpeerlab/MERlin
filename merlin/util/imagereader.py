@@ -105,25 +105,22 @@ class Reader:
             self.fileptr.close()
             self.fileptr = None
 
-    def film_filename(self):
-        """Returns the film name."""
-        return self.filename
-
-    def film_size(self):
-        """Returns the film size."""
+    @property
+    def size(self):
+        """Returns the image size."""
         return [self.image_width, self.image_height, self.number_frames]
 
-    def film_location(self):
-        """Returns the picture x,y location, if available."""
-        if hasattr(self, "stage_x"):
+    @property
+    def location(self):
+        """Returns the image (x, y) location, if available."""
+        if hasattr(self, "stage_x") and hasattr(self, "stage_y"):
             return [self.stage_x, self.stage_y]
         else:
             return [0.0, 0.0]
 
-    def film_scale(self):
-        """Returns the scale used to display the film when
-        the picture was taken.
-        """
+    @property
+    def scale(self):
+        """Scale used to display the film when the image was taken."""
         if hasattr(self, "scalemin") and hasattr(self, "scalemax"):
             return [self.scalemin, self.scalemax]
         else:
@@ -143,13 +140,13 @@ class Reader:
         """A (hopefully) unique string that identifies this movie."""
         return hashlib.md5(self.load_frame(0).tostring()).hexdigest()
 
-    def load_frame(self, frame_number):
-        assert (
-            frame_number >= 0
-        ), "Frame_number must be greater than or equal to 0, it is " + str(frame_number)
-        assert (
-            frame_number < self.number_frames
-        ), "Frame number must be less than " + str(self.number_frames)
+    def load_frame(self, frame: int):
+        assert frame >= 0, "frame must be greater than or equal to 0, it is " + str(
+            frame
+        )
+        assert frame < self.number_frames, "frame must be less than " + str(
+            self.number_frames
+        )
 
     def lock_target(self):
         """Returns the film focus lock target."""
@@ -225,11 +222,18 @@ class DaxReader(Reader):
             self.image_height = 256
             self.image_width = 256
 
-    def load_frame(self, frame_number):
-        """Load a frame & return it as a np array."""
-        super().load_frame(frame_number)
+    def load_frame(self, frame: int) -> np.ndarray:
+        """Load a frame & return it as a np array.
 
-        startByte = frame_number * self.image_height * self.image_width * 2
+        Args:
+            frame (int): Index of the frame to load.
+
+        Returns:
+            np.ndarray: A numpy array containing the frame image.
+        """
+        super().load_frame(frame)
+
+        startByte = frame * self.image_height * self.image_width * 2
         endByte = startByte + 2 * (self.image_height * self.image_width)
 
         dataFormat = np.dtype("uint16")
@@ -314,20 +318,20 @@ class TifReader(Reader):
                 )
             )
 
-    def load_frame(self, frame_number, cast_to_int16=True):
-        super().load_frame(frame_number)
+    def load_frame(self, frame: int, cast_to_int16: bool = True) -> np.ndarray:
+        super().load_frame(frame)
 
         # All the data is on a single page.
         if self.number_frames == self.frames_per_page:
             if self.number_frames == 1:
                 image_data = self.page_data
             else:
-                image_data = self.page_data[frame_number, :, :]
+                image_data = self.page_data[frame, :, :]
 
         # Multiple frames of data on multiple pages.
         elif self.frames_per_page > 1:
-            page = int(frame_number / self.frames_per_page)
-            frame = frame_number % self.frames_per_page
+            page = int(frame / self.frames_per_page)
+            frame = frame % self.frames_per_page
 
             # This is an optimization for files with a large number of frames
             # per page. In this case tifffile will keep loading the entire
@@ -346,7 +350,7 @@ class TifReader(Reader):
 
         # One frame on each page.
         else:
-            image_data = self.fileptr.asarray(key=frame_number)
+            image_data = self.fileptr.asarray(key=frame)
 
         assert len(image_data.shape) == 2, "Not a monochrome tif image! " + str(
             image_data.shape

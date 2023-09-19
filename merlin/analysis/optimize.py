@@ -11,9 +11,7 @@ from merlin.util import aberration, decoding, registration
 
 
 class OptimizeIteration(decode.BarcodeSavingParallelAnalysisTask):
-    """An analysis task for performing a single iteration of scale factor
-    optimization.
-    """
+    """Performs a single iteration of scale factor optimization."""
 
     def __init__(self, dataSet, parameters=None, analysisName=None) -> None:
         super().__init__(dataSet, parameters, analysisName)

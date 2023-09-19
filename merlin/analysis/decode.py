@@ -60,7 +60,7 @@ class Decode(BarcodeSavingParallelAnalysisTask):
                 self.parameters["z_duplicate_xy_pixel_threshold"] = np.sqrt(2)
 
         self.cropWidth = self.parameters["crop_width"]
-        self.imageSize = dataSet.get_image_dimensions()
+        self.imageSize = dataSet.imageDimensions
 
     def fragment_count(self):
         return len(self.dataSet.get_fovs())
@@ -106,7 +106,7 @@ class Decode(BarcodeSavingParallelAnalysisTask):
 
         zPositionCount = len(self.dataSet.get_z_positions())
         bitCount = codebook.get_bit_count()
-        imageShape = self.dataSet.get_image_dimensions()
+        imageShape = self.dataSet.imageDimensions
         decodedImages = np.zeros((zPositionCount, *imageShape), dtype=np.int16)
         magnitudeImages = np.zeros((zPositionCount, *imageShape), dtype=np.float32)
         distances = np.zeros((zPositionCount, *imageShape), dtype=np.float32)
