@@ -87,9 +87,6 @@ def simple_merfish_data(merfish_files):
         microscopeParametersName="test_microscope_parameters.json",
     )
     yield testMERFISHData
-    import pdb
-
-    pdb.set_trace()
     shutil.rmtree(os.path.join(merlin.ANALYSIS_HOME, "merfish_test"))
 
 
