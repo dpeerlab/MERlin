@@ -77,7 +77,7 @@ def simple_data(base_files):
     shutil.rmtree(dataDirectory)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def simple_merfish_data(merfish_files):
     testMERFISHData = dataset.MERFISHDataSet(
         "merfish_test",
@@ -87,7 +87,10 @@ def simple_merfish_data(merfish_files):
         microscopeParametersName="test_microscope_parameters.json",
     )
     yield testMERFISHData
-    shutil.rmtree("merfish_test")
+    import pdb
+
+    pdb.set_trace()
+    shutil.rmtree(os.path.join(merlin.ANALYSIS_HOME, "merfish_test"))
 
 
 @pytest.fixture(scope="session")
