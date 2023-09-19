@@ -17,7 +17,6 @@ merlin.DATA_ORGANIZATION_HOME = os.path.abspath("test_dataorganization")
 merlin.POSITION_HOME = os.path.abspath("test_positions")
 merlin.MICROSCOPE_PARAMETERS_HOME = os.path.abspath("test_microcope_parameters")
 
-
 dataDirectory = os.sep.join([merlin.DATA_HOME, "test"])
 merfishDataDirectory = os.sep.join([merlin.DATA_HOME, "merfish_test"])
 
@@ -54,11 +53,8 @@ def base_files():
         if os.path.exists(folder):
             shutil.rmtree(folder)
         os.makedirs(folder)
-
     copy_test_files("auxiliary_files")
-
     yield
-
     for folder in folderList:
         shutil.rmtree(folder)
 
@@ -66,13 +62,10 @@ def base_files():
 @pytest.fixture(scope="session")
 def merfish_files(base_files):
     os.mkdir(merfishDataDirectory)
-
     for imageFile in glob.iglob(os.sep.join([root, "auxiliary_files", "*.tif"])):
         if os.path.isfile(imageFile):
             shutil.copy(imageFile, merfishDataDirectory)
-
     yield
-
     shutil.rmtree(merfishDataDirectory)
 
 
@@ -80,9 +73,7 @@ def merfish_files(base_files):
 def simple_data(base_files):
     os.mkdir(dataDirectory)
     testData = dataset.DataSet("test")
-
     yield testData
-
     shutil.rmtree(dataDirectory)
 
 
@@ -95,7 +86,8 @@ def simple_merfish_data(merfish_files):
         positionFileName="test_positions.csv",
         microscopeParametersName="test_microscope_parameters.json",
     )
-    return testMERFISHData
+    yield testMERFISHData
+    shutil.rmtree("merfish_test")
 
 
 @pytest.fixture(scope="session")
@@ -111,7 +103,6 @@ def two_codebook_merfish_data(merfish_files):
         microscopeParametersName="test_microscope_parameters.json",
     )
     yield testMERFISHData
-
     shutil.rmtree("test_analysis_two_codebook")
 
 
